@@ -443,11 +443,12 @@ footer{background:#020b14;border-top:1px solid var(--border);
       </ul>
       <a href="/app" class="prod-cta">OPEN SONIQ →</a>
     </div>
-    <div class="prod-card">
-      <div class="prod-name" style="color:rgba(255,255,255,.3)">CERTIQ</div>
+    <div class="prod-card live" onclick="window.location='/cert'" style="cursor:pointer" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 60px rgba(34,170,255,.1)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+      <div class="prod-badge">LIVE</div>
+      <div class="prod-name" style="color:var(--ai)">CERTIQ</div>
       <div class="prod-sub">CERTIFICATION TOOLKIT</div>
       <p class="prod-desc">ICAO Annex 16 and EASA SC-VTOL data package generation. Flyover/approach/lateral limits and certification margin calculator.</p>
-      <div class="prod-soon">COMING SOON</div>
+      <a href="/cert" class="prod-cta">OPEN CERTIQ →</a>
     </div>
     <div class="prod-card">
       <div class="prod-name" style="color:rgba(255,255,255,.3)">PROPAGIQ</div>
@@ -468,9 +469,9 @@ footer{background:#020b14;border-top:1px solid var(--border);
       <p class="contact-text" style="font-size:15px;color:var(--muted);line-height:1.9;font-weight:300">SONONAI is developed by <strong style="color:#fff">Zirconique</strong>, an aerospace acoustics consultancy specialising in rotorcraft and advanced air mobility noise engineering.</p>
     </div>
     <div class="contact-cards">
-      <a href="mailto:info@sononai.com" class="contact-card">
+      <a href="/cdn-cgi/l/email-protection#a7cec9c1c8e7d4c8c9c8c9c6ce89c4c8ca" class="contact-card">
         <span class="cc-icon">✉</span>
-        <div><div class="cc-lbl">EMAIL</div><div class="cc-val">info@sononai.com</div></div>
+        <div><div class="cc-lbl">EMAIL</div><div class="cc-val"><span class="__cf_email__" data-cfemail="462f282029063529282928272f6825292b">[email&#160;protected]</span></div></div>
       </a>
       <a href="https://www.sononai.com" class="contact-card">
         <span class="cc-icon">🌐</span>
@@ -491,13 +492,13 @@ footer{background:#020b14;border-top:1px solid var(--border);
     <a href="#acoustic">SCIENCE</a>
     <a href="#aircraft">AIRCRAFT</a>
     <a href="#products">PRODUCTS</a>
-    <a href="mailto:info@sononai.com">CONTACT</a>
+    <a href="/cdn-cgi/l/email-protection#3d54535b527d4e525352535c54135e5250">CONTACT</a>
     <a href="/app">LAUNCH SONIQ</a>
   </div>
   <div class="footer-copy">© 2025 SONONAI · SAE ARP1779 · ICAO ANNEX 16 · EASA SC-VTOL-01</div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ═══ HERO CANVAS — animated SPL radiation rings + aircraft ═══ */
 (function(){
   const canvas = document.getElementById('hero-canvas');
@@ -907,16 +908,4 @@ footer{background:#020b14;border-top:1px solid var(--border);
     // compass
     ctx.fillStyle='rgba(255,255,255,.2)'; ctx.font='9px JetBrains Mono,monospace';
     ctx.fillText('N',W/2-4,16); ctx.fillText('S',W/2-4,H-6);
-    ctx.fillText('W',6,H/2+4); ctx.fillText('E',W-16,H/2+4);
-
-    // label
-    ctx.fillStyle='rgba(34,170,255,.6)'; ctx.font='bold 7px JetBrains Mono,monospace';
-    ctx.fillText('JOBY S4 · TOP-DOWN · HOVER CONFIGURATION',10,H-10);
-
-    t+=0.02; requestAnimationFrame(draw);
-  }
-  draw();
-})();
-</script>
-</body>
-</html>
+    ctx.fillText('W',6,H/2+4); ctx.fillText('E'
