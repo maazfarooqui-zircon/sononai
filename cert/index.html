@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certiq — eVTOL Airworthiness & Certification</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:wght@300;400;500;600&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f6fa;
+  --s1:#ffffff;
+  --s2:#eaf0f7;
+  --s3:#dde6ef;
+  --b1:#c0d0e0;
+  --b2:#90aac0;
+  --b3:#6088a8;
+  --cyan:#0066bb;
+  --cyanG:rgba(0,102,187,.10);
+  --cyanB:rgba(0,102,187,.07);
+  --green:#006633;
+  --greenG:rgba(0,102,51,.10);
+  --amber:#995500;
+  --amberG:rgba(153,85,0,.10);
+  --red:#bb1133;
+  --redG:rgba(187,17,51,.10);
+  --violet:#5533aa;
+  --violetG:rgba(85,51,170,.10);
+  --text:#0d1f2e;
+  --muted:#3a5a78;
+  --dim:#6888a8;
+  --mono:'JetBrains Mono',monospace;
+  --disp:'Orbitron',sans-serif;
+  --body:'Barlow',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.6;overflow-x:hidden;min-height:100vh}
+
+/* ── BG */
+.bg-wrap{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-radial{position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 5% 40%,rgba(0,102,187,.05) 0%,transparent 60%),radial-gradient(ellipse 50% 60% at 95% 10%,rgba(0,102,51,.04) 0%,transparent 60%)}
+
+/* ── HEADER */
+#hdr{position:relative;z-index:200;background:var(--s1);border-bottom:2px solid var(--b1);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:62px;box-shadow:0 2px 8px rgba(0,40,80,.08)}
+.hdr-brand{display:flex;align-items:center;gap:16px}
+.brand-logo{width:36px;height:36px;background:var(--cyan);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-logo svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:1.8}
+.brand-wordmark{font-family:var(--disp);font-size:20px;font-weight:900;letter-spacing:5px;color:var(--cyan)}
+.brand-tagline{font-family:var(--mono);font-size:9px;letter-spacing:2.5px;color:var(--muted);border-left:1px solid var(--b2);padding-left:14px;line-height:1.5}
+.brand-tagline strong{display:block;color:var(--cyan);font-size:10px;letter-spacing:2px}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.hdr-badge{font-family:var(--mono);font-size:9px;letter-spacing:2px;padding:4px 10px;border:1px solid var(--b2);color:var(--muted);text-transform:uppercase}
+.hdr-badge.live{border-color:var(--green);color:var(--green);background:var(--greenG);animation:livePulse 2s infinite}
+@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(0,102,51,.3)}50%{box-shadow:0 0 0 5px rgba(0,102,51,0)}}
+.hdr-user{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer;padding:5px 10px;border:1px solid var(--b1);transition:all .2s}
+.hdr-user:hover{border-color:var(--cyan);color:var(--cyan)}
+.user-avatar{width:26px;height:26px;background:var(--cyan);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:var(--disp)}
+
+/* ── GLOBAL NAV */
+.gnav{position:relative;z-index:190;background:#1a2d42;border-bottom:1px solid #0d1f2e;display:flex;align-items:stretch;height:40px;padding:0 24px;gap:0;overflow-x:auto}
+.gnav::-webkit-scrollbar{height:0}
+.gtab{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:rgba(220,235,248,.6);padding:0 16px;cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;transition:all .2s;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0}
+.gtab:hover{color:#fff;background:rgba(255,255,255,.05)}
+.gtab.active{color:#fff;border-bottom-color:#22aaff;background:rgba(34,170,255,.08)}
+.gtab .gi{font-size:11px}
+.gnav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.gnav-proj-sel{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:rgba(220,235,248,.7);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);padding:4px 10px;cursor:pointer;max-width:160px;outline:none}
+.gnav-proj-sel option{background:#1a2d42;color:#fff}
+.gnav-new-btn{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:#22aaff;border:1px solid rgba(34,170,255,.4);background:rgba(34,170,255,.08);padding:4px 12px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.gnav-new-btn:hover{background:rgba(34,170,255,.18);border-color:#22aaff}
+
+/* ── PAGE WRAPPERS */
+.page{display:none;position:relative;z-index:10;min-height:calc(100vh - 102px)}
+.page.active{display:block}
+
+/* ══════════════════════════════════════════
+   LOGIN / PROJECT HUB
+══════════════════════════════════════════ */
+#pg-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 62px);padding:40px}
+.login-box{background:var(--s1);border:1px solid var(--b1);width:420px;max-width:100%;box-shadow:0 8px 32px rgba(0,40,80,.12)}
+.login-header{background:#1a2d42;padding:28px 32px;border-bottom:1px solid var(--b1)}
+.login-title{font-family:var(--disp);font-size:18px;font-weight:700;letter-spacing:4px;color:#22aaff;margin-bottom:4px}
+.login-sub{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(220,235,248,.5);text-transform:uppercase}
+.login-body{padding:28px 32px}
+.lbl{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;display:block}
+.linput{width:100%;background:var(--s2);border:1px solid var(--b2);color:var(--text);font-family:var(--mono);font-size:13px;padding:9px 12px;outline:none;margin-bottom:14px;transition:border-color .2s}
+.linput:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyanB)}
+.login-btn{width:100%;padding:12px;font-family:var(--disp);font-size:11px;font-weight:600;letter-spacing:4px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);cursor:pointer;transition:all .3s;text-transform:uppercase;position:relative;overflow:hidden;margin-top:4px}
+.login-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,102,187,.18),transparent);transition:left .5s}
+.login-btn:hover{background:var(--cyanG);box-shadow:0 0 24px rgba(0,102,187,.3)}
+.login-btn:hover::before{left:100%}
+.login-err{font-family:var(--mono);font-size:10px;color:var(--red);background:var(--redG);border:1px solid rgba(187,17,51,.25);padding:7px 12px;margin-bottom:12px;display:none}
+.login-note{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:14px;text-align:center;letter-spacing:1px}
+
+/* ══════════════════════════════════════════
+   PROJECT HUB
+══════════════════════════════════════════ */
+#pg-hub{padding:40px 48px}
+.hub-hero{margin-bottom:36px}
+.hub-title{font-family:var(--disp);font-size:26px;font-weight:700;letter-spacing:4px;color:var(--text);margin-bottom:6px}
+.hub-title span{color:var(--cyan)}
+.hub-sub{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted)}
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:28px}
+.proj-card{background:var(--s1);border:1px solid var(--b1);cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.proj-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--b2);transition:background .25s}
+.proj-card:hover{border-color:var(--b3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,40,80,.1)}
+.proj-card:hover::before{background:var(--cyan)}
+.proj-card-top{padding:18px 20px 14px}
+.proj-card-name{font-family:var(--disp);font-size:14px;font-weight:600;letter-spacing:2px;color:var(--cyan);margin-bottom:5px}
+.proj-card-meta{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--muted);line-height:1.9}
+.proj-card-bar{height:3px;background:var(--s3);margin:0}
+.proj-card-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width .5s}
+.proj-card-bottom{padding:10px 20px;border-top:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
+.proj-card-pct{font-family:var(--disp);font-size:18px;color:var(--cyan)}
+.proj-card-actions{display:flex;gap:6px}
+.proj-btn{font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:4px 10px;border:1px solid var(--b2);color:var(--muted);cursor:pointer;background:transparent;transition:all .2s;text-transform:uppercase}
+.proj-btn:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyanG)}
+.proj-btn.danger:hover{border-color:var(--red);color:var(--red);background:var(--redG)}
+.new-proj-card{background:transparent;border:1px dashed var(--b2);cursor:pointer;transition:all .25s;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;gap:10px;min-height:140px}
+.new-proj-card:hover{border-color:var(--cyan);background:var(--cyanB)}
+.new-proj-icon{font-size:28px;color:var(--b2)}
+.new-proj-card:hover .new-proj-icon{color:var(--cyan)}
+.new-proj-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.new-proj-card:hover .new-proj-label{color:var(--cyan)}
+
+/* ══════════════════════════════════════════
+   MAIN APP SHELL
+══════════════════════════════════════════ */
+#pg-app{padding:0}
+.app-shell{display:grid;grid-template-columns:260px 1fr;height:calc(100vh - 102px);overflow:hidden}
+
+/* ── APP SIDEBAR */
+.app-sidebar{background:var(--s1);border-right:1px solid var(--b1);overflow-y:auto;display:flex;flex-direction:column}
+.app-sidebar::-webkit-scrollbar{width:3px}
+.app-sidebar::-webkit-scrollbar-thumb{background:var(--b2)}
+
+.asb-proj{padding:14px 18px;border-bottom:2px solid var(--b1);background:var(--s2)}
+.asb-proj-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-bottom:4px}
+.asb-proj-name{font-family:var(--disp);font-size:13px;font-weight:600;letter-spacing:2px;color:var(--cyan)}
+.asb-proj-pct{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px}
+.asb-prog{height:2px;background:var(--b1);margin-top:7px}
+.asb-prog-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width .5s}
+
+.asb-section{padding:10px 16px 4px;font-family:var(--mono);font-size:8px;letter-spacing:2.5px;color:var(--dim);text-transform:uppercase}
+.asb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;transition:all .15s;border-left:3px solid transparent;font-size:13px;color:var(--muted)}
+.asb-item:hover{background:var(--s2);color:var(--text)}
+.asb-item.active{background:var(--cyanB);border-left-color:var(--cyan);color:var(--cyan)}
+.asb-icon{font-size:13px;width:16px;text-align:center;flex-shrink:0}
+.asb-badge{margin-left:auto;font-family:var(--mono);font-size:8px;padding:1px 6px;border:1px solid var(--b2);color:var(--dim)}
+.asb-item.active .asb-badge{border-color:rgba(0,102,187,.4);color:var(--cyan);background:var(--cyanG)}
+.asb-divider{height:1px;background:var(--b1);margin:6px 14px}
+
+.asb-footer{margin-top:auto;padding:12px 14px;border-top:1px solid var(--b1);background:var(--s2)}
+.asb-footer-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.asb-stat{background:var(--s1);border:1px solid var(--b1);padding:8px 10px}
+.asb-stat-val{font-family:var(--disp);font-size:18px;color:var(--cyan)}
+.asb-stat-lbl{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--dim);text-transform:uppercase}
+
+/* ── APP CONTENT */
+.app-content{overflow-y:auto;background:var(--bg)}
+.app-content::-webkit-scrollbar{width:4px}
+.app-content::-webkit-scrollbar-thumb{background:var(--b2)}
+
+/* ── VIEW */
+.view{display:none;padding:28px 32px;animation:fadeUp .25s ease}
+.view.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ══ SECTION HEADERS */
+.sec-title{font-family:var(--disp);font-size:13px;font-weight:600;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--b1)}
+.sec-title .cnt{font-size:10px;color:var(--muted);background:var(--s2);border:1px solid var(--b1);padding:1px 8px;letter-spacing:1px}
+
+/* ══ PANELS */
+.panel{background:var(--s1);border:1px solid var(--b1);margin-bottom:16px}
+.panel-hdr{padding:11px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px;background:var(--s2)}
+.panel-hdr-icon{width:24px;height:24px;border:1px solid var(--b2);color:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.panel-hdr-label{font-family:var(--mono);font-size:9px;letter-spacing:2.5px;color:var(--cyan);text-transform:uppercase}
+.panel-body{padding:18px}
+
+/* ══ KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:var(--s1);border:1px solid var(--b1);padding:14px 16px;position:relative}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.c::after{background:var(--cyan)}.kpi.g::after{background:var(--green)}.kpi.a::after{background:var(--amber)}.kpi.r::after{background:var(--red)}
+.kpi-val{font-family:var(--disp);font-size:28px;line-height:1;margin-bottom:4px}
+.kpi.c .kpi-val{color:var(--cyan)}.kpi.g .kpi-val{color:var(--green)}.kpi.a .kpi-val{color:var(--amber)}.kpi.r .kpi-val{color:var(--red)}
+.kpi-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.kpi-sub{font-size:11px;color:var(--dim);margin-top:2px}
+
+/* ══ LEVEL BARS */
+.lv-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.lv-tag{font-family:var(--mono);font-size:9px;font-weight:600;width:24px;text-align:center;padding:2px 0;border:1px solid;flex-shrink:0}
+.lv-L1{color:var(--red);border-color:rgba(187,17,51,.4);background:var(--redG)}
+.lv-L2{color:var(--amber);border-color:rgba(153,85,0,.4);background:var(--amberG)}
+.lv-L3{color:var(--green);border-color:rgba(0,102,51,.4);background:var(--greenG)}
+.lv-L4{color:var(--cyan);border-color:rgba(0,102,187,.4);background:var(--cyanG)}
+.lv-bar{flex:1;height:6px;background:var(--s3)}
+.lv-fill{height:100%;transition:width .6s ease}
+.lv-fill.L1{background:var(--red)}.lv-fill.L2{background:var(--amber)}.lv-fill.L3{background:var(--green)}.lv-fill.L4{background:var(--cyan)}
+.lv-pct{font-family:var(--mono);font-size:9px;color:var(--dim);width:28px;text-align:right}
+
+/* ══ ACTIVITY */
+.act-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--b1);font-size:12px}
+.act-item:last-child{border:none}
+.act-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);flex-shrink:0;margin-top:5px}
+.act-text{color:var(--muted);flex:1;line-height:1.5}
+.act-text strong{color:var(--text)}
+.act-time{font-family:var(--mono);font-size:9px;color:var(--dim);white-space:nowrap}
+
+/* ══ WIZARD STEPS */
+.wiz-steps{display:flex;background:var(--s1);border:1px solid var(--b1);margin-bottom:24px;overflow:hidden}
+.wiz-step{flex:1;display:flex;align-items:center;gap:10px;padding:12px 18px;border-right:1px solid var(--b1);transition:background .2s}
+.wiz-step:last-child{border-right:none}
+.wiz-step.active{background:var(--cyanB)}
+.wiz-step.done{background:var(--greenG)}
+.wiz-snum{width:24px;height:24px;border:1.5px solid var(--b2);color:var(--dim);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;flex-shrink:0;transition:all .2s}
+.wiz-step.active .wiz-snum{border-color:var(--cyan);color:var(--cyan);background:var(--cyanG)}
+.wiz-step.done .wiz-snum{border-color:var(--green);color:#fff;background:var(--green)}
+.wiz-slbl{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--dim);transition:color .2s;text-transform:uppercase}
+.wiz-step.active .wiz-slbl{color:var(--cyan)}
+.wiz-step.done .wiz-slbl{color:var(--green)}
+
+/* ══ AUTHORITY CARDS */
+.auth-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.auth-card{background:var(--s2);border:1px solid var(--b1);cursor:pointer;transition:all .25s;padding:18px 16px;position:relative}
+.auth-card:hover{border-color:var(--b3);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,40,80,.1)}
+.auth-card.selected{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan),0 0 20px var(--cyanB)}
+.auth-card.selected::after{content:'✓';position:absolute;top:8px;right:10px;font-family:var(--mono);font-size:10px;color:var(--cyan)}
+.auth-flag{font-size:28px;margin-bottom:8px}
+.auth-code{font-family:var(--disp);font-size:20px;font-weight:700;letter-spacing:2px;margin-bottom:3px}
+.faa .auth-code{color:var(--cyan)}.easa .auth-code{color:#1e40af}.dgca .auth-code{color:var(--amber)}.caac .auth-code{color:var(--red)}
+.auth-name{font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:9px}
+.auth-fw{font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:2px 7px;border:1px solid var(--b2);color:var(--dim);display:inline-block}
+
+/* ══ AIRCRAFT GRID */
+.ac-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.ac-card{background:var(--s2);border:1px solid var(--b1);cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.ac-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,rgba(0,102,187,.04));opacity:0;transition:opacity .3s}
+.ac-card:hover{border-color:var(--b3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,40,80,.1)}
+.ac-card:hover::before{opacity:1}
+.ac-card.selected{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan),0 0 24px var(--cyanB)}
+.ac-card.selected::after{content:'SELECTED ✓';position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:7px;letter-spacing:1.5px;color:var(--cyan);background:var(--cyanG);border:1px solid rgba(0,102,187,.3);padding:2px 6px}
+.ac-illus{width:100%;height:120px;display:flex;align-items:center;justify-content:center;background:var(--s1);border-bottom:1px solid var(--b1);font-size:42px;position:relative;overflow:hidden}
+.ac-info{padding:14px 16px}
+.ac-type{font-family:var(--mono);font-size:8px;letter-spacing:2.5px;color:var(--cyan);margin-bottom:5px;text-transform:uppercase}
+.ac-name{font-family:var(--disp);font-size:13px;font-weight:600;letter-spacing:1.5px;color:var(--text);margin-bottom:6px}
+.ac-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:10px}
+.ac-tags{display:flex;flex-wrap:wrap;gap:4px}
+.ac-tag{font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:2px 7px;border:1px solid var(--b2);color:var(--dim)}
+
+/* ══ CHIPS */
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;min-height:26px;margin-bottom:14px}
+.chip{font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:3px 10px;border:1px solid var(--b2);color:var(--muted);display:inline-flex;align-items:center;gap:5px}
+.chip.c{border-color:var(--cyan);color:var(--cyan);background:var(--cyanG)}
+.chip.v{border-color:var(--violet);color:var(--violet);background:var(--violetG)}
+
+/* ══ PROCEED BTN */
+.proceed-btn{font-family:var(--disp);font-size:12px;font-weight:600;letter-spacing:3px;padding:13px 44px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);cursor:pointer;transition:all .3s;text-transform:uppercase;position:relative;overflow:hidden}
+.proceed-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,102,187,.18),transparent);transition:left .5s}
+.proceed-btn:hover{background:var(--cyanG);box-shadow:0 0 24px rgba(0,102,187,.3)}
+.proceed-btn:hover::before{left:100%}
+.proceed-btn:disabled{opacity:.3;cursor:not-allowed;border-color:var(--b2);color:var(--dim)}
+.proceed-btn.ghost{border-color:var(--b2);color:var(--muted);background:transparent}
+.proceed-btn.ghost:hover{border-color:var(--b3);background:var(--s2)}
+.btn-row{display:flex;gap:10px;align-items:center;margin-top:18px}
+
+/* ══ RESULTS HEADER */
+.res-header{background:var(--s1);border:1px solid var(--b1);padding:22px 24px;margin-bottom:16px;display:grid;grid-template-columns:1fr auto;gap:18px}
+.res-title{font-family:var(--disp);font-size:22px;font-weight:700;letter-spacing:3px;color:var(--text);margin-bottom:6px}
+.res-meta{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--dim);line-height:2}
+.res-meta span{color:var(--muted)}
+.cert-badges{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start}
+.cert-badge{text-align:center;padding:12px 16px;border:1px solid var(--b1);background:var(--s2);min-width:120px}
+.cert-badge-type{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;margin-bottom:4px}
+.cert-badge-name{font-family:var(--disp);font-size:12px;font-weight:600;letter-spacing:1px;margin-bottom:3px}
+.cert-badge-time{font-family:var(--mono);font-size:8px;color:var(--dim)}
+
+/* ══ TABS */
+.tabs{display:flex;border-bottom:1px solid var(--b1);overflow-x:auto;background:var(--s1)}
+.tabs::-webkit-scrollbar{height:0}
+.tab{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:var(--muted);padding:10px 16px;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;text-transform:uppercase;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.tab-pane{display:none;padding-top:16px}
+.tab-pane.active{display:block;animation:fadeUp .2s ease}
+
+/* ══ REQ SECTIONS */
+.req-section{margin-bottom:20px}
+.req-sec-hdr{font-family:var(--disp);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--violet);padding:7px 12px;border-left:3px solid var(--violet);background:var(--violetG);margin-bottom:8px}
+.req-table{width:100%;border-collapse:collapse;font-size:12px}
+.req-table th{text-align:left;padding:8px 12px;background:var(--s2);border-bottom:1px solid var(--b1);font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.req-table td{padding:9px 12px;border-bottom:1px solid var(--s3);vertical-align:top;line-height:1.5}
+.req-table tr:hover td{background:var(--s2)}
+.req-id{font-family:var(--mono);font-size:9px;font-weight:600;color:var(--cyan)}
+.req-title-cell{font-weight:600;color:var(--text)}
+.req-desc-cell{font-size:11px;color:var(--muted);margin-top:2px}
+.applic-cell{font-size:11px;color:var(--muted);line-height:1.5}
+
+/* severity */
+.sev{font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:2px 8px;border:1px solid;display:inline-block;white-space:nowrap}
+.sev-critical{border-color:rgba(187,17,51,.5);color:var(--red);background:var(--redG)}
+.sev-mandatory{border-color:rgba(153,85,0,.5);color:var(--amber);background:var(--amberG)}
+.sev-high{border-color:rgba(0,102,51,.4);color:var(--green);background:var(--greenG)}
+.sev-standard{border-color:rgba(0,102,187,.4);color:var(--cyan);background:var(--cyanG)}
+
+/* ══ TEST CARDS */
+.test-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+.test-card{background:var(--s1);border:1px solid var(--b1);padding:14px;border-top:3px solid var(--b2)}
+.test-card.ground{border-top-color:var(--green)}.test-card.flight{border-top-color:var(--cyan)}.test-card.simulation{border-top-color:var(--violet)}.test-card.analysis{border-top-color:var(--amber)}
+.test-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.test-name{font-weight:600;font-size:12px;color:var(--text);line-height:1.3}
+.test-type-tag{font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:2px 7px;border:1px solid;white-space:nowrap;margin-left:6px;flex-shrink:0}
+.ground .test-type-tag{border-color:rgba(0,102,51,.4);color:var(--green);background:var(--greenG)}
+.flight .test-type-tag{border-color:rgba(0,102,187,.4);color:var(--cyan);background:var(--cyanG)}
+.simulation .test-type-tag{border-color:rgba(85,51,170,.4);color:var(--violet);background:var(--violetG)}
+.analysis .test-type-tag{border-color:rgba(153,85,0,.4);color:var(--amber);background:var(--amberG)}
+.test-desc{font-size:11px;color:var(--muted);line-height:1.55;margin-bottom:8px}
+.test-meta-row{display:flex;gap:14px;font-family:var(--mono);font-size:9px;color:var(--dim)}
+.test-meta-row strong{color:var(--muted)}
+
+/* ══ MATRIX */
+.matrix-table{width:100%;border-collapse:collapse;font-size:11px}
+.matrix-table th{padding:9px 12px;background:var(--s2);border:1px solid var(--b1);font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-align:center}
+.matrix-table th:first-child{text-align:left}
+.matrix-table td{padding:8px 12px;border:1px solid var(--s3);text-align:center;vertical-align:middle}
+.matrix-table td:first-child{text-align:left;font-weight:600;color:var(--muted);font-size:12px}
+.matrix-table tr:hover td{background:var(--s2)}
+.mchk-y{color:var(--green);font-size:14px;font-weight:700}
+.mchk-p{color:var(--amber);font-size:12px}
+.mchk-n{color:var(--b2)}
+
+/* ══ FORM ELEMENTS */
+.form-group{margin-bottom:12px}
+.form-lbl{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;display:block}
+.form-sel,.form-inp{width:100%;background:var(--s2);border:1px solid var(--b2);color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.form-sel:focus,.form-inp:focus{border-color:var(--cyan);box-shadow:0 0 0 3px var(--cyanB)}
+.form-sel option{background:var(--s1)}
+.choice-row{display:flex;gap:5px;flex-wrap:wrap}
+.choice-btn{font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:4px 10px;border:1px solid var(--b2);color:var(--muted);cursor:pointer;transition:all .2s;background:transparent;text-transform:uppercase}
+.choice-btn:hover{border-color:var(--b3);color:var(--text)}
+.choice-btn.on{border-color:var(--cyan);color:var(--cyan);background:var(--cyanG)}
+
+/* ══ GEN LAYOUT */
+.gen-layout{display:grid;grid-template-columns:280px 1fr;gap:16px}
+.gen-form-wrap{background:var(--s1);border:1px solid var(--b1);position:sticky;top:0}
+.gen-form-hdr{padding:10px 16px;border-bottom:1px solid var(--b1);background:#1a2d42}
+.gen-form-title{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#22aaff;text-transform:uppercase}
+.gen-form-body{padding:14px 16px}
+hr.divline{border:none;border-top:1px solid var(--b1);margin:10px 0}
+
+/* ══ TREE */
+.req-tree{display:flex;flex-direction:column;gap:7px}
+.tree-l1{background:var(--s1);border:1px solid var(--b1);border-left:4px solid var(--red)}
+.tree-l1-hdr{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;background:var(--redG);transition:filter .15s}
+.tree-l1-hdr:hover{filter:brightness(.97)}
+.tree-exp{font-size:8px;color:var(--dim);width:10px;flex-shrink:0;transition:transform .2s;font-style:normal}
+.tree-exp.open{transform:rotate(90deg)}
+.tree-l1-id{font-family:var(--mono);font-size:9px;font-weight:600;color:var(--red);flex-shrink:0}
+.tree-l1-title{font-size:12px;font-weight:700;color:var(--text);flex:1}
+.tree-l2{margin:0 10px 8px 14px;background:var(--bg);border:1px solid var(--b1);border-left:3px solid var(--amber)}
+.tree-l2-hdr{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;transition:background .13s}
+.tree-l2-hdr:hover{background:var(--amberG)}
+.tree-l2-id{font-family:var(--mono);font-size:9px;font-weight:600;color:var(--amber);flex-shrink:0}
+.tree-l2-title{font-size:12px;font-weight:600;color:var(--text);flex:1}
+.tree-l3{margin:0 8px 7px 18px;background:var(--s1);border:1px solid var(--b1);border-left:3px solid var(--green)}
+.tree-l3-hdr{display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;transition:background .13s}
+.tree-l3-hdr:hover{background:var(--greenG)}
+.tree-l3-id{font-family:var(--mono);font-size:9px;font-weight:600;color:var(--green);flex-shrink:0}
+.tree-l3-title{font-size:11px;font-weight:500;color:var(--muted);flex:1}
+.tree-l4-list{margin:0 7px 7px 18px;display:flex;flex-direction:column;gap:3px}
+.tree-l4{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--s2);border:1px solid var(--b1);border-left:3px solid var(--cyan);cursor:pointer;transition:all .13s}
+.tree-l4:hover{background:var(--cyanB);border-color:var(--b2)}
+.tree-l4-id{font-family:var(--mono);font-size:9px;font-weight:600;color:var(--cyan);flex-shrink:0;width:72px}
+.tree-l4-title{font-size:11px;color:var(--muted);flex:1}
+.tree-children{display:none}
+.tree-children.open{display:block}
+
+/* ══ BADGES */
+.sbadge{font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:2px 7px;border:1px solid;white-space:nowrap;flex-shrink:0}
+.s-OPEN{border-color:rgba(0,102,187,.4);color:var(--cyan);background:var(--cyanG)}
+.s-IN-PROG{border-color:rgba(153,85,0,.4);color:var(--amber);background:var(--amberG)}
+.s-VERIFIED{border-color:rgba(0,102,51,.4);color:var(--green);background:var(--greenG)}
+.s-CLOSED{border-color:var(--b2);color:var(--dim);background:var(--s3)}
+.dal-badge{font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:2px 6px;border:1px solid;flex-shrink:0}
+.dal-A{border-color:rgba(187,17,51,.4);color:var(--red);background:var(--redG)}
+.dal-B{border-color:rgba(153,85,0,.4);color:var(--amber);background:var(--amberG)}
+.dal-C{border-color:rgba(0,102,51,.4);color:var(--green);background:var(--greenG)}
+.dal-D{border-color:rgba(0,102,187,.4);color:var(--cyan);background:var(--cyanG)}
+.dal-E{border-color:var(--b2);color:var(--dim);background:var(--s3)}
+.moc-chip{font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:1px 6px;border:1px solid;display:inline-flex;align-items:center;margin:1px}
+.moc-TEST{border-color:rgba(0,102,51,.4);color:var(--green);background:var(--greenG)}
+.moc-ANALYSIS{border-color:rgba(85,51,170,.4);color:var(--violet);background:var(--violetG)}
+.moc-SIM{border-color:rgba(153,85,0,.4);color:var(--amber);background:var(--amberG)}
+.moc-INSPECT{border-color:rgba(0,102,187,.4);color:var(--cyan);background:var(--cyanG)}
+
+/* ══ TRACKER */
+.filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.fsel{font-family:var(--mono);font-size:10px;padding:5px 9px;background:var(--s1);border:1px solid var(--b2);color:var(--muted);outline:none;cursor:pointer;-webkit-appearance:none}
+.fsel:focus{border-color:var(--cyan)}
+.fsearch{font-family:var(--mono);font-size:10px;padding:5px 9px;background:var(--s1);border:1px solid var(--b2);color:var(--text);outline:none;width:160px}
+.fsearch:focus{border-color:var(--cyan)}
+.tr-table{width:100%;border-collapse:collapse;font-size:12px}
+.tr-table th{text-align:left;padding:8px 12px;background:var(--s2);border-bottom:1px solid var(--b1);font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);position:sticky;top:0;z-index:2}
+.tr-table td{padding:8px 12px;border-bottom:1px solid var(--s3);vertical-align:middle}
+.tr-table tr.crow:hover td{background:var(--cyanB);cursor:pointer}
+.mini-bar{height:3px;background:var(--s3);width:54px}
+.mini-fill{height:100%}
+
+/* ══ COMPLIANCE PATH */
+.comp-layout{display:grid;grid-template-columns:1fr 300px;gap:14px}
+.path-l1-box{background:var(--redG);border:1px solid rgba(187,17,51,.3);border-left:4px solid var(--red);padding:14px;margin-bottom:14px;position:relative}
+.path-l1-box::after{content:'';position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);width:1px;height:14px;background:linear-gradient(var(--red),var(--amber))}
+.path-l2-wrap{margin-bottom:12px;position:relative}
+.path-l2-wrap::before{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:1px;height:14px;background:linear-gradient(var(--amber),transparent)}
+.path-l2-box{background:var(--amberG);border:1px solid rgba(153,85,0,.3);border-left:3px solid var(--amber);padding:11px}
+.path-l3-group{margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.path-l3-box{background:var(--greenG);border:1px solid rgba(0,102,51,.25);border-left:2px solid var(--green);padding:7px 10px;display:flex;align-items:center;gap:7px}
+.path-l4-group{margin-top:5px;display:flex;flex-direction:column;gap:3px}
+.path-l4-box{background:var(--cyanB);border:1px solid rgba(0,102,187,.2);border-left:2px solid var(--cyan);padding:6px 9px;display:flex;align-items:center;gap:7px;cursor:pointer;transition:background .13s}
+.path-l4-box:hover{background:var(--cyanG)}
+.path-lbl{font-family:var(--mono);font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.path-l1-box .path-lbl{color:var(--red)}.path-l2-box .path-lbl{color:var(--amber)}.path-l3-box .path-lbl{color:var(--green);flex-shrink:0}.path-l4-box .path-lbl{color:var(--cyan);flex-shrink:0;width:70px}
+.path-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px}
+.path-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.path-l3-title{font-size:11px;color:var(--muted);flex:1}
+.path-l4-title{font-size:11px;color:var(--muted);flex:1}
+.ck{width:15px;height:15px;border:1px solid;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;font-weight:700}
+.ck-done{border-color:var(--green);color:var(--green);background:var(--greenG)}
+.ck-part{border-color:var(--amber);color:var(--amber);background:var(--amberG)}
+.ck-open{border-color:var(--b2);color:var(--dim);background:var(--s3)}
+
+/* ══ DETAIL OVERLAY */
+.det-overlay{position:fixed;inset:0;background:rgba(13,31,46,.55);z-index:300;display:none;backdrop-filter:blur(4px)}
+.det-overlay.open{display:flex;justify-content:flex-end}
+.det-panel{width:540px;height:100vh;background:var(--s1);border-left:1px solid var(--b1);overflow-y:auto;padding:0;box-shadow:-8px 0 32px rgba(0,40,80,.15);animation:slideIn .22s ease}
+@keyframes slideIn{from{transform:translateX(32px);opacity:0}to{transform:none;opacity:1}}
+.det-panel::-webkit-scrollbar{width:3px}
+.det-panel::-webkit-scrollbar-thumb{background:var(--b2)}
+.det-header{background:#1a2d42;padding:20px 22px;border-bottom:1px solid #0d1f2e;position:relative}
+.det-close{position:absolute;top:16px;right:16px;width:28px;height:28px;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+.det-close:hover{border-color:rgba(255,255,255,.4);color:#fff}
+.det-id{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;margin-bottom:5px;font-weight:600}
+.det-title{font-family:var(--disp);font-size:16px;font-weight:600;letter-spacing:1.5px;color:#fff;line-height:1.3}
+.det-body{padding:20px 22px}
+.det-sec{margin-bottom:16px}
+.det-sec-title{font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);padding-bottom:5px;border-bottom:1px solid var(--b1);margin-bottom:7px}
+.det-text{font-size:13px;color:var(--muted);line-height:1.7}
+.det-text strong{color:var(--text)}
+.status-opts{display:flex;gap:5px;flex-wrap:wrap}
+.sopt{font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 12px;border:1px solid var(--b2);background:transparent;cursor:pointer;transition:all .15s;text-transform:uppercase;color:var(--muted)}
+.sopt.sel-OPEN{border-color:var(--cyan);color:var(--cyan);background:var(--cyanG)}
+.sopt.sel-IN-PROG{border-color:var(--amber);color:var(--amber);background:var(--amberG)}
+.sopt.sel-VERIFIED{border-color:var(--green);color:var(--green);background:var(--greenG)}
+.sopt.sel-CLOSED{border-color:var(--b2);color:var(--dim);background:var(--s3)}
+.child-list{display:flex;flex-direction:column;gap:4px}
+.child-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--s2);border:1px solid var(--b1);cursor:pointer;transition:background .13s;font-size:12px}
+.child-item:hover{background:var(--s3)}
+.ev-list{display:flex;flex-direction:column;gap:4px}
+.ev-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--s2);border:1px solid var(--b1);font-size:11px;color:var(--muted)}
+.add-ev-btn{width:100%;padding:7px;margin-top:5px;background:transparent;border:1px dashed var(--b2);color:var(--dim);font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.add-ev-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* ══ ALERTS */
+.alert{border:1px solid;padding:10px 14px;margin-bottom:12px;font-size:12px;line-height:1.6;border-left:3px solid}
+.alert-info{border-color:rgba(0,102,187,.25);border-left-color:var(--cyan);color:var(--cyan);background:var(--cyanB)}
+.alert-warn{border-color:rgba(153,85,0,.25);border-left-color:var(--amber);color:var(--amber);background:var(--amberG)}
+.alert-ok{border-color:rgba(0,102,51,.25);border-left-color:var(--green);color:var(--green);background:var(--greenG)}
+
+/* ══ TIP BOX */
+.tip-box{background:var(--cyanB);border:1px solid rgba(0,102,187,.2);border-left:3px solid var(--cyan);padding:11px 14px;margin-bottom:12px}
+.tip-title{font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:5px}
+.tip-text{font-size:12px;color:var(--muted);line-height:1.7}
+.tip-text strong{color:var(--cyan)}
+
+/* ══ GAP ITEM */
+.gap-item{background:var(--s1);border:1px solid var(--b1);padding:14px;margin-bottom:10px;border-left:4px solid var(--b2)}
+.gap-item.gap-ok{border-left-color:var(--green)}
+.gap-item.gap-part{border-left-color:var(--amber)}
+.gap-item.gap-bad{border-left-color:var(--red)}
+.gap-header{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.gap-prog{height:3px;background:var(--s3);margin-bottom:7px}
+.gap-prog-fill{height:100%;transition:width .5s}
+.gap-id-chips{font-size:11px;color:var(--muted);line-height:1.9}
+.gap-id-chip{font-family:var(--mono);font-size:9px;background:var(--s2);border:1px solid var(--b1);padding:1px 6px;margin:1px;display:inline-block}
+
+/* ══ TRACE MATRIX */
+.trace-table{border-collapse:collapse;font-size:10px;min-width:660px}
+.trace-table th{padding:8px 10px;background:var(--s2);border:1px solid var(--b1);font-family:var(--mono);font-size:8px;color:var(--muted);text-align:center;letter-spacing:1px;text-transform:uppercase}
+.trace-table th:first-child{text-align:left}
+.trace-table td{padding:6px 10px;border:1px solid var(--s3);text-align:center;vertical-align:middle}
+.trace-table td:first-child{text-align:left;color:var(--muted)}
+
+/* ══ EXPORT PANEL */
+.export-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.exp-card{background:var(--s1);border:1px solid var(--b1);padding:18px;cursor:pointer;transition:all .2s;position:relative}
+.exp-card:hover{border-color:var(--cyan);background:var(--cyanB);transform:translateY(-2px)}
+.exp-icon{font-size:28px;margin-bottom:8px}
+.exp-name{font-family:var(--disp);font-size:11px;font-weight:600;letter-spacing:2px;color:var(--cyan);margin-bottom:4px}
+.exp-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.exp-badge{font-family:var(--mono);font-size:8px;letter-spacing:1px;position:absolute;top:8px;right:8px;padding:2px 6px;border:1px solid var(--green);color:var(--green);background:var(--greenG)}
+
+/* ══ MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(13,31,46,.6);z-index:400;display:none;align-items:center;justify-content:center;backdrop-filter:blur(5px)}
+.modal-ov.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--b1);width:460px;max-width:95vw;box-shadow:0 16px 48px rgba(0,40,80,.2);animation:slideIn .2s ease}
+.modal-hdr{background:#1a2d42;padding:18px 22px;border-bottom:1px solid #0d1f2e}
+.modal-title{font-family:var(--disp);font-size:14px;font-weight:600;letter-spacing:3px;color:#22aaff}
+.modal-body{padding:22px}
+.modal-foot{padding:14px 22px;border-top:1px solid var(--b1);background:var(--s2);display:flex;gap:8px}
+
+/* ══ STATUS BAR */
+.status-bar{position:relative;z-index:50;background:var(--s1);border-top:1px solid var(--b1);padding:6px 24px;display:flex;align-items:center;gap:18px;font-family:var(--mono);font-size:9px;color:var(--dim);flex-wrap:wrap}
+.st-item{display:flex;align-items:center;gap:5px}
+.st-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:livePulse 2s infinite}
+.st-val{color:var(--cyan)}
+.st-right{margin-left:auto}
+
+/* ══ RESPONSIVE */
+@media(max-width:960px){.app-shell{grid-template-columns:1fr}.app-sidebar{display:none}.auth-grid,.kpi-grid{grid-template-columns:repeat(2,1fr)}.gen-layout,.comp-layout{grid-template-columns:1fr}}
+@media print{#hdr,.gnav,.app-sidebar,.status-bar,.det-overlay,.modal-ov{display:none!important}.app-shell{grid-template-columns:1fr;height:auto}.app-content{overflow:visible}}
+</style>
+</head>
+<body>
+<div class="bg-wrap"><div class="bg-radial"></div></div>
+
+<!-- ═══ HEADER ═══ -->
+<header id="hdr">
+  <div class="hdr-brand">
+    <div class="brand-logo">
+      <svg viewBox="0 0 22 22"><polygon points="11,2 20,7 20,15 11,20 2,15 2,7" stroke-width="1.6"/><line x1="11" y1="2" x2="11" y2="20"/><line x1="2" y1="7" x2="20" y2="15"/><line x1="20" y1="7" x2="2" y2="15"/></svg>
+    </div>
+    <div class="brand-wordmark">Certiq</div>
+    <div class="brand-tagline"><strong>eVTOL Airworthiness</strong>ARP 4754A · FAA · EASA · DGCA · CAAC</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-badge live">● SYSTEM LIVE</div>
+    <div class="hdr-badge" id="hdr-ver">v3.0</div>
+    <div class="hdr-user" id="hdr-user-btn" onclick="showUserMenu()" style="display:none">
+      <div class="user-avatar" id="hdr-avatar">?</div>
+      <span id="hdr-username">User</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ GLOBAL NAV ═══ -->
+<nav class="gnav" id="gnav" style="display:none">
+  <button class="gtab active" onclick="navPage('hub')" id="gtab-hub"><span class="gi">⊞</span> Projects</button>
+  <button class="gtab" onclick="navPage('app')" id="gtab-app"><span class="gi">◈</span> Certification Tool</button>
+  <div class="gnav-right">
+    <select class="gnav-proj-sel" id="gnav-proj-sel" onchange="switchProject(this.value)"></select>
+    <button class="gnav-new-btn" onclick="showNewProjectModal()">+ New Project</button>
+    <button class="gnav-new-btn" style="border-color:rgba(255,255,255,.2);color:rgba(220,235,248,.6)" onclick="doLogout()">↩ Logout</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     LOGIN PAGE
+═══════════════════════════════════════ -->
+<div id="pg-login">
+  <div class="login-box">
+    <div class="login-header">
+      <div class="login-title">Certiq</div>
+      <div class="login-sub">eVTOL Airworthiness Platform · ARP 4754A</div>
+    </div>
+    <div class="login-body">
+      <div class="login-err" id="login-err"></div>
+      <label class="lbl">Username</label>
+      <input class="linput" id="login-user" type="text" placeholder="engineer@company.com" autocomplete="username">
+      <label class="lbl">Email</label>
+      <input class="linput" id="login-user" type="email" placeholder="engineer@company.com" autocomplete="username">
+      <label class="lbl">Password</label>
+      <input class="linput" id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+      <button class="login-btn" onclick="doLogin()">SIGN IN →</button>
+      <div id="login-loading" style="display:none;text-align:center;font-family:var(--mono);font-size:9px;color:var(--dim);padding:8px;letter-spacing:1px">AUTHENTICATING…</div>
+      <div class="login-note" style="margin-top:12px">Powered by Supabase Auth &nbsp;·&nbsp; Data persists per account</div>
+      <div style="margin-top:10px;text-align:center">
+        <span style="font-family:var(--mono);font-size:9px;color:var(--dim)">No account? </span>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--cyan);cursor:pointer;text-decoration:underline" onclick="showSignup()">Create one</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PROJECT HUB
+═══════════════════════════════════════ -->
+<div class="page" id="pg-hub">
+  <div id="pg-hub-inner" style="padding:36px 40px">
+    <div class="hub-hero">
+      <div class="hub-title">My <span>Projects</span></div>
+      <div class="hub-sub" id="hub-sub-user">Welcome back — select a project or create a new one</div>
+    </div>
+    <div class="hub-grid" id="hub-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MAIN APP
+═══════════════════════════════════════ -->
+<div class="page" id="pg-app">
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar">
+      <div class="asb-proj">
+        <div class="asb-proj-lbl">Active Project</div>
+        <div class="asb-proj-name" id="asb-proj-name">—</div>
+        <div class="asb-proj-pct" id="asb-proj-pct">0% compliance</div>
+        <div class="asb-prog"><div class="asb-prog-fill" id="asb-prog-fill" style="width:0%"></div></div>
+      </div>
+      <div class="asb-section">Certification</div>
+      <div class="asb-item active" onclick="appNav('wizard')" id="anav-wizard"><span class="asb-icon">⊕</span> Authority & Aircraft</div>
+      <div class="asb-item" onclick="appNav('reqs')" id="anav-reqs"><span class="asb-icon">≡</span> Requirements Library <span class="asb-badge" id="anav-reqs-badge">—</span></div>
+      <div class="asb-divider"></div>
+      <div class="asb-section">ARP 4754A · RMS</div>
+      <div class="asb-item" onclick="appNav('dashboard')" id="anav-dashboard"><span class="asb-icon">⬡</span> Dashboard</div>
+      <div class="asb-item" onclick="appNav('generator')" id="anav-generator"><span class="asb-icon">⚡</span> Req Generator</div>
+      <div class="asb-item" onclick="appNav('tracker')" id="anav-tracker"><span class="asb-icon">▤</span> Tracker <span class="asb-badge" id="anav-tracker-badge">0</span></div>
+      <div class="asb-item" onclick="appNav('compliance')" id="anav-compliance"><span class="asb-icon">◈</span> Compliance Paths</div>
+      <div class="asb-item" onclick="appNav('matrix')" id="anav-matrix"><span class="asb-icon">▦</span> Trace Matrix</div>
+      <div class="asb-item" onclick="appNav('gaps')" id="anav-gaps"><span class="asb-icon">△</span> Gap Analysis <span class="asb-badge" id="anav-gaps-badge" style="border-color:rgba(187,17,51,.4);color:var(--red);background:var(--redG)">!</span></div>
+      <div class="asb-divider"></div>
+      <div class="asb-section">Utilities</div>
+      <div class="asb-item" onclick="appNav('export')" id="anav-export"><span class="asb-icon">↓</span> Export & Reports</div>
+      <div class="asb-footer">
+        <div class="asb-footer-stats">
+          <div class="asb-stat"><div class="asb-stat-val" id="asb-stat-total">0</div><div class="asb-stat-lbl">Total Reqs</div></div>
+          <div class="asb-stat"><div class="asb-stat-val" id="asb-stat-ver" style="color:var(--green)">0</div><div class="asb-stat-lbl">Verified</div></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="app-content">
+
+      <!-- WIZARD -->
+      <div class="view active" id="view-wizard">
+        <div class="wiz-steps" id="wiz-steps">
+          <div class="wiz-step active" id="wstep1"><div class="wiz-snum">1</div><div class="wiz-slbl">Authority</div></div>
+          <div class="wiz-step" id="wstep2"><div class="wiz-snum">2</div><div class="wiz-slbl">Aircraft</div></div>
+          <div class="wiz-step" id="wstep3"><div class="wiz-snum">3</div><div class="wiz-slbl">Requirements</div></div>
+        </div>
+        <div id="wpanel-1">
+          <div class="sec-title">Aviation Authority</div>
+          <p style="font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--dim);margin-bottom:14px;text-transform:uppercase">Multi-select for cross-authority comparison</p>
+          <div class="auth-grid">
+            <div class="auth-card faa" onclick="toggleAuth('faa',this)"><div class="auth-flag">🇺🇸</div><div class="auth-code">FAA</div><div class="auth-name">Federal Aviation Administration</div><div class="auth-fw">14 CFR Part 21 / AC 21-52</div></div>
+            <div class="auth-card easa" onclick="toggleAuth('easa',this)"><div class="auth-flag">🇪🇺</div><div class="auth-code">EASA</div><div class="auth-name">European Union Aviation Safety Agency</div><div class="auth-fw">SC VTOL / AMC VTOL</div></div>
+            <div class="auth-card dgca" onclick="toggleAuth('dgca',this)"><div class="auth-flag">🇮🇳</div><div class="auth-code">DGCA</div><div class="auth-name">Directorate General of Civil Aviation — India</div><div class="auth-fw">CAR-21 / AC 21-1.0</div></div>
+            <div class="auth-card caac" onclick="toggleAuth('caac',this)"><div class="auth-flag">🇨🇳</div><div class="auth-code">CAAC</div><div class="auth-name">Civil Aviation Administration of China</div><div class="auth-fw">CCAR-21 / AP-21-AA-2021-31</div></div>
+          </div>
+          <div class="chip-row" id="auth-chips"></div>
+          <div class="btn-row"><button class="proceed-btn" id="to-wiz2" onclick="wizGo(2)" disabled>Next: Aircraft →</button></div>
+        </div>
+        <div id="wpanel-2" style="display:none">
+          <div class="sec-title">Aircraft Selection</div>
+          <div class="ac-grid" id="ac-grid"></div>
+          <div class="chip-row" id="ac-chips"></div>
+          <div class="btn-row">
+            <button class="proceed-btn ghost" onclick="wizGo(1)">← Back</button>
+            <button class="proceed-btn" id="to-wiz3" onclick="wizGo(3)" disabled>Generate Requirements →</button>
+          </div>
+        </div>
+        <div id="wpanel-3" style="display:none">
+          <div id="wiz-results"></div>
+        </div>
+      </div>
+
+      <!-- REQS LIBRARY -->
+      <div class="view" id="view-reqs">
+        <div id="reqs-area"><div class="alert alert-info">Complete the certification wizard first to populate the requirements library.</div></div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="view" id="view-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi c"><div class="kpi-val" id="kd-total">0</div><div class="kpi-lbl">Total Requirements</div><div class="kpi-sub">All levels</div></div>
+          <div class="kpi g"><div class="kpi-val" id="kd-ver">0</div><div class="kpi-lbl">Verified / Closed</div><div class="kpi-sub">Compliance confirmed</div></div>
+          <div class="kpi a"><div class="kpi-val" id="kd-ip">0</div><div class="kpi-lbl">In Progress</div><div class="kpi-sub">Active work</div></div>
+          <div class="kpi r"><div class="kpi-val" id="kd-cov">0%</div><div class="kpi-lbl">Coverage</div><div class="kpi-sub">L1 objectives met</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div class="panel"><div class="panel-hdr"><div class="panel-hdr-icon">▦</div><div class="panel-hdr-label">Compliance by Level</div></div><div class="panel-body" id="dash-lv-bars"><div style="color:var(--dim);font-family:var(--mono);font-size:10px;padding:12px 0;text-align:center">Generate requirements to see progress</div></div></div>
+          <div class="panel"><div class="panel-hdr"><div class="panel-hdr-icon">◉</div><div class="panel-hdr-label">ARP 4754A Process Coverage</div></div><div class="panel-body" id="dash-arp"><div style="color:var(--dim);font-family:var(--mono);font-size:10px;padding:12px 0;text-align:center">No project loaded</div></div></div>
+        </div>
+        <div class="panel"><div class="panel-hdr"><div class="panel-hdr-icon">≡</div><div class="panel-hdr-label">Recent Activity</div></div><div class="panel-body" id="dash-activity"><div class="act-item"><div class="act-dot"></div><div class="act-text"><strong>System ready</strong> — Use the Req Generator to start</div><div class="act-time">now</div></div></div></div>
+      </div>
+
+      <!-- GENERATOR -->
+      <div class="view" id="view-generator">
+        <div class="alert alert-info" style="margin-bottom:14px"><strong>ARP 4754A Requirement Generator</strong> — Configure parameters to generate a full L1→L2→L3→L4 hierarchy. Authority, aircraft, DAL and environment drive requirement inclusion.</div>
+        <div class="gen-layout">
+          <div class="gen-form-wrap">
+            <div class="gen-form-hdr"><div class="gen-form-title">⚙ Project Configuration</div></div>
+            <div class="gen-form-body">
+              <div class="form-group"><label class="form-lbl">Project Name</label><input class="form-inp" id="cfg-proj" value="eVTOL-001"></div>
+              <div class="form-group"><label class="form-lbl">Aircraft Config</label><select class="form-sel" id="cfg-ac">
+                <optgroup label="— eVTOL / New Entrant">
+                  <option value="lift-cruise">Lift + Cruise (Distributed)</option>
+                  <option value="multirotor">Multirotor (No Fixed Wing)</option>
+                  <option value="vectored">Vectored Thrust / Tiltrotor</option>
+                  <option value="wingless">Wingless Electric Rotorcraft</option>
+                  <option value="powered-lift">Powered Lift (Hybrid Turbo-Electric)</option>
+                </optgroup>
+                <optgroup label="— Airbus">
+                  <option value="A320neo">Airbus A320neo (CS-25 / Part 25)</option>
+                  <option value="A350">Airbus A350 XWB (CS-25 / Part 25)</option>
+                  <option value="A220">Airbus A220 (CS-25 / Part 25)</option>
+                  <option value="CityAirbus">CityAirbus NextGen eVTOL</option>
+                </optgroup>
+                <optgroup label="— Boeing">
+                  <option value="B737MAX">Boeing 737 MAX (14 CFR Part 25)</option>
+                  <option value="B787">Boeing 787 Dreamliner (Part 25)</option>
+                  <option value="Wisk">Wisk Aero Gen-6 Autonomous eVTOL</option>
+                  <option value="VoloCity">Volocopter VoloCity Multirotor</option>
+                </optgroup>
+              </select></div>
+              <div class="form-group"><label class="form-lbl">Target Authorities</label>
+                <div class="choice-row">
+                  <div class="choice-btn on" data-g="auth" data-v="faa" onclick="cb(this)">FAA</div>
+                  <div class="choice-btn on" data-g="auth" data-v="easa" onclick="cb(this)">EASA</div>
+                  <div class="choice-btn" data-g="auth" data-v="dgca" onclick="cb(this)">DGCA</div>
+                  <div class="choice-btn" data-g="auth" data-v="caac" onclick="cb(this)">CAAC</div>
+                </div>
+              </div>
+              <div class="form-group"><label class="form-lbl">Redundancy Level</label><select class="form-sel" id="cfg-red"><option value="n1">N+1</option><option value="n2">N+2</option><option value="n3">N+3</option></select></div>
+              <div class="form-group"><label class="form-lbl">Environment</label>
+                <div class="choice-row">
+                  <div class="choice-btn on" data-g="env" data-v="urban" onclick="cb(this)">Urban</div>
+                  <div class="choice-btn" data-g="env" data-v="icing" onclick="cb(this)">Icing</div>
+                  <div class="choice-btn" data-g="env" data-v="highalt" onclick="cb(this)">Hi-Alt</div>
+                  <div class="choice-btn" data-g="env" data-v="tropical" onclick="cb(this)">Tropical</div>
+                </div>
+              </div>
+              <div class="form-group"><label class="form-lbl">DAL Ceiling</label><select class="form-sel" id="cfg-dal"><option value="A">DAL-A (Catastrophic)</option><option value="B">DAL-B (Hazardous)</option><option value="C">DAL-C (Major)</option></select></div>
+              <div class="form-group"><label class="form-lbl">Crew</label><select class="form-sel" id="cfg-crew"><option value="piloted">Piloted</option><option value="single">Single Pilot+Automation</option><option value="remote">Remote Pilot</option><option value="auto">Autonomous</option></select></div>
+              <div class="form-group"><label class="form-lbl">Passengers</label><select class="form-sel" id="cfg-pax"><option value="0">Cargo/None</option><option value="1-2">1–2</option><option value="3-5" selected>3–5</option><option value="6+">6+</option></select></div>
+              <div class="form-group"><label class="form-lbl">Special Features</label>
+                <div class="choice-row">
+                  <div class="choice-btn" data-g="feat" data-v="brs" onclick="cb(this)">BRS</div>
+                  <div class="choice-btn" data-g="feat" data-v="autoland" onclick="cb(this)">Auto-Land</div>
+                  <div class="choice-btn" data-g="feat" data-v="obstacle" onclick="cb(this)">Obstacle Avoid</div>
+                </div>
+              </div>
+              <hr class="divline">
+              <button class="proceed-btn" style="width:100%;letter-spacing:2px;font-size:11px" onclick="generateReqs()">⚡ GENERATE REQUIREMENTS</button>
+            </div>
+          </div>
+          <div id="gen-out">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:260px;color:var(--dim)">
+              <div style="font-size:44px;margin-bottom:12px;opacity:.25">◈</div>
+              <div style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase">Configure and click Generate</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRACKER -->
+      <div class="view" id="view-tracker">
+        <div class="filter-bar">
+          <select class="fsel" id="f-lv" onchange="renderTracker()"><option value="all">All Levels</option><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option><option value="L4">L4</option></select>
+          <select class="fsel" id="f-st" onchange="renderTracker()"><option value="all">All Status</option><option value="OPEN">Open</option><option value="IN-PROG">In Progress</option><option value="VERIFIED">Verified</option><option value="CLOSED">Closed</option></select>
+          <select class="fsel" id="f-dal" onchange="renderTracker()"><option value="all">All DAL</option><option value="A">DAL-A</option><option value="B">DAL-B</option><option value="C">DAL-C</option><option value="D">DAL-D</option></select>
+          <input class="fsearch" id="f-q" placeholder="Search ID / title…" oninput="renderTracker()">
+          <span style="margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--dim)" id="tr-ct"></span>
+        </div>
+        <div style="background:var(--s1);border:1px solid var(--b1);overflow:hidden">
+          <table class="tr-table"><thead><tr><th>ID</th><th>Lvl</th><th>Title</th><th>Domain</th><th>DAL</th><th>MOC</th><th>Status</th><th>Prog</th></tr></thead>
+          <tbody id="tr-body"></tbody></table>
+          <div id="tr-empty" style="display:none;text-align:center;padding:44px;color:var(--dim);font-family:var(--mono);font-size:10px;letter-spacing:1px">No requirements yet — use the Generator.</div>
+        </div>
+      </div>
+
+      <!-- COMPLIANCE -->
+      <div class="view" id="view-compliance">
+        <div class="alert alert-warn" style="margin-bottom:14px"><strong>ARP 4754A Compliance Path Finder</strong> — Select any L1 objective to see its full decomposition L1→L2→L3→L4. Mark L4 tests as complete to roll up compliance to L1 airworthiness objectives.</div>
+        <div class="comp-layout">
+          <div>
+            <div class="panel" style="margin-bottom:14px">
+              <div class="panel-hdr"><div class="panel-hdr-icon">◉</div><div class="panel-hdr-label">L1 Objectives</div></div>
+              <div class="panel-body" style="padding:12px">
+                <input class="fsearch" style="width:100%;margin-bottom:8px" placeholder="Search L1…" id="comp-q" oninput="filterCompL1()">
+                <div id="comp-l1-list" style="max-height:220px;overflow-y:auto"></div>
+              </div>
+            </div>
+            <div id="comp-path-area"><div style="text-align:center;padding:32px;color:var(--dim);font-family:var(--mono);font-size:10px;letter-spacing:1px">Select an L1 objective above</div></div>
+          </div>
+          <div><div class="panel" id="comp-summary" style="position:sticky;top:0"><div class="panel-hdr"><div class="panel-hdr-icon">▦</div><div class="panel-hdr-label">Coverage Summary</div></div><div class="panel-body"><div style="color:var(--dim);font-size:11px;text-align:center;padding:12px">Select a requirement</div></div></div></div>
+        </div>
+      </div>
+
+      <!-- MATRIX -->
+      <div class="view" id="view-matrix">
+        <div class="alert alert-info" style="margin-bottom:14px"><strong>Bidirectional Traceability Matrix</strong> — L4 verification methods (rows) traced to L1 airworthiness objectives (columns). Status shown inline.</div>
+        <div style="overflow-x:auto"><div id="matrix-area"><div style="text-align:center;padding:44px;color:var(--dim);font-family:var(--mono);font-size:10px">Generate requirements first.</div></div></div>
+      </div>
+
+      <!-- GAPS -->
+      <div class="view" id="view-gaps">
+        <div class="alert alert-warn" style="margin-bottom:14px"><strong>Gap Analysis</strong> — L1 objectives with insufficient L4 verification coverage. Specific missing test IDs are listed for each gap.</div>
+        <div id="gap-area"><div style="text-align:center;padding:44px;color:var(--dim);font-family:var(--mono);font-size:10px">Generate requirements first.</div></div>
+      </div>
+
+      <!-- EXPORT -->
+      <div class="view" id="view-export">
+        <div class="sec-title">Export & Reports</div>
+        <div class="export-grid">
+          <div class="exp-card" onclick="doExport('csv')"><div class="exp-icon">📊</div><div class="exp-name">CSV</div><div class="exp-desc">Full requirements table, compatible with Excel, Google Sheets, DOORS, JAMA.</div><div class="exp-badge">READY</div></div>
+          <div class="exp-card" onclick="doExport('json')"><div class="exp-icon">{ }</div><div class="exp-name">JSON</div><div class="exp-desc">Structured data for tool integration, API import, DOORS NG, Polarion, Jira.</div><div class="exp-badge">READY</div></div>
+          <div class="exp-card" onclick="doExport('html')"><div class="exp-icon">🌐</div><div class="exp-name">HTML Report</div><div class="exp-desc">Standalone compliance report with full traceability. Email-ready, browser-viewable.</div><div class="exp-badge">READY</div></div>
+          <div class="exp-card" onclick="doExport('md')"><div class="exp-icon">📝</div><div class="exp-name">Markdown</div><div class="exp-desc">Requirements in Markdown format. Compatible with Confluence, GitHub, GitLab docs.</div><div class="exp-badge">READY</div></div>
+          <div class="exp-card" onclick="doExport('xml')"><div class="exp-icon">🔖</div><div class="exp-name">XML / ReqIF</div><div class="exp-desc">ReqIF-compatible XML for import into IBM DOORS, Siemens Polarion, PTC Integrity.</div><div class="exp-badge">READY</div></div>
+          <div class="exp-card" onclick="doExport('print')"><div class="exp-icon">🖨</div><div class="exp-name">Print / PDF</div><div class="exp-desc">Browser print dialog. Save as PDF directly. All views included.</div><div class="exp-badge">READY</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hdr"><div class="panel-hdr-icon">≡</div><div class="panel-hdr-label">Export Summary</div></div>
+          <div class="panel-body">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-family:var(--mono);font-size:11px;color:var(--muted)">
+              <div><div style="font-size:20px;color:var(--cyan);font-family:var(--disp)" id="exp-total">0</div><div style="font-size:9px;letter-spacing:1px;text-transform:uppercase">Total Reqs</div></div>
+              <div><div style="font-size:20px;color:var(--green);font-family:var(--disp)" id="exp-ver">0</div><div style="font-size:9px;letter-spacing:1px;text-transform:uppercase">Verified</div></div>
+              <div><div style="font-size:20px;color:var(--amber);font-family:var(--disp)" id="exp-open">0</div><div style="font-size:9px;letter-spacing:1px;text-transform:uppercase">Open</div></div>
+              <div><div style="font-size:20px;color:var(--text);font-family:var(--disp)" id="exp-pct">0%</div><div style="font-size:9px;letter-spacing:1px;text-transform:uppercase">Coverage</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /app-content -->
+  </div><!-- /app-shell -->
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar" id="status-bar" style="display:none">
+  <div class="st-item"><div class="st-dot"></div><span>LIVE</span></div>
+  <div class="st-item">Project: <span class="st-val" id="st-proj">—</span></div>
+  <div class="st-item">Reqs: <span class="st-val" id="st-reqs">0</span></div>
+  <div class="st-item">Coverage: <span class="st-val" id="st-cov">0%</span></div>
+  <div class="st-right" id="st-user">Not logged in</div>
+</div>
+
+<!-- DETAIL OVERLAY -->
+<div class="det-overlay" id="det-overlay" onclick="closeDetOv(event)">
+  <div class="det-panel" id="det-panel">
+    <div class="det-header">
+      <button class="det-close" onclick="closeDet()">✕</button>
+      <div id="det-head-content"></div>
+    </div>
+    <div class="det-body" id="det-body"></div>
+  </div>
+</div>
+
+<!-- NEW PROJECT MODAL -->
+<div class="modal-ov" id="new-proj-modal">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title">NEW PROJECT</div></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-lbl">Project Name</label><input class="form-inp" id="np-name" placeholder="e.g. CityAirbus-TC-2025"></div>
+      <div class="form-group"><label class="form-lbl">Aircraft Type</label><input class="form-inp" id="np-ac" placeholder="e.g. Lift+Cruise eVTOL"></div>
+      <div class="form-group"><label class="form-lbl">Description (optional)</label><input class="form-inp" id="np-desc" placeholder="Brief project description"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="proceed-btn" style="padding:9px 24px;font-size:11px;letter-spacing:2px" onclick="createProject()">CREATE PROJECT</button>
+      <button class="proceed-btn ghost" style="padding:9px 24px;font-size:11px;letter-spacing:2px" onclick="closeModal('new-proj-modal')">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-ov" id="del-proj-modal">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" style="color:#ff4466">DELETE PROJECT</div></div>
+    <div class="modal-body">
+      <div style="color:var(--muted);font-size:13px;margin-bottom:14px">Are you sure you want to delete <strong id="del-proj-name" style="color:var(--text)">—</strong>? This action cannot be undone.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="proceed-btn" style="padding:9px 24px;font-size:11px;letter-spacing:2px;border-color:var(--red);color:var(--red)" onclick="confirmDeleteProject()">DELETE</button>
+      <button class="proceed-btn ghost" style="padding:9px 24px;font-size:11px;letter-spacing:2px" onclick="closeModal('del-proj-modal')">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNUP MODAL -->
+<div class="modal-ov" id="signup-modal">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title">CREATE ACCOUNT</div></div>
+    <div class="modal-body">
+      <div class="login-err" id="signup-err" style="display:none;border:1px solid rgba(187,17,51,.25);padding:7px 12px;margin-bottom:12px;font-family:var(--mono);font-size:10px;color:var(--red);background:var(--redG)"></div>
+      <div class="form-group"><label class="form-lbl">Full Name</label><input class="form-inp" id="su-name" type="text" placeholder="Jane Engineer"></div>
+      <div class="form-group"><label class="form-lbl">Email</label><input class="form-inp" id="su-email" type="email" placeholder="engineer@company.com"></div>
+      <div class="form-group"><label class="form-lbl">Password</label><input class="form-inp" id="su-pass" type="password" placeholder="Min 6 characters"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="proceed-btn" style="padding:9px 24px;font-size:11px;letter-spacing:2px" onclick="doSignup()">CREATE ACCOUNT</button>
+      <button class="proceed-btn ghost" style="padding:9px 24px;font-size:11px;letter-spacing:2px" onclick="closeModal('signup-modal')">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// AIRCRAFT DATABASE
+// ═══════════════════════════════════════════════════
+const AIRCRAFT_DB = {
+  // eVTOL
+  'lift-cruise':  { cat:'eVTOL', icon:'✈️', type:'LIFT + CRUISE', name:'Generic L+C eVTOL', desc:'Separate lift rotors and pusher/puller propulsor. Fixed wing for cruise efficiency.', tags:['Multi-rotor','Fixed-wing','UAM','Distributed'], certBasis:'14 CFR Part 23 / SC VTOL' },
+  'multirotor':   { cat:'eVTOL', icon:'🚁', type:'MULTIROTOR', name:'Generic Multirotor', desc:'All lift from electric rotors, no fixed wing. High redundancy, urban operations.', tags:['High Redundancy','Urban','VTOL','Electric'], certBasis:'SC VTOL / CS-VTOL' },
+  'vectored':     { cat:'eVTOL', icon:'🛸', type:'VECTORED THRUST', name:'Tiltrotor / Tiltwing', desc:'Same propulsion for lift and cruise via thrust vectoring. Tiltrotor or tiltwing.', tags:['Tiltrotor','Tiltwing','Long Range'], certBasis:'14 CFR Part 23 / SC VTOL' },
+  'wingless':     { cat:'eVTOL', icon:'🔵', type:'WINGLESS ROTORCRAFT', name:'Electric Helicopter', desc:'Pure electric rotorcraft without fixed wing. Similar to conventional helicopter.', tags:['Rotorcraft','Coaxial','Electric'], certBasis:'14 CFR Part 27/29 / CS-29' },
+  'powered-lift': { cat:'eVTOL', icon:'⚡', type:'POWERED LIFT', name:'Hybrid Turbo-Electric', desc:'Turbo-electric propulsion. Sustained VTOL via non-rotating lift devices.', tags:['Hybrid','Turbo-Electric','STOL'], certBasis:'Special Class / Part 23' },
+  // Airbus
+  'A320neo':      { cat:'Airbus', icon:'🛫', type:'NARROW-BODY JET', name:'Airbus A320neo', desc:'Single-aisle, CFM LEAP / PW1100G engines. 150–194 passengers. FB-W controls.', tags:['CS-25','Part 25','Fly-By-Wire','ETOPS'], certBasis:'CS-25 / 14 CFR Part 25' },
+  'A350':         { cat:'Airbus', icon:'🛩', type:'WIDE-BODY JET', name:'Airbus A350 XWB', desc:'Twin-aisle, Rolls-Royce Trent XWB, composite airframe. 300–369 passengers.', tags:['CS-25','Composite','ETOPS 370','FBW'], certBasis:'CS-25 / 14 CFR Part 25' },
+  'A220':         { cat:'Airbus', icon:'🛩', type:'NARROW-BODY JET', name:'Airbus A220 (C Series)', desc:'Regional jet, PW1500G engines. 100–160 passengers. Advanced composite structure.', tags:['CS-25','Part 25','Composite','Regional'], certBasis:'CS-25 / 14 CFR Part 25' },
+  'CityAirbus':   { cat:'Airbus eVTOL', icon:'🛸', type:'eVTOL MULTIROTOR', name:'CityAirbus NextGen', desc:'8-rotor electric UAM vehicle. 90 km range target. 4 passenger seats. Airbus proprietary design.', tags:['Multirotor','UAM','SC VTOL','4-Pax'], certBasis:'EASA SC VTOL / FAA AC 21-52' },
+  // Boeing / Partners
+  'B737MAX':      { cat:'Boeing', icon:'🛫', type:'NARROW-BODY JET', name:'Boeing 737 MAX', desc:'Single-aisle with CFM LEAP-1B engines. 138–230 passengers. MCAS flight control system.', tags:['Part 25','CS-25','MCAS','Narrow-body'], certBasis:'14 CFR Part 25 / CS-25' },
+  'B787':         { cat:'Boeing', icon:'🛩', type:'WIDE-BODY JET', name:'Boeing 787 Dreamliner', desc:'Twin-aisle, GEnx / Trent 1000 engines. 242–330 passengers. All-composite primary structure.', tags:['Part 25','Composite','ETOPS 330','Electric bleed'], certBasis:'14 CFR Part 25 / CS-25' },
+  'Wisk':         { cat:'Boeing eVTOL', icon:'🤖', type:'AUTONOMOUS eVTOL', name:'Wisk Aero Gen-6', desc:'Boeing-backed autonomous AAM aircraft. 12 lift rotors + pusher prop. Self-piloted concept.', tags:['Autonomous','AAM','12-rotor','Gen-6'], certBasis:'FAA AC 21-52 / SC VTOL' },
+  'VoloCity':     { cat:'Partner eVTOL', icon:'🚁', type:'MULTIROTOR eVTOL', name:'Volocopter VoloCity', desc:'18-rotor multicopter, 2-passenger UAM. EASA-certified concept in development.', tags:['18-rotor','UAM','2-Pax','EASA SC VTOL'], certBasis:'EASA SC VTOL' },
+};
+
+// ═══════════════════════════════════════════════════
+// AUTHORITY DATA
+// ═══════════════════════════════════════════════════
+const AUTH_DATA = {
+  faa:{ name:'FAA', fw:'14 CFR Part 23 / AC 21-52', certName:'Type Certificate (TC)', timeline:'5–9 years',
+    cats:[
+      { name:'Flight Performance & Handling', reqs:[
+        { id:'FAA-P-01', title:'VTOL Hover Performance', desc:'Demonstrate OGE hover at MTOW up to declared ceiling at ISA+20°C.', sev:'mandatory' },
+        { id:'FAA-P-02', title:'Stall Speed & Recovery', desc:'For winged variants; electric stall characteristics must be demonstrated.', sev:'standard' },
+        { id:'FAA-P-03', title:'Cruise Performance', desc:'Must meet declared numbers under standard atmospheric conditions.', sev:'mandatory' },
+        { id:'FAA-P-04', title:'OEI Climb & Ceiling', desc:'Demonstrate climb at MTOW with critical propulsor(s) inoperative.', sev:'mandatory' },
+        { id:'FAA-P-05', title:'Emergency Descent / Autorotation', desc:'Controlled emergency descent from all phases with full propulsion failure.', sev:'critical' },
+      ]},
+      { name:'Structural Integrity', reqs:[
+        { id:'FAA-S-01', title:'Limit & Ultimate Loads', desc:'Withstand limit loads without permanent deformation; 1.5× without failure.', sev:'mandatory' },
+        { id:'FAA-S-02', title:'Fatigue & Damage Tolerance', desc:'Dynamic components: safe-life or damage-tolerant certification.', sev:'critical' },
+        { id:'FAA-S-03', title:'Crash Resistance', desc:'Battery/fuel system crash resistance per 14 CFR 27.952/29.952.', sev:'mandatory' },
+        { id:'FAA-S-04', title:'Bird Strike Tolerance', desc:'Windshield/leading edges: 4 lb bird at Vc.', sev:'high' },
+        { id:'FAA-S-05', title:'Lightning Strike Protection', desc:'Direct and indirect effects per AC 20-53.', sev:'mandatory' },
+      ]},
+      { name:'Propulsion & Energy', reqs:[
+        { id:'FAA-E-01', title:'Battery System Certification', desc:'Novel technology — Issue Paper required. Thermal runaway containment mandatory.', sev:'critical' },
+        { id:'FAA-E-02', title:'Motor Redundancy', desc:'Single motor failure must not result in uncontrolled flight.', sev:'mandatory' },
+        { id:'FAA-E-03', title:'Electromagnetic Compatibility', desc:'All electrical equipment per DO-160G.', sev:'mandatory' },
+        { id:'FAA-E-04', title:'Propulsor Containment', desc:'Blade containment or no unacceptable hazard from blade separation.', sev:'critical' },
+        { id:'FAA-E-05', title:'Fire Protection', desc:'Battery and motor controller fire suppression per 14 CFR 23.2420.', sev:'mandatory' },
+      ]},
+      { name:'Avionics & FBW', reqs:[
+        { id:'FAA-A-01', title:'FCS Safety (DO-178C / DO-254)', desc:'Certified per DO-178C (SW) and DO-254 (HW). DAL commensurate with failure hazard.', sev:'critical' },
+        { id:'FAA-A-02', title:'Flight Display Standards', desc:'Primary displays per TSO-C113 / AC 25-11B.', sev:'mandatory' },
+        { id:'FAA-A-03', title:'Navigation & ADS-B Out', desc:'ADS-B Out per 14 CFR 91.225 required for airspace access.', sev:'mandatory' },
+        { id:'FAA-A-04', title:'Autonomous / Highly Automated Systems', desc:'Evaluated under AC 23.1309. SORA-equivalent safety objectives required.', sev:'high' },
+      ]},
+      { name:'Noise & Environmental', reqs:[
+        { id:'FAA-N-01', title:'Noise Certification (14 CFR Part 36)', desc:'VTOL noise limits: Chapter 13 adapted for eVTOL via special condition.', sev:'mandatory' },
+        { id:'FAA-N-02', title:'Emissions (Hybrid)', desc:'Non-CO2 emissions evaluation for hybrid configurations.', sev:'standard' },
+      ]},
+    ]
+  },
+  easa:{ name:'EASA', fw:'SC VTOL Issue 2 / AMC VTOL', certName:'Type Certificate (VTOL)', timeline:'4–8 years',
+    cats:[
+      { name:'Flight Performance', reqs:[
+        { id:'EASA-PH-01', title:'VTOL Performance at MTOW', desc:'OGE/IGE hover at ISA+20°C and max altitude — SC VTOL.2420.', sev:'mandatory' },
+        { id:'EASA-PH-02', title:'Rejected Takeoff Performance', desc:'Balanced field for all-engine and OEI scenarios.', sev:'mandatory' },
+        { id:'EASA-PH-03', title:'Emergency Landing', desc:'Controlled touchdown from any flight phase — SC VTOL.2425.', sev:'critical' },
+        { id:'EASA-PH-04', title:'Cruise Envelope', desc:'Speed limits and manoeuvre envelope per AMC2 VTOL.2335.', sev:'standard' },
+      ]},
+      { name:'Design & Structural', reqs:[
+        { id:'EASA-DS-01', title:'Design Loads (AMC VTOL.2305)', desc:'Ground, manoeuvre, gust loads including urban gust environment.', sev:'mandatory' },
+        { id:'EASA-DS-02', title:'Flight Loads Monitoring', desc:'Integrated load monitoring if fatigue life is usage-dependent.', sev:'high' },
+        { id:'EASA-DS-03', title:'Crashworthiness (SC VTOL.2415)', desc:'Energy absorbing seats and gear; post-crash egress.', sev:'critical' },
+        { id:'EASA-DS-04', title:'Rotor/Propeller Integrity', desc:'Containment analysis for high-energy fragment per CS-29.', sev:'critical' },
+      ]},
+      { name:'Electric Propulsion', reqs:[
+        { id:'EASA-EP-01', title:'EPU Certification (Opinion 2/2023)', desc:'Electric Propulsion Unit as aircraft component per ARP4761 safety assessment.', sev:'critical' },
+        { id:'EASA-EP-02', title:'Battery System (ETSO-C197)', desc:'Lithium batteries per ETSO-C197 including cell-level thermal management.', sev:'mandatory' },
+        { id:'EASA-EP-03', title:'Distributed Propulsion Redundancy', desc:'N+1/N+2 per category. FTA per VTOL.2510.', sev:'mandatory' },
+        { id:'EASA-EP-04', title:'Battery SOC/SOH Monitoring', desc:'SOC accuracy ≤3%; SOH monitoring with alert function.', sev:'high' },
+        { id:'EASA-EP-05', title:'Thermal Runaway Prevention', desc:'Cell-to-cell propagation prevention or containment — no passenger hazard.', sev:'critical' },
+      ]},
+      { name:'Avionics & Safety', reqs:[
+        { id:'EASA-AV-01', title:'FCS Development Assurance', desc:'DO-178C DAL-A/B, full safety assessment — VTOL.2395.', sev:'critical' },
+        { id:'EASA-AV-02', title:'Triple-Redundant FBW', desc:'Independent power rails per VTOL.2395.', sev:'mandatory' },
+        { id:'EASA-OS-01', title:'Emergency Egress (VTOL.2810)', desc:'Exits accessible post-crash. Max 90 sec evacuation.', sev:'critical' },
+        { id:'EASA-NS-01', title:'VTOL Noise (Chapter 13 Amdt.)', desc:'ICAO Annex 16 Vol.I Chapter 13 noise limits.', sev:'mandatory' },
+      ]},
+    ]
+  },
+  dgca:{ name:'DGCA', fw:'CAR-21 / AC 21-1.0', certName:'Type Certificate (India)', timeline:'4–7 years (bilateral FAA/EASA)',
+    cats:[
+      { name:'Certification Basis', reqs:[
+        { id:'DGCA-CB-01', title:'Certification Basis Determination', desc:'Follows 14 CFR Part 23/27 or CS-23/29 equivalents with Indian Special Conditions.', sev:'mandatory' },
+        { id:'DGCA-CB-02', title:'Bilateral Validation (BASA)', desc:'India-USA BASA: FAA TC holders may apply for DGCA validation TC via AC 21-1.0.', sev:'standard' },
+        { id:'DGCA-CB-03', title:'Novel Design Issue Papers', desc:'eVTOL novelties require Issue Papers; early engagement mandatory.', sev:'high' },
+      ]},
+      { name:'Indian Special Conditions', reqs:[
+        { id:'DGCA-AS-01', title:'Tropical Performance (ISA+30°C)', desc:'Demonstrated at ISA+30°C, sea level to 10,000 ft.', sev:'mandatory' },
+        { id:'DGCA-AS-02', title:'Dust & Monsoon Ingestion', desc:'Protection per MIL-STD for sand, dust, and heavy precipitation.', sev:'mandatory' },
+        { id:'DGCA-AS-03', title:'Himalayan High-Altitude Ops', desc:'Demonstrate up to 6,000 m with power derating if applicable.', sev:'high' },
+        { id:'DGCA-PB-01', title:'Electric Propulsion Approval (BIS)', desc:'CAR Section 2 Series E Part II. BIS approval for battery cells.', sev:'mandatory' },
+        { id:'DGCA-PB-03', title:'Thermal Mgmt at 45°C Ambient', desc:'Cooling adequate at sustained 45°C ambient conditions.', sev:'critical' },
+      ]},
+      { name:'Production & Operations', reqs:[
+        { id:'DGCA-MP-01', title:'Production Organisation Approval', desc:'POA under CAR-21 Subpart G.', sev:'mandatory' },
+        { id:'DGCA-MP-02', title:'Design Organisation Approval', desc:'DGCA DOA under CAR-21 Subpart J for continued airworthiness.', sev:'mandatory' },
+        { id:'DGCA-OP-01', title:'Digital Sky / UTM Integration', desc:'Digital Sky Platform registration and UTM integration required.', sev:'mandatory' },
+        { id:'DGCA-OP-03', title:'Pilot Type Rating', desc:'DGCA new eVTOL type rating category. Training syllabi must be approved.', sev:'mandatory' },
+      ]},
+    ]
+  },
+  caac:{ name:'CAAC', fw:'CCAR-21 / AP-21-AA-2021-31', certName:'型号合格证 (Type Certificate)', timeline:'5–8 years',
+    cats:[
+      { name:'Airworthiness Framework', reqs:[
+        { id:'CAAC-AF-01', title:'VTOL Special Conditions (专用条件)', desc:'CAAC VTOL certification basis via 专用条件.', sev:'mandatory' },
+        { id:'CAAC-AF-02', title:'Validation TC for Foreign Designs', desc:'Foreign designs validated per CCAR-21 Subpart B.', sev:'high' },
+        { id:'CAAC-AF-03', title:'Chinese Technical Documentation', desc:'All documentation must be provided in Simplified Chinese.', sev:'mandatory' },
+      ]},
+      { name:'China-Specific Performance', reqs:[
+        { id:'CAAC-FP-01', title:'Plateau Performance (4,500 m)', desc:'Mandatory demonstration at Qinghai-Tibet Plateau relevant density altitude.', sev:'mandatory' },
+        { id:'CAAC-FP-02', title:'Cold Weather (–30°C)', desc:'Performance and battery operation at –30°C ambient.', sev:'mandatory' },
+        { id:'CAAC-PE-01', title:'Battery (GB/T 36672 & GB 38031)', desc:'Propulsion battery per Chinese national standards.', sev:'mandatory' },
+        { id:'CAAC-SC-02', title:'Cybersecurity Requirements', desc:'Data link security, ground control auth, encrypted telemetry.', sev:'mandatory' },
+        { id:'CAAC-SC-03', title:'Data Sovereignty', desc:'Flight data must be stored on domestic servers per national security law.', sev:'critical' },
+      ]},
+      { name:'Operations & UTM', reqs:[
+        { id:'CAAC-OP-01', title:'CAAC Digital Airspace Mgmt', desc:'Integration with CAAC digital airspace system. ADS-B equivalent mandatory.', sev:'mandatory' },
+        { id:'CAAC-OP-02', title:'Vertiport Compliance (MH/T 4046)', desc:'Vertiport design per MH/T 4046.', sev:'mandatory' },
+        { id:'CAAC-OP-03', title:'Trial Zone Operations', desc:'Initial commercial ops restricted to Shenzhen, Guangzhou, Chengdu zones.', sev:'standard' },
+      ]},
+    ]
+  },
+};
+
+const TESTS_DATA = {
+  'lift-cruise':[
+    {name:'Fixed-Wing Aerodynamic Envelope Test',type:'flight',tl:'FLIGHT',desc:'Flutter clearance, dive speed, stall demos, HQ across full envelope including transition.',dur:'180–250 hrs',phase:'Ph 2–3'},
+    {name:'VTOL Transition Performance',type:'flight',tl:'FLIGHT',desc:'Aerodynamic efficiency through lift-to-cruise transition. OEI performance at transition speed.',dur:'60 hrs',phase:'Ph 2'},
+    {name:'Ground Vibration Test (GVT)',type:'ground',tl:'GROUND',desc:'Modal survey of complete aircraft before first flight. Updates flutter model.',dur:'3–4 weeks',phase:'Ph 1'},
+    {name:'Static & Fatigue Structural Tests',type:'ground',tl:'GROUND',desc:'Full-scale article to 150% limit load. 6× design life fatigue spectrum.',dur:'12–18 months',phase:'Ph 1'},
+    {name:'Battery Thermal Runaway (UL 9540A)',type:'ground',tl:'GROUND',desc:'Single-cell TR. Verify no propagation violates safety envelope.',dur:'4–6 weeks',phase:'Ph 1'},
+    {name:'Iron Bird / System Integration Lab',type:'simulation',tl:'SIM',desc:'FCS, power mgmt, avionics integration on ground rig with failure injection.',dur:'6–12 months',phase:'Ph 0–1'},
+    {name:'Noise Measurement Campaign',type:'ground',tl:'GROUND',desc:'ICAO Annex 16 Chapter 13 at all reference conditions.',dur:'3–4 weeks',phase:'Ph 3'},
+    {name:'EMI/EMC Testing (DO-160G)',type:'ground',tl:'GROUND',desc:'All LRUs per DO-160G. Aircraft-level lightning D&I effects.',dur:'8–12 weeks',phase:'Ph 1'},
+    {name:'Icing Certification (Appendix C)',type:'flight',tl:'FLIGHT',desc:'Natural icing or tanker. Electric anti-ice power budget critical.',dur:'1 season',phase:'Ph 3'},
+    {name:'Safety Assessment (ARP4754A/4761)',type:'analysis',tl:'ANALYSIS',desc:'Aircraft-level FHA, PSSA, SSA and CCA. Establishes all DALs.',dur:'Continuous',phase:'All'},
+    {name:'DO-178C / DO-254 Qualification',type:'analysis',tl:'ANALYSIS',desc:'All flight-critical SW/HW to appropriate DAL.',dur:'18–36 months',phase:'Ph 1–3'},
+  ],
+  'multirotor':[
+    {name:'Propulsor Failure Hover Test',type:'flight',tl:'FLIGHT',desc:'Controlled flight/landing N-1 propulsors. OEI hover ceiling and descent.',dur:'40 hrs',phase:'Ph 2'},
+    {name:'Ground Resonance Test',type:'ground',tl:'GROUND',desc:'Multi-rotor resonance on soft and hard surfaces.',dur:'2–3 weeks',phase:'Ph 1'},
+    {name:'Battery Cycle Endurance (1000 cycles)',type:'ground',tl:'GROUND',desc:'1000+ charge/discharge cycles with SOH monitoring.',dur:'6–9 months',phase:'Ph 1'},
+    {name:'BRS / Ballistic Recovery Test',type:'flight',tl:'FLIGHT',desc:'Parachute from all operating conditions. Min deployment altitude.',dur:'20 tests',phase:'Ph 3'},
+    {name:'Safety Assessment (FHA/PSSA/SSA)',type:'analysis',tl:'ANALYSIS',desc:'CCA for symmetric failure modes in multirotor architecture.',dur:'Continuous',phase:'All'},
+    {name:'DO-178C FCC (DAL-A)',type:'analysis',tl:'ANALYSIS',desc:'FCC SW to DAL-A given catastrophic FCS failure mode.',dur:'24–36 months',phase:'Ph 0–3'},
+  ],
+  'vectored':[
+    {name:'Tilt Mechanism Endurance Test',type:'ground',tl:'GROUND',desc:'10,000+ full-range cycles under load. Critical failure mode demo.',dur:'4–6 months',phase:'Ph 1'},
+    {name:'Conversion Corridor Flight Test',type:'flight',tl:'FLIGHT',desc:'Complete safe conversion envelope mapping. OEI at worst-case speed.',dur:'200 hrs',phase:'Ph 2–3'},
+    {name:'Proprotor Aeroelastic Stability',type:'flight',tl:'FLIGHT',desc:'Whirl mode and flutter clearance in high-speed regime.',dur:'60 hrs',phase:'Ph 3'},
+    {name:'Conversion Jam/Runaway (Iron Bird)',type:'simulation',tl:'SIM',desc:'Tilt jam and runaway injection. FCS recovery demonstrated.',dur:'3–4 months',phase:'Ph 1'},
+    {name:'Safety Assessment',type:'analysis',tl:'ANALYSIS',desc:'Additional FHA: partial, asymmetric, jammed-at-angle conversion.',dur:'Continuous',phase:'All'},
+  ],
+  'wingless':[
+    {name:'Autorotation Flight Test Program',type:'flight',tl:'FLIGHT',desc:'Autorotation entries from all altitudes/airspeeds. H-V diagram.',dur:'80 hrs',phase:'Ph 2'},
+    {name:'Ground Resonance Test',type:'ground',tl:'GROUND',desc:'Electric rotorcraft resonance on representative surfaces.',dur:'2–3 weeks',phase:'Ph 1'},
+    {name:'Drive System Endurance (TBO-proving)',type:'ground',tl:'GROUND',desc:'Main/tail rotor drive train to 3× design TBO.',dur:'12–24 months',phase:'Ph 1'},
+    {name:'BVI Noise Measurement',type:'flight',tl:'FLIGHT',desc:'Blade-vortex interaction noise for urban operations.',dur:'3–4 weeks',phase:'Ph 3'},
+    {name:'Safety Assessment',type:'analysis',tl:'ANALYSIS',desc:'CS-29/CFR 29 FHA adapted for electric drivetrain.',dur:'Continuous',phase:'All'},
+  ],
+  'powered-lift':[
+    {name:'Hybrid Propulsion Integration',type:'ground',tl:'GROUND',desc:'Turbo-gen + battery integration: power sharing, transient response.',dur:'6–9 months',phase:'Ph 0–1'},
+    {name:'Emergency VTOL on Battery Only',type:'flight',tl:'FLIGHT',desc:'VTOL with gas turbine inoperative — battery power alone.',dur:'60 hrs',phase:'Ph 3'},
+    {name:'Noise (Combined Sources)',type:'flight',tl:'FLIGHT',desc:'Combined jet exhaust and rotor signature.',dur:'3–4 weeks',phase:'Ph 3'},
+    {name:'Power Management Validation (HILS)',type:'simulation',tl:'SIM',desc:'Energy management in all mission phases and degradation states.',dur:'4–6 months',phase:'Ph 1'},
+    {name:'Safety Assessment',type:'analysis',tl:'ANALYSIS',desc:'Combined electrical/mechanical/fuel CCA.',dur:'Continuous',phase:'All'},
+  ],
+  // Classical aircraft - Part 25 focus
+  'A320neo':[
+    {name:'Stall Speed & Buffet Onset Tests',type:'flight',tl:'FLIGHT',desc:'Stall characterization per CS-25.201. Stick pusher and stick shaker validation.',dur:'80–120 hrs',phase:'Ph 2'},
+    {name:'Flutter Clearance to 1.15 VMO/MMO',type:'flight',tl:'FLIGHT',desc:'Subcritical response flutter clearance. GVT-validated model correlation.',dur:'60–90 hrs',phase:'Ph 2'},
+    {name:'Engine Failure V1 Takeoff Test',type:'flight',tl:'FLIGHT',desc:'Critical engine failure at V1 on runway. Demonstrated directional control.',dur:'40 hrs',phase:'Ph 2'},
+    {name:'Full-Scale Static Test (Airframe)',type:'ground',tl:'GROUND',desc:'Ultimate load static test of fuselage, wing, and empennage to 1.5× limit.',dur:'18–24 months',phase:'Ph 1'},
+    {name:'Fire Test (Engine Bay & APU)',type:'ground',tl:'GROUND',desc:'Engine bay fire detection and suppression per CS-25.1195.',dur:'3–4 months',phase:'Ph 1'},
+    {name:'Extended Cold-Soak Ground Test',type:'ground',tl:'GROUND',desc:'Aircraft soaked to –40°C. All systems start and operate per CS-25.1527.',dur:'2–3 weeks',phase:'Ph 1'},
+    {name:'Electromagnetic Compatibility (DO-160G)',type:'ground',tl:'GROUND',desc:'All avionics LRUs and aircraft-level EMI/HIRF per AC 20-158.',dur:'6–8 weeks',phase:'Ph 1'},
+    {name:'Cabin Fire Test & Evacuation',type:'ground',tl:'GROUND',desc:'Full cabin fire detection. 90-second evacuation demonstration (CS-25.807).',dur:'Special test',phase:'Ph 3'},
+    {name:'FBW System Safety Assessment',type:'analysis',tl:'ANALYSIS',desc:'Full ARP4754A/ARP4761 process for fly-by-wire FCS. DO-178C DAL-A for FCC.',dur:'Continuous',phase:'All'},
+    {name:'ETOPS Validation (180-min)',type:'flight',tl:'FLIGHT',desc:'Extended operations engine reliability and systems validation.',dur:'1000+ hrs',phase:'Ph 3'},
+  ],
+  'A350':[
+    {name:'Composite Airframe Ultimate Load Test',type:'ground',tl:'GROUND',desc:'Full-scale composite wing/centre box to 1.5× limit. Critical per CS-25.305.',dur:'24–30 months',phase:'Ph 1'},
+    {name:'All-Composite Environmental Aging',type:'ground',tl:'GROUND',desc:'Hot-wet conditioning of structural composite specimens per CS-25 Appendix F.',dur:'12 months',phase:'Ph 1'},
+    {name:'Long-Haul Systems Endurance Test',type:'simulation',tl:'SIM',desc:'Iron-bird simulation of 20,000+ flight cycle equivalent for all aircraft systems.',dur:'Ongoing',phase:'Ph 1–2'},
+    {name:'Flutter Clearance (Full Envelope)',type:'flight',tl:'FLIGHT',desc:'Flutter/LCO clearance to 1.15 VD/MD. Transonic regime included.',dur:'100 hrs',phase:'Ph 2'},
+    {name:'ETOPS 370-min Validation',type:'flight',tl:'FLIGHT',desc:'Extended ETOPS up to 370 min diversion. Engine reliability and APU backup.',dur:'2000+ hrs',phase:'Ph 3'},
+    {name:'FBW Safety Assessment (CS-25.1309)',type:'analysis',tl:'ANALYSIS',desc:'Full FHA/PSSA/SSA for primary FCS. DO-178C DAL-A for all flight-critical SW.',dur:'Continuous',phase:'All'},
+  ],
+  'A220':[
+    {name:'PW1500G Engine Integration Test',type:'ground',tl:'GROUND',desc:'Geared turbofan integration, vibration, and performance validation.',dur:'6–9 months',phase:'Ph 0–1'},
+    {name:'Stall/High-AOA Flight Test',type:'flight',tl:'FLIGHT',desc:'Natural stall approach per CS-25.201. Stick shaker and pusher validation.',dur:'60 hrs',phase:'Ph 2'},
+    {name:'Composite Structure Tests',type:'ground',tl:'GROUND',desc:'Advanced composite fuselage skin ultimate load and damage tolerance tests.',dur:'12–18 months',phase:'Ph 1'},
+    {name:'FBW Qualification (CS-25)',type:'analysis',tl:'ANALYSIS',desc:'Full ARP4754A process for FCS. DO-178C DAL-A for primary FCC.',dur:'Continuous',phase:'All'},
+    {name:'Cold Weather Certification (–40°C)',type:'flight',tl:'FLIGHT',desc:'Natural cold soak operations at Iqaluit or Yellowknife.',dur:'Seasonal',phase:'Ph 3'},
+  ],
+  'CityAirbus':[
+    {name:'8-Rotor OEI Hover Test',type:'flight',tl:'FLIGHT',desc:'Hover with one rotor inoperative. EASA SC VTOL loss-of-propulsor requirements.',dur:'40 hrs',phase:'Ph 2'},
+    {name:'Battery Pack Safety (ETSO-C197)',type:'ground',tl:'GROUND',desc:'Pack-level thermal runaway test per ETSO-C197 requirements.',dur:'4–6 weeks',phase:'Ph 1'},
+    {name:'SC VTOL Safety Assessment',type:'analysis',tl:'ANALYSIS',desc:'Full EASA SC VTOL compliant FHA/PSSA/SSA.',dur:'Continuous',phase:'All'},
+    {name:'Urban Noise Campaign',type:'flight',tl:'FLIGHT',desc:'EASA SC VTOL noise certification plus urban noise footprint < helicopter.',dur:'3–4 weeks',phase:'Ph 3'},
+  ],
+  'B737MAX':[
+    {name:'MCAS / Maneuvering Characteristics Test',type:'flight',tl:'FLIGHT',desc:'Full validation of updated MCAS per Special Conditions following re-certification.',dur:'120+ hrs',phase:'Ph 2'},
+    {name:'LEAP-1B Engine Integration',type:'ground',tl:'GROUND',desc:'Engine ground test, vibration, and performance per 14 CFR Part 33.',dur:'9–12 months',phase:'Ph 0–1'},
+    {name:'Stall Recovery Validation (Part 25.201)',type:'flight',tl:'FLIGHT',desc:'Natural stall and recovery. Stall warning margin validation.',dur:'60 hrs',phase:'Ph 2'},
+    {name:'FCS Safety Assessment (DO-178C)',type:'analysis',tl:'ANALYSIS',desc:'Updated FCS including MCAS: full ARP4754A/4761 safety assessment.',dur:'Continuous',phase:'All'},
+    {name:'Full-Scale Static Test',type:'ground',tl:'GROUND',desc:'Wing and fuselage to ultimate load per 14 CFR 25.305.',dur:'18–24 months',phase:'Ph 1'},
+    {name:'EMC & HIRF Testing (AC 20-158)',type:'ground',tl:'GROUND',desc:'Aircraft-level HIRF and lightning tests.',dur:'6–8 weeks',phase:'Ph 1'},
+  ],
+  'B787':[
+    {name:'Composite Airframe Load Test',type:'ground',tl:'GROUND',desc:'Full fuselage and wing composite structure to ultimate load. 14 CFR 25.305.',dur:'24–30 months',phase:'Ph 1'},
+    {name:'All-Electric Bleed-Free Systems Test',type:'ground',tl:'GROUND',desc:'More-Electric architecture: all bleed-free systems ground integration testing.',dur:'9–12 months',phase:'Ph 1'},
+    {name:'ETOPS 330-min Validation',type:'flight',tl:'FLIGHT',desc:'Boeing 787 ETOPS 330 validation including fuel system and APU reliability.',dur:'2000+ hrs',phase:'Ph 3'},
+    {name:'Composite Damage Tolerance Testing',type:'ground',tl:'GROUND',desc:'Impact damage tolerance per AC 20-107B. Residual strength after damage.',dur:'18 months',phase:'Ph 1'},
+    {name:'FCS Safety Assessment',type:'analysis',tl:'ANALYSIS',desc:'Full ARP4754A process for FBW. DO-178C DAL-A for primary FCC.',dur:'Continuous',phase:'All'},
+  ],
+  'Wisk':[
+    {name:'Autonomous Flight Safety Assessment',type:'analysis',tl:'ANALYSIS',desc:'Full autonomy safety assessment per FAA AC 21-52. DAL-A for decision-making SW.',dur:'Continuous',phase:'All'},
+    {name:'12-Rotor OEI Hover Flight Test',type:'flight',tl:'FLIGHT',desc:'N-1 and N-2 rotor loss during all phases. FC response validation.',dur:'60 hrs',phase:'Ph 2'},
+    {name:'Remote Monitoring & Control Test',type:'simulation',tl:'SIM',desc:'Ground control station integration, latency, and failure mode testing.',dur:'6–9 months',phase:'Ph 1–2'},
+    {name:'Battery TR Containment Test',type:'ground',tl:'GROUND',desc:'Full-pack TR test per UL 9540A.',dur:'4–6 weeks',phase:'Ph 1'},
+    {name:'DO-178C DAL-A Autonomy SW',type:'analysis',tl:'ANALYSIS',desc:'All autonomous decision-making software certified to DAL-A.',dur:'30–48 months',phase:'Ph 0–3'},
+  ],
+  'VoloCity':[
+    {name:'18-Rotor OEI Hover Test',type:'flight',tl:'FLIGHT',desc:'Loss of one and two rotors during hover. EASA SC VTOL compliance.',dur:'30 hrs',phase:'Ph 2'},
+    {name:'Battery Pack Safety (EASA)',type:'ground',tl:'GROUND',desc:'TR propagation test per ETSO-C197.',dur:'4 weeks',phase:'Ph 1'},
+    {name:'Urban UAM Noise Campaign',type:'flight',tl:'FLIGHT',desc:'Noise footprint ≤ conventional helicopter per EASA urban ops guidance.',dur:'2–3 weeks',phase:'Ph 3'},
+    {name:'SC VTOL Safety Assessment',type:'analysis',tl:'ANALYSIS',desc:'EASA SC VTOL FHA/PSSA/SSA for 18-rotor multirotor.',dur:'Continuous',phase:'All'},
+  ],
+};
+
+const MATRIX_ITEMS=[
+  {area:'Battery Thermal Runaway Containment',faa:'✓',easa:'✓',dgca:'✓',caac:'✓'},
+  {area:'Motor/Propulsor Redundancy (N+1)',faa:'✓',easa:'✓',dgca:'~',caac:'✓'},
+  {area:'FBW/FCS DAL-A Software (DO-178C)',faa:'✓',easa:'✓',dgca:'~',caac:'✓'},
+  {area:'Noise Certification (Chapter 13)',faa:'✓',easa:'✓',dgca:'~',caac:'✓'},
+  {area:'Whole-Aircraft Parachute (MOC)',faa:'~',easa:'✓',dgca:'—',caac:'~'},
+  {area:'Cybersecurity / Data Sovereignty',faa:'~',easa:'~',dgca:'—',caac:'✓'},
+  {area:'High Altitude Plateau Performance',faa:'—',easa:'—',dgca:'✓',caac:'✓'},
+  {area:'Tropical / Hot Ambient Env.',faa:'—',easa:'—',dgca:'✓',caac:'~'},
+  {area:'UTM / Digital Sky Integration',faa:'~',easa:'~',dgca:'✓',caac:'✓'},
+  {area:'Domestic Component Preference',faa:'—',easa:'—',dgca:'~',caac:'✓'},
+  {area:'Bilateral Validation Pathway',faa:'N/A',easa:'N/A',dgca:'✓',caac:'~'},
+  {area:'Composite Structure Damage Tolerance',faa:'✓',easa:'✓',dgca:'~',caac:'~'},
+  {area:'ETOPS / Long-Range Ops',faa:'✓',easa:'✓',dgca:'~',caac:'~'},
+];
+
+// ═══════════════════════════════════════════════════
+// ARP 4754A RMS DATA (inline L1-L4 tree)
+// ═══════════════════════════════════════════════════
+const RMS_TREE = [
+  {id:'FL-L1-001',level:'L1',dom:'Flight Performance',title:'VTOL Hover Performance',text:'Aircraft shall sustain hover at MTOW in OGE conditions up to declared ceiling at ISA+20°C.',dal:'B',moc:['TEST','ANALYSIS'],auth:['FAA','EASA','DGCA','CAAC'],ref:'14 CFR 27.143 / SC VTOL.2420',children:[
+    {id:'FL-L2-001',level:'L2',title:'Hover Ceiling Standard',text:'OGE ceiling ≥ declared service ceiling at MTOW.',dal:'B',moc:['TEST','ANALYSIS'],children:[
+      {id:'FL-L3-001',level:'L3',title:'Hover Ceiling Test Plan',text:'Test plan: OGE/IGE, ISA and hot-day.',dal:'C',moc:['TEST'],children:[
+        {id:'FL-L4-001',level:'L4',title:'OGE Hover @ ISA MTOW',moc:'TEST',dal:'C',text:'Measure hover power at MTOW OGE ISA SL.',status:'OPEN'},
+        {id:'FL-L4-002',level:'L4',title:'OGE Hover @ ISA+20 MTOW',moc:'TEST',dal:'C',text:'Repeat at ISA+20°C to establish derating.',status:'OPEN'},
+        {id:'FL-L4-003',level:'L4',title:'OGE Hover @ Max Altitude',moc:'TEST',dal:'C',text:'OGE hover at declared ceiling with full payload.',status:'OPEN'},
+        {id:'FL-L4-004',level:'L4',title:'Hover Performance Model (BEMT/CFD)',moc:'ANALYSIS',dal:'C',text:'Validated model extrapolated to all conditions.',status:'OPEN'},
+      ]},
+      {id:'FL-L3-002',level:'L3',title:'OEI Hover Capability',text:'N-1 propulsor hover. Define MCA.',dal:'B',moc:['TEST','SIM'],children:[
+        {id:'FL-L4-005',level:'L4',title:'OEI Hover — HILS (Iron Bird)',moc:'SIM',dal:'B',text:'Single motor failure in HILS. Altitude loss <3 m.',status:'OPEN'},
+        {id:'FL-L4-006',level:'L4',title:'OEI Hover — Flight Test',moc:'TEST',dal:'B',text:'In-flight motor shutdown hover. Time-to-recovery.',status:'OPEN'},
+      ]},
+    ]},
+  ]},
+  {id:'ST-L1-001',level:'L1',dom:'Structural Integrity',title:'Limit & Ultimate Load Strength',text:'Structure withstands limit loads without deformation; ultimate (1.5×) without failure.',dal:'A',moc:['TEST','ANALYSIS'],auth:['FAA','EASA','DGCA','CAAC'],ref:'14 CFR 23.2210 / CS-25.305 / CS VTOL.2305',children:[
+    {id:'ST-L2-001',level:'L2',title:'Design Load Cases',text:'All manoeuvre, gust, ground, crash loads.',dal:'A',moc:['ANALYSIS'],children:[
+      {id:'ST-L3-001',level:'L3',title:'Flight Loads Analysis',text:'V-n diagram, continuous turbulence + discrete gust.',dal:'A',moc:['ANALYSIS'],children:[
+        {id:'ST-L4-001',level:'L4',title:'V-n Diagram Derivation',moc:'ANALYSIS',dal:'A',text:'Manoeuvre and gust V-n for all phases.',status:'OPEN'},
+        {id:'ST-L4-002',level:'L4',title:'FEM Limit Load Analysis',moc:'ANALYSIS',dal:'A',text:'FEM at all design loads. Positive margins.',status:'OPEN'},
+        {id:'ST-L4-003',level:'L4',title:'Ultimate Load Static Test',moc:'TEST',dal:'A',text:'Full-scale to 1.5× limit. Hold 3 s. No failure.',status:'OPEN'},
+      ]},
+      {id:'ST-L3-002',level:'L3',title:'Emergency Landing Loads',text:'8g fwd / 4g side / 20g down crash loads.',dal:'A',moc:['TEST','ANALYSIS'],children:[
+        {id:'ST-L4-004',level:'L4',title:'Crash Seat Sled Test',moc:'TEST',dal:'A',text:'16g/0.1s sled test. HIC <1000.',status:'OPEN'},
+        {id:'ST-L4-005',level:'L4',title:'Battery Crash Containment',moc:'TEST',dal:'A',text:'Battery at crash loads. No hazardous rupture.',status:'OPEN'},
+      ]},
+    ]},
+    {id:'ST-L2-002',level:'L2',title:'Fatigue & Damage Tolerance',text:'Primary structure: safe-life or damage-tolerant certification.',dal:'A',moc:['TEST','ANALYSIS'],children:[
+      {id:'ST-L3-003',level:'L3',title:'Rotor/Propulsor Fatigue Life',text:'Safe retirement life for all blades and hubs.',dal:'A',moc:['TEST','ANALYSIS'],children:[
+        {id:'ST-L4-006',level:'L4',title:'Coupon Fatigue Tests (S-N)',moc:'TEST',dal:'B',text:'Material coupon fatigue. Min 6 pts per stress level.',status:'OPEN'},
+        {id:'ST-L4-007',level:'L4',title:'Component Fatigue Test (×3 life)',moc:'TEST',dal:'A',text:'Full-scale blade/hub to 3× life. No failure at 2×.',status:'OPEN'},
+        {id:'ST-L4-008',level:'L4',title:'Damage Tolerance Analysis (FMech)',moc:'ANALYSIS',dal:'A',text:'Fracture mechanics. Inspection intervals derived.',status:'OPEN'},
+      ]},
+    ]},
+  ]},
+  {id:'PR-L1-001',level:'L1',dom:'Propulsion & Energy',title:'Propulsion System Reliability',text:'Total loss of propulsive power < 1×10⁻⁹ per flight hour (catastrophic per ARP 4761).',dal:'A',moc:['ANALYSIS','TEST'],auth:['FAA','EASA','DGCA','CAAC'],ref:'ARP 4761 / AC 23.2320 / SC VTOL.2510',children:[
+    {id:'PR-L2-001',level:'L2',title:'Motor Reliability (MTBF ≥ 100k h)',text:'Each MCU MTBF ≥ 100,000 flight hours demonstrated.',dal:'A',moc:['TEST','ANALYSIS'],children:[
+      {id:'PR-L3-005',level:'L3',title:'MCU Accelerated Life Test',text:'ALT with Arrhenius model validation.',dal:'A',moc:['TEST'],children:[
+        {id:'PR-L4-012',level:'L4',title:'Motor Endurance Test (ALT)',moc:'TEST',dal:'A',text:'10 MCUs × 2000 h over-stress. MTBF extrapolated.',status:'OPEN'},
+        {id:'PR-L4-013',level:'L4',title:'FMEA — Motor Controller',moc:'ANALYSIS',dal:'A',text:'Detailed FMEA. All modes mapped to hazard categories.',status:'OPEN'},
+        {id:'PR-L4-014',level:'L4',title:'System FTA (Loss of Propulsion)',moc:'ANALYSIS',dal:'A',text:'FTA. All cut sets ≤ 1×10⁻⁹/FH.',status:'OPEN'},
+      ]},
+    ]},
+    {id:'PR-L2-002',level:'L2',title:'Battery System Safety',text:'Single-cell TR tolerated. No propagation hazardous to occupants.',dal:'A',moc:['TEST','ANALYSIS'],children:[
+      {id:'PR-L3-006',level:'L3',title:'Thermal Runaway Containment',text:'Single-cell TR — containment per UL 9540A / IEC 62619.',dal:'A',moc:['TEST'],children:[
+        {id:'PR-L4-015',level:'L4',title:'Cell-level TR Test',moc:'TEST',dal:'A',text:'Overcharge-triggered TR. Gas/temp propagation measured.',status:'OPEN'},
+        {id:'PR-L4-016',level:'L4',title:'Module TR Propagation Test',moc:'TEST',dal:'A',text:'Single-cell TR in flight module. No cell-to-cell propagation.',status:'OPEN'},
+        {id:'PR-L4-017',level:'L4',title:'Pack TR Fire Containment Test',moc:'TEST',dal:'A',text:'Full-pack TR. Cabin isolation confirmed.',status:'OPEN'},
+      ]},
+      {id:'PR-L3-007',level:'L3',title:'Battery Endurance & SOH',text:'Battery meets declared cycle life and SOH.',dal:'B',moc:['TEST'],children:[
+        {id:'PR-L4-018',level:'L4',title:'Calendar Aging Test',moc:'TEST',dal:'B',text:'12 months at 25°C and 45°C. Capacity loss <5%.',status:'OPEN'},
+        {id:'PR-L4-019',level:'L4',title:'Cycle Life Test (1000 cycles)',moc:'TEST',dal:'B',text:'1000 full cycles. SOH ≥ 80% at end.',status:'OPEN'},
+      ]},
+    ]},
+  ]},
+  {id:'AV-L1-001',level:'L1',dom:'Avionics & FCS',title:'Flight Control System Integrity',text:'Loss of FCS < 1×10⁻⁹/FH. Any single failure ≤ major effect.',dal:'A',moc:['ANALYSIS','TEST','INSPECT'],auth:['FAA','EASA','DGCA','CAAC'],ref:'DO-178C / DO-254 / ARP 4754A §5 / ARP 4761',children:[
+    {id:'AV-L2-001',level:'L2',title:'FCS Software (DO-178C DAL-A)',text:'All flight-critical SW per DO-178C DAL-A.',dal:'A',moc:['INSPECT','ANALYSIS'],children:[
+      {id:'AV-L3-009',level:'L3',title:'SW Development Plan Compliance',text:'SDP, SVP, SCMP reviewed/approved. All DAL-A objectives met.',dal:'A',moc:['INSPECT'],children:[
+        {id:'AV-L4-022',level:'L4',title:'SDP / SVP / SCMP DER Approval',moc:'INSPECT',dal:'A',text:'DER review before coding begins.',status:'OPEN'},
+        {id:'AV-L4-023',level:'L4',title:'MC/DC Coverage 100%',moc:'INSPECT',dal:'A',text:'100% MC/DC on all DAL-A source code.',status:'OPEN'},
+        {id:'AV-L4-024',level:'L4',title:'Software Accomplishment Summary',moc:'INSPECT',dal:'A',text:'SAS with full compliance matrix at SOI-4.',status:'OPEN'},
+      ]},
+      {id:'AV-L3-010',level:'L3',title:'FCS Hardware (DO-254 DAL-A)',text:'FCC, ACE per DO-254 DAL-A.',dal:'A',moc:['INSPECT','TEST'],children:[
+        {id:'AV-L4-025',level:'L4',title:'PHAC / HDP Approval',moc:'INSPECT',dal:'A',text:'Hardware Dev Plan approved before design freeze.',status:'OPEN'},
+        {id:'AV-L4-026',level:'L4',title:'FPGA/ASIC Verification',moc:'TEST',dal:'A',text:'100% structural coverage. Formal equivalence checking.',status:'OPEN'},
+      ]},
+    ]},
+    {id:'AV-L2-002',level:'L2',title:'FCS Redundancy Architecture',text:'Triple-redundant FCS, independent power, dissimilar SW.',dal:'A',moc:['TEST','ANALYSIS'],children:[
+      {id:'AV-L3-011',level:'L3',title:'Failure Mode Injection (Iron Bird)',text:'All single/dual failures in SIL. No catastrophic outcome.',dal:'A',moc:['TEST'],children:[
+        {id:'AV-L4-027',level:'L4',title:'Single FCC Failure — HILS',moc:'SIM',dal:'A',text:'Single FCC failure all phases. Backup <50 ms.',status:'OPEN'},
+        {id:'AV-L4-028',level:'L4',title:'Power Loss to FCS — HILS',moc:'SIM',dal:'A',text:'Primary bus loss. Backup ≥30 min all phases.',status:'OPEN'},
+        {id:'AV-L4-029',level:'L4',title:'Common Cause Analysis (CCA)',moc:'ANALYSIS',dal:'A',text:'ZSA, PRA, CMA per ARP 4761. No CCA cuts triple redundancy.',status:'OPEN'},
+      ]},
+    ]},
+  ]},
+  {id:'SA-L1-001',level:'L1',dom:'Safety Systems',title:'Aircraft-Level Safety Objective (ALSA)',text:'Overall catastrophic failure condition probability < 1×10⁻⁷ per flight hour.',dal:'A',moc:['ANALYSIS'],auth:['FAA','EASA','DGCA','CAAC'],ref:'ARP 4761 §4 / ARP 4754A §5.2',children:[
+    {id:'SA-L2-004',level:'L2',title:'Aircraft FHA (AFHA)',text:'Top-level identification of all aircraft functions and failure conditions.',dal:'A',moc:['ANALYSIS'],children:[
+      {id:'SA-L3-013',level:'L3',title:'AFHA Document',text:'All functions listed. Failure conditions classified. Authority-reviewed.',dal:'A',moc:['ANALYSIS'],children:[
+        {id:'SA-L4-033',level:'L4',title:'Function List & Classification',moc:'ANALYSIS',dal:'A',text:'All functions assigned Cat I–V per ARP 4761. DER signed.',status:'OPEN'},
+        {id:'SA-L4-034',level:'L4',title:'Aircraft-Level FTA',moc:'ANALYSIS',dal:'A',text:'Top-level FTA for each catastrophic failure condition.',status:'OPEN'},
+        {id:'SA-L4-035',level:'L4',title:'PSSA (System Safety Requirements)',moc:'ANALYSIS',dal:'A',text:'PSSA derived from AFHA. Safety reqs allocated to all systems.',status:'OPEN'},
+      ]},
+    ]},
+    {id:'SA-L2-005',level:'L2',title:'Emergency Landing Capability',text:'Controlled emergency landing from any point — total power loss tolerated.',dal:'A',moc:['TEST','SIM'],children:[
+      {id:'SA-L3-014',level:'L3',title:'Emergency Descent / Forced Landing',text:'Controlled descent to touchdown — powered and unpowered.',dal:'A',moc:['TEST','SIM'],children:[
+        {id:'SA-L4-036',level:'L4',title:'Total Power Loss — Simulator',moc:'SIM',dal:'A',text:'All power cut from cruise/hover/transition. Survivable profile.',status:'OPEN'},
+        {id:'SA-L4-037',level:'L4',title:'BRS Deployment Test',moc:'TEST',dal:'A',text:'Parachute fired at declared speeds. ROD <6 m/s.',status:'OPEN'},
+        {id:'SA-L4-038',level:'L4',title:'Emergency Landing Flight Test',moc:'TEST',dal:'A',text:'Simulated power-off approach to touchdown. Loads measured.',status:'OPEN'},
+      ]},
+    ]},
+  ]},
+  {id:'OP-L1-001',level:'L1',dom:'Operations',title:'Noise Certification',text:'Aircraft complies with ICAO Annex 16 Chapter 13 / 14 CFR Part 36 at all reference points.',dal:'D',moc:['TEST','ANALYSIS'],auth:['FAA','EASA'],ref:'14 CFR Part 36 / ICAO Annex 16 Vol.1 Ch.13',children:[
+    {id:'OP-L2-007',level:'L2',title:'Acoustic Test Campaign',text:'Noise at all reference conditions per ICAO Annex 16.',dal:'D',moc:['TEST','ANALYSIS'],children:[
+      {id:'OP-L3-016',level:'L3',title:'Noise Flight Test Plan',text:'Microphone array, atmos corrections, full matrix.',dal:'D',moc:['TEST'],children:[
+        {id:'OP-L4-041',level:'L4',title:'Takeoff Noise Measurement',moc:'TEST',dal:'D',text:'EPNL at 450 m. Chapter 13 limit compliance.',status:'OPEN'},
+        {id:'OP-L4-042',level:'L4',title:'Approach Noise Measurement',moc:'TEST',dal:'D',text:'3° glide slope. EPNL at reference point.',status:'OPEN'},
+        {id:'OP-L4-043',level:'L4',title:'Acoustic Prediction Model',moc:'ANALYSIS',dal:'D',text:'Validated model to ±2 EPNdB.',status:'OPEN'},
+      ]},
+    ]},
+  ]},
+];
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+function flatTree(nodes,out){nodes.forEach(n=>{out.push(n);if(n.children)flatTree(n.children,out);});}
+function findNode(id,nodes){for(const n of nodes){if(n.id===id)return n;if(n.children){const f=findNode(id,n.children);if(f)return f;}}return null;}
+function collectL4s(node){let ids=[];if(node.level==='L4')ids.push(node.id);(node.children||[]).forEach(c=>ids=ids.concat(collectL4s(c)));return ids;}
+function containsId(node,id){return node.id===id||(node.children||[]).some(c=>containsId(c,id));}
+
+// ═══════════════════════════════════════════════════
+// SUPABASE INIT
+// ═══════════════════════════════════════════════════
+const SUPA_URL = 'https://wiphtdgqtsuuspuomqab.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpcGh0ZGdxdHN1dXNwdW9tcWFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0Mzk3MzYsImV4cCI6MjA4OTAxNTczNn0.eCpGhjr9eqx5-Wc8gX7CjSp7EgFJxfB2WLz4n7KDeME';
+const _supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// Friendly display name — prefers full_name metadata, then email prefix
+function getUserDisplay(user){
+  if(!user) return 'User';
+  return user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+}
+function getUserInitials(user){
+  const d = getUserDisplay(user);
+  return d.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+}
+
+// ═══════════════════════════════════════════════════
+// PERSISTENT STORAGE (localStorage per Supabase user UUID)
+// ═══════════════════════════════════════════════════
+let CU = null;        // Supabase user object
+let CU_ID = null;     // user.id (UUID) — storage key root
+
+function storeKey(k){ return `certiq_${CU_ID}_${k}`; }
+function load(k,def=null){try{const v=localStorage.getItem(storeKey(k));return v?JSON.parse(v):def;}catch{return def;}}
+function save(k,v){try{localStorage.setItem(storeKey(k),JSON.stringify(v));}catch{}}
+
+function loadProjects(){return load('projects',{});}
+function saveProjects(p){save('projects',p);}
+function loadProjectData(pid){return load('proj_'+pid,{statusMap:{},evidenceMap:{},allReqs:[],config:{},activity:[]});}
+function saveProjectData(pid,data){save('proj_'+pid,data);}
+
+// ═══════════════════════════════════════════════════
+// APP STATE
+// ═══════════════════════════════════════════════════
+let PROJECTS = {};
+let ACTIVE_PID = null;
+let PD = { statusMap:{}, evidenceMap:{}, allReqs:[], config:{}, activity:[] };
+
+function getProj(){return PROJECTS[ACTIVE_PID]||{};}
+function savePD(){saveProjectData(ACTIVE_PID,PD);}
+function saveProj(){saveProjects(PROJECTS);}
+
+// ═══════════════════════════════════════════════════
+// AUTH — Supabase
+// ═══════════════════════════════════════════════════
+function setLoginLoading(on){
+  document.getElementById('login-loading').style.display=on?'block':'none';
+  document.querySelector('.login-btn').style.opacity=on?'.4':'1';
+  document.querySelector('.login-btn').disabled=on;
+}
+
+async function doLogin(){
+  const email=(document.getElementById('login-user').value||'').trim();
+  const pass=(document.getElementById('login-pass').value||'').trim();
+  const errEl=document.getElementById('login-err');
+  errEl.style.display='none';
+  if(!email||!pass){errEl.textContent='Please enter your email and password.';errEl.style.display='block';return;}
+  setLoginLoading(true);
+  const {data, error} = await _supa.auth.signInWithPassword({email, password:pass});
+  setLoginLoading(false);
+  if(error){errEl.textContent=error.message||'Sign in failed. Please try again.';errEl.style.display='block';return;}
+  CU=data.user; CU_ID=data.user.id;
+  postLogin();
+}
+
+async function doSignup(){
+  const name=(document.getElementById('su-name').value||'').trim();
+  const email=(document.getElementById('su-email').value||'').trim();
+  const pass=(document.getElementById('su-pass').value||'').trim();
+  const errEl=document.getElementById('signup-err');
+  errEl.style.display='none';
+  if(!email||!pass){errEl.textContent='Email and password are required.';errEl.style.display='block';return;}
+  if(pass.length<6){errEl.textContent='Password must be at least 6 characters.';errEl.style.display='block';return;}
+  const {data, error} = await _supa.auth.signUp({email, password:pass, options:{data:{full_name:name||email.split('@')[0]}}});
+  if(error){errEl.textContent=error.message||'Sign up failed.';errEl.style.display='block';return;}
+  if(data.session){
+    CU=data.user; CU_ID=data.user.id;
+    closeModal('signup-modal');
+    postLogin();
+  } else {
+    closeModal('signup-modal');
+    // Email confirmation required
+    const errL=document.getElementById('login-err');
+    errL.style.cssText='display:block;color:var(--green);background:var(--greenG);border:1px solid rgba(0,102,51,.25)';
+    errL.textContent='Account created! Check your email to confirm, then sign in.';
+  }
+}
+
+function showSignup(){
+  document.getElementById('login-err').style.display='none';
+  document.getElementById('signup-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('su-name').focus(),100);
+}
+
+function postLogin(){
+  const displayName = getUserDisplay(CU);
+  const initials    = getUserInitials(CU);
+  document.getElementById('pg-login').style.display='none';
+  document.getElementById('gnav').style.display='flex';
+  document.getElementById('status-bar').style.display='flex';
+  document.getElementById('hdr-user-btn').style.display='flex';
+  document.getElementById('hdr-avatar').textContent=initials;
+  document.getElementById('hdr-username').textContent=displayName;
+  document.getElementById('hub-sub-user').textContent=`Welcome back, ${displayName} — select a project or create a new one`;
+  document.getElementById('st-user').textContent=displayName;
+  PROJECTS = loadProjects();
+  renderHub();
+  navPage('hub');
+}
+
+async function doLogout(){
+  await _supa.auth.signOut();
+  CU=null; CU_ID=null; ACTIVE_PID=null; PD={statusMap:{},evidenceMap:{},allReqs:[],config:{},activity:[]};
+  document.getElementById('gnav').style.display='none';
+  document.getElementById('status-bar').style.display='none';
+  document.getElementById('hdr-user-btn').style.display='none';
+  document.getElementById('pg-login').style.display='flex';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-err').style.display='none';
+}
+
+// ── On page load: restore Supabase session
+window.addEventListener('load', async ()=>{
+  buildAircraftGrid();
+  document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  document.getElementById('login-user').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('login-pass').focus();});
+  // Check for existing Supabase session
+  const {data:{session}} = await _supa.auth.getSession();
+  if(session?.user){
+    CU=session.user; CU_ID=session.user.id;
+    postLogin();
+  }
+  // Listen for auth changes (e.g. email confirm redirect)
+  _supa.auth.onAuthStateChange((_event, session)=>{
+    if(session?.user && !CU){
+      CU=session.user; CU_ID=session.user.id;
+      postLogin();
+    }
+  });
+});
+
+// ═══════════════════════════════════════════════════
+// PAGE NAVIGATION
+// ═══════════════════════════════════════════════════
+function navPage(pg){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.gtab').forEach(t=>t.classList.remove('active'));
+  if(pg==='hub'){document.getElementById('pg-hub').classList.add('active');document.getElementById('gtab-hub').classList.add('active');}
+  else if(pg==='app'){document.getElementById('pg-app').classList.add('active');document.getElementById('gtab-app').classList.add('active');renderDash();}
+}
+
+function appNav(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.asb-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.getElementById('anav-'+v).classList.add('active');
+  if(v==='tracker')renderTracker();
+  if(v==='compliance')renderComplianceView();
+  if(v==='matrix')renderMatrix();
+  if(v==='gaps')renderGaps();
+  if(v==='dashboard')renderDash();
+  if(v==='export')renderExportSummary();
+}
+
+// ═══════════════════════════════════════════════════
+// PROJECT HUB
+// ═══════════════════════════════════════════════════
+function renderHub(){
+  const grid=document.getElementById('hub-grid');
+  const pids=Object.keys(PROJECTS);
+  let html='';
+  pids.forEach(pid=>{
+    const proj=PROJECTS[pid];
+    const pd=loadProjectData(pid);
+    const tot=pd.allReqs.length;
+    const ver=pd.allReqs.filter(r=>['VERIFIED','CLOSED'].includes(pd.statusMap[r.id])).length;
+    const pct=tot?Math.round((ver/tot)*100):0;
+    html+=`<div class="proj-card" onclick="openProject('${pid}')">
+      <div class="proj-card-top">
+        <div class="proj-card-name">${proj.name}</div>
+        <div class="proj-card-meta">${proj.ac||'—'}<br>Authorities: ${(proj.auths||[]).join(', ')||'—'}<br>Created: ${proj.created||'—'}</div>
+        ${proj.desc?`<div style="font-size:11px;color:var(--dim);margin-top:6px">${proj.desc}</div>`:''}
+      </div>
+      <div class="proj-card-bar"><div class="proj-card-fill" style="width:${pct}%"></div></div>
+      <div class="proj-card-bottom">
+        <div class="proj-card-pct">${pct}%</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--dim)">${tot} reqs · ${ver} verified</div>
+        <div class="proj-card-actions">
+          <button class="proj-btn" onclick="event.stopPropagation();openProject('${pid}')">OPEN</button>
+          <button class="proj-btn danger" onclick="event.stopPropagation();promptDeleteProject('${pid}')">DEL</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  html+=`<div class="new-proj-card" onclick="showNewProjectModal()"><div class="new-proj-icon">＋</div><div class="new-proj-label">New Project</div></div>`;
+  grid.innerHTML=html;
+  // update dropdown
+  const sel=document.getElementById('gnav-proj-sel');
+  sel.innerHTML='<option value="">— select project —</option>'+pids.map(pid=>`<option value="${pid}">${PROJECTS[pid].name}</option>`).join('');
+  if(ACTIVE_PID)sel.value=ACTIVE_PID;
+}
+
+function showNewProjectModal(){document.getElementById('new-proj-modal').classList.add('open');setTimeout(()=>document.getElementById('np-name').focus(),100);}
+
+function createProject(){
+  const name=(document.getElementById('np-name').value||'').trim();
+  if(!name){alert('Please enter a project name.');return;}
+  const pid='proj_'+Date.now();
+  PROJECTS[pid]={name,ac:document.getElementById('np-ac').value||'',desc:document.getElementById('np-desc').value||'',created:new Date().toLocaleDateString(),auths:[],pid};
+  saveProj();
+  closeModal('new-proj-modal');
+  document.getElementById('np-name').value='';document.getElementById('np-ac').value='';document.getElementById('np-desc').value='';
+  openProject(pid);
+}
+
+let DELETE_PID=null;
+function promptDeleteProject(pid){DELETE_PID=pid;document.getElementById('del-proj-name').textContent=PROJECTS[pid]?.name||pid;document.getElementById('del-proj-modal').classList.add('open');}
+function confirmDeleteProject(){
+  if(!DELETE_PID)return;
+  localStorage.removeItem(storeKey('proj_'+DELETE_PID));
+  delete PROJECTS[DELETE_PID];
+  saveProj();
+  if(ACTIVE_PID===DELETE_PID){ACTIVE_PID=null;PD={statusMap:{},evidenceMap:{},allReqs:[],config:{},activity:[]};}
+  closeModal('del-proj-modal');
+  renderHub();
+}
+
+function openProject(pid){
+  ACTIVE_PID=pid;
+  PD=loadProjectData(pid);
+  document.getElementById('asb-proj-name').textContent=PROJECTS[pid]?.name||pid;
+  document.getElementById('st-proj').textContent=PROJECTS[pid]?.name||pid;
+  document.getElementById('gnav-proj-sel').value=pid;
+  updateSidebarStats();
+  navPage('app');
+  appNav('wizard');
+}
+
+function switchProject(pid){if(pid&&PROJECTS[pid])openProject(pid);}
+
+// ═══════════════════════════════════════════════════
+// AIRCRAFT GRID (dynamic)
+// ═══════════════════════════════════════════════════
+function buildAircraftGrid(){
+  const grid=document.getElementById('ac-grid');
+  const cats={};
+  Object.entries(AIRCRAFT_DB).forEach(([id,ac])=>{if(!cats[ac.cat])cats[ac.cat]=[];cats[ac.cat].push({id,...ac});});
+  let html='';
+  Object.entries(cats).forEach(([cat,acs])=>{
+    acs.forEach(ac=>{
+      html+=`<div class="ac-card" onclick="selectAircraft('${ac.id}',this)" data-id="${ac.id}">
+        <div class="ac-illus">${ac.icon}</div>
+        <div class="ac-info">
+          <div class="ac-type">${cat} · ${ac.type}</div>
+          <div class="ac-name">${ac.name}</div>
+          <div class="ac-desc">${ac.desc}</div>
+          <div class="ac-tags">${ac.tags.map(t=>`<div class="ac-tag">${t}</div>`).join('')}</div>
+        </div>
+      </div>`;
+    });
+  });
+  grid.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════
+// WIZARD
+// ═══════════════════════════════════════════════════
+let WIZ_AUTHS=[], WIZ_AC=null;
+
+function toggleAuth(id,el){
+  const i=WIZ_AUTHS.indexOf(id);
+  if(i>-1){WIZ_AUTHS.splice(i,1);el.classList.remove('selected');}
+  else{WIZ_AUTHS.push(id);el.classList.add('selected');}
+  const n={faa:'🇺🇸 FAA',easa:'🇪🇺 EASA',dgca:'🇮🇳 DGCA',caac:'🇨🇳 CAAC'};
+  document.getElementById('auth-chips').innerHTML=WIZ_AUTHS.map(a=>`<div class="chip c">${n[a]}</div>`).join('');
+  document.getElementById('to-wiz2').disabled=WIZ_AUTHS.length===0;
+}
+
+function selectAircraft(id,el){
+  document.querySelectorAll('.ac-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected'); WIZ_AC=id;
+  const ac=AIRCRAFT_DB[id];
+  document.getElementById('ac-chips').innerHTML=`<div class="chip v">${ac.icon} ${ac.name}</div>`;
+  document.getElementById('to-wiz3').disabled=false;
+}
+
+function wizGo(n){
+  [1,2,3].forEach(i=>{
+    const p=document.getElementById('wpanel-'+i);
+    const s=document.getElementById('wstep'+i);
+    if(p)p.style.display=i===n?'block':'none';
+    s.classList.remove('active','done');
+    if(i===n)s.classList.add('active'); if(i<n)s.classList.add('done');
+  });
+  if(n===3)renderWizResults();
+  document.querySelector('.app-content').scrollTop=0;
+}
+
+function renderWizResults(){
+  if(!ACTIVE_PID)return;
+  const auths=WIZ_AUTHS,ac=AIRCRAFT_DB[WIZ_AC]||{};
+  const authNames={faa:'FAA (USA)',easa:'EASA (EU)',dgca:'DGCA (India)',caac:'CAAC (China)'};
+  const authColors={faa:['#1d4ed8','#eff6ff'],easa:['#1e40af','#eef2ff'],dgca:['#b45309','#fffbeb'],caac:['#b91c1c','#fef2f2']};
+  const tests=TESTS_DATA[WIZ_AC]||[];
+  let totalReqs=0;
+  auths.forEach(a=>{if(AUTH_DATA[a])(AUTH_DATA[a].cats||[]).forEach(c=>totalReqs+=c.reqs.length);});
+  const mandatory=auths.reduce((n,a)=>{return n+(AUTH_DATA[a]?.cats||[]).reduce((m,c)=>m+c.reqs.filter(r=>r.sev==='mandatory'||r.sev==='critical').length,0);},0);
+
+  // Save authority/aircraft to project
+  PROJECTS[ACTIVE_PID].auths=WIZ_AUTHS;
+  PROJECTS[ACTIVE_PID].ac=ac.name||WIZ_AC;
+  saveProj(); renderHub();
+
+  let html=`<div class="res-header">
+    <div><div class="res-title">${ac.name||WIZ_AC}</div>
+    <div class="res-meta">Aircraft: <span>${ac.name||WIZ_AC}</span> · Authorities: <span>${auths.map(a=>authNames[a]).join(' / ')}</span><br>Cert Basis: <span>${ac.certBasis||'Per selected authority'}</span></div></div>
+    <div class="cert-badges">${auths.map(a=>{const[c,bg]=authColors[a]||['#1d4ed8','#eff6ff'];if(!AUTH_DATA[a])return'';return`<div class="cert-badge" style="border-color:${c}30"><div class="cert-badge-type">${AUTH_DATA[a].name}</div><div class="cert-badge-name" style="color:${c}">${AUTH_DATA[a].certName}</div><div class="cert-badge-time">${AUTH_DATA[a].timeline}</div></div>`;}).join('')}</div></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+    <div class="kpi c"><div class="kpi-val">${totalReqs}</div><div class="kpi-lbl">Total Reqs</div></div>
+    <div class="kpi r"><div class="kpi-val">${mandatory}</div><div class="kpi-lbl">Mandatory/Critical</div></div>
+    <div class="kpi a"><div class="kpi-val">${tests.length}</div><div class="kpi-lbl">Required Tests</div></div>
+    <div class="kpi g"><div class="kpi-val">${auths.length}</div><div class="kpi-lbl">Authorities</div></div>
+  </div>`;
+
+  // TABS
+  const tabIds=[...auths.map(a=>'wr-'+a),'wr-tests','wr-matrix'];
+  const tabLabels=[...auths.map(a=>(AUTH_DATA[a]?.name||a)+' Requirements'),'Tests ('+tests.length+')','Matrix'];
+  html+=`<div class="tabs" id="wiz-tabs-bar">${tabLabels.map((l,i)=>`<button class="tab${i===0?' active':''}" onclick="switchWTab('${tabIds[i]}')" id="wtab-${tabIds[i]}">${l}</button>`).join('')}</div>`;
+
+  auths.forEach((a,ai)=>{
+    const ad=AUTH_DATA[a];if(!ad)return;
+    html+=`<div class="tab-pane${ai===0?' active':''}" id="wtp-wr-${a}">
+      <div class="tip-box"><div class="tip-title">🔵 Cert Tip — ${ad.name}</div><div class="tip-text">Framework: <strong>${ad.fw}</strong>. Engage the authority early with a <strong>Project Specific Certification Plan (PSCP)</strong>. Novel features (battery, FBW, distributed propulsion) require <strong>Issue Papers</strong> or <strong>Special Conditions</strong> before design freeze.</div></div>`;
+    (ad.cats||[]).forEach(cat=>{
+      html+=`<div class="req-section"><div class="req-sec-hdr">${cat.name}</div><table class="req-table"><thead><tr><th>ID</th><th>Requirement</th><th>Notes for ${ac.name||WIZ_AC}</th><th>Level</th></tr></thead><tbody>`;
+      cat.reqs.forEach(r=>{
+        const sc={critical:'sev-critical',mandatory:'sev-mandatory',high:'sev-high',standard:'sev-standard'}[r.sev]||'sev-standard';
+        html+=`<tr><td><span class="req-id">${r.id}</span></td><td><div class="req-title-cell">${r.title}</div><div class="req-desc-cell">${r.desc}</div></td><td class="applic-cell">${getApplic(r.id,WIZ_AC)}</td><td><span class="sev ${sc}">${r.sev.toUpperCase()}</span></td></tr>`;
+      });
+      html+=`</tbody></table></div>`;
+    });
+    html+=`</div>`;
+  });
+
+  // Tests pane
+  html+=`<div class="tab-pane" id="wtp-wr-tests"><div class="tip-box"><div class="tip-title">🧪 Test Strategy — ${ac.name||WIZ_AC}</div><div class="tip-text">Phase 0 (Analysis) → Phase 1 (Ground) → Phase 2 (Dev Flight) → Phase 3 (Cert Flight). Results shareable under bilateral agreements.</div></div><div class="test-grid">${tests.map(t=>`<div class="test-card ${t.type}"><div class="test-card-top"><div class="test-name">${t.name}</div><span class="test-type-tag">${t.tl}</span></div><div class="test-desc">${t.desc}</div><div class="test-meta-row">Duration: <strong>${t.dur}</strong> &nbsp;·&nbsp; Phase: <strong>${t.phase}</strong></div></div>`).join('')}</div></div>`;
+
+  // Matrix pane
+  html+=`<div class="tab-pane" id="wtp-wr-matrix"><div class="tip-box"><div class="tip-title">📊 Cross-Authority Matrix</div><div class="tip-text"><strong>✓ Required · ~ Conditional · — Not applicable.</strong> Design to the strictest applicable standard to simplify multi-authority certification.</div></div><div style="overflow-x:auto"><table class="matrix-table"><thead><tr><th>Compliance Area</th><th>🇺🇸 FAA</th><th>🇪🇺 EASA</th><th>🇮🇳 DGCA</th><th>🇨🇳 CAAC</th></tr></thead><tbody>${MATRIX_ITEMS.map(m=>{const rv=v=>{if(v==='✓')return`<span class="mchk-y">✓</span>`;if(v==='—')return`<span class="mchk-n">—</span>`;if(v==='N/A')return`<span style="font-size:9px;color:var(--dim)">N/A</span>`;return`<span class="mchk-p">~</span>`};return`<tr><td>${m.area}</td><td>${rv(m.faa)}</td><td>${rv(m.easa)}</td><td>${rv(m.dgca)}</td><td>${rv(m.caac)}</td></tr>`;}).join('')}</tbody></table></div><div style="margin-top:8px;font-family:var(--mono);font-size:9px;color:var(--dim)"><span style="color:var(--green)">✓ Required</span> · <span style="color:var(--amber)">~ Conditional</span> · <span style="color:var(--b2)">— Not applicable</span></div></div>`;
+
+  html+=`<div class="btn-row" style="margin-top:16px">
+    <button class="proceed-btn ghost" onclick="wizGo(2)">← Modify</button>
+    <button class="proceed-btn" onclick="launchRMS()">Open in ARP 4754A RMS →</button>
+  </div>`;
+
+  document.getElementById('wiz-results').innerHTML=html;
+}
+
+function switchWTab(id){
+  document.querySelectorAll('#wiz-tabs-bar .tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('wtab-'+id).classList.add('active');
+  document.getElementById('wtp-'+id).classList.add('active');
+}
+
+function getApplic(id,ac){
+  const m={'FAA-P-02':{'multirotor':'Not applicable — no fixed wing.','wingless':'Rotorcraft aerodynamics govern.'},'FAA-P-05':{'lift-cruise':'Full motor failure descent required from all phases.','multirotor':'OEI with N-1 rotors; descent demonstrated.','vectored':'Critical during conversion — mid-conversion worst case.','wingless':'Autorotation primary emergency mode.'},'FAA-E-01':{default:'Novel technology — Issue Paper required.'},'EASA-EP-05':{default:'Critical for all eVTOL — no exceptions.'},'CAAC-SC-03':{default:'Mandatory for commercial ops in China.'}};
+  if(m[id]){if(m[id][ac])return m[id][ac];if(m[id].default)return m[id].default;}
+  const d={'lift-cruise':'Fully applicable — fixed wing adds requirements.','multirotor':'Fully applicable — redundancy is primary strategy.','vectored':'Applicable with conversion mechanism failure modes added.','wingless':'CS-29/CFR 29 basis with electric drive adaptations.','powered-lift':'Applicable — hybrid adds compliance complexity.','A320neo':'Applicable under CS-25 / 14 CFR Part 25.','A350':'Applicable under CS-25 — composite-specific additions.','A220':'Applicable under CS-25 for regional aircraft.','CityAirbus':'Applicable under EASA SC VTOL.','B737MAX':'Applicable — MCAS-related special conditions apply.','B787':'Applicable under Part 25 — more-electric architecture.','Wisk':'Applicable with autonomous system special conditions.','VoloCity':'Applicable under EASA SC VTOL.'};
+  return d[ac]||'Applicable to this configuration.';
+}
+
+function launchRMS(){
+  const sel=document.getElementById('cfg-ac');
+  if(WIZ_AC&&sel)sel.value=WIZ_AC;
+  if(WIZ_AUTHS.length){
+    document.querySelectorAll('[data-g="auth"]').forEach(el=>el.classList.toggle('on',WIZ_AUTHS.includes(el.dataset.v)));
+  }
+  generateReqs();
+  appNav('generator');
+}
+
+// ═══════════════════════════════════════════════════
+// RMS GENERATOR
+// ═══════════════════════════════════════════════════
+function cb(el){el.classList.toggle('on');}
+function getChoices(g){return[...document.querySelectorAll(`[data-g="${g}"].on`)].map(e=>e.dataset.v);}
+
+function generateReqs(){
+  if(!ACTIVE_PID){alert('Please open a project first.');return;}
+  const cfg={proj:document.getElementById('cfg-proj').value||'eVTOL-001',ac:document.getElementById('cfg-ac').value,auth:getChoices('auth'),feat:getChoices('feat'),dal:document.getElementById('cfg-dal').value,crew:document.getElementById('cfg-crew').value};
+  PD.config=cfg;
+  let flat=[];flatTree(RMS_TREE,flat);
+  flat=flat.filter(r=>{
+    if(r.auth&&r.auth.length&&cfg.auth.length&&!r.auth.some(a=>cfg.auth.map(x=>x.toUpperCase()).includes(a.toUpperCase())))return false;
+    if((r.id==='FL-L2-002'||r.id==='FL-L4-007'||r.id==='FL-L4-008')&&!['lift-cruise','vectored'].includes(cfg.ac))return false;
+    if(r.id==='SA-L4-037'&&!cfg.feat.includes('brs'))return false;
+    if(r.id&&r.id.startsWith('OP-L1-001')&&!cfg.auth.some(a=>['faa','easa'].includes(a)))return false;
+    return true;
+  });
+  flat.forEach(r=>{if(!PD.statusMap[r.id])PD.statusMap[r.id]=r.status||'OPEN';if(!PD.evidenceMap[r.id])PD.evidenceMap[r.id]=[];});
+  PD.allReqs=flat;
+  addAct('⚡',`Generated <strong>${flat.length} requirements</strong> for ${cfg.proj}`);
+  savePD();
+  document.getElementById('anav-tracker-badge').textContent=flat.length;
+  document.getElementById('anav-reqs-badge').textContent=flat.length;
+  renderGenOut();renderDash();updateSidebarStats();
+}
+
+function renderGenOut(){
+  const flat=PD.allReqs;if(!flat.length)return;
+  let html=`<div class="alert alert-ok" style="margin-bottom:12px">✓ Generated <strong>${flat.length} requirements</strong>. All items added to Tracker and Compliance Paths.</div><div class="req-tree">`;
+  RMS_TREE.forEach(l1=>{html+=renderTreeL1(l1);});
+  html+=`</div>`;
+  document.getElementById('gen-out').innerHTML=html;
+}
+
+function renderTreeL1(n){
+  const cnt=countK(n);
+  return`<div class="tree-l1"><div class="tree-l1-hdr" onclick="togTree('ch-${n.id}',this)"><i class="tree-exp">▶</i><span class="tree-l1-id">${n.id}</span><span class="tree-l1-title">${n.title}</span><div style="display:flex;gap:5px;margin-left:auto"><span class="dal-badge dal-${n.dal}">DAL-${n.dal}</span><span class="sbadge s-OPEN">L1</span><span style="font-family:var(--mono);font-size:8px;color:var(--dim)">${cnt} items</span></div></div><div class="tree-children" id="ch-${n.id}">${(n.children||[]).map(l2=>renderTreeL2(l2)).join('')}</div></div>`;
+}
+function renderTreeL2(n){
+  const mocs=(n.moc||[]).map(m=>`<span class="moc-chip moc-${m}">${m}</span>`).join('');
+  return`<div class="tree-l2"><div class="tree-l2-hdr" onclick="togTree('ch-${n.id}',this)"><i class="tree-exp">▶</i><span class="tree-l2-id">${n.id}</span><span class="tree-l2-title">${n.title}</span><div style="display:flex;gap:5px;margin-left:auto"><span class="dal-badge dal-${n.dal}">DAL-${n.dal}</span>${mocs}<button style="font-family:var(--mono);font-size:9px;padding:2px 8px;border:1px solid var(--b2);background:transparent;color:var(--dim);cursor:pointer" onclick="event.stopPropagation();openDet('${n.id}')">Detail</button></div></div><div class="tree-children" id="ch-${n.id}">${(n.children||[]).map(l3=>renderTreeL3(l3)).join('')}</div></div>`;
+}
+function renderTreeL3(n){
+  return`<div class="tree-l3"><div class="tree-l3-hdr" onclick="togTree('ch-${n.id}',this)"><i class="tree-exp">▶</i><span class="tree-l3-id">${n.id}</span><span class="tree-l3-title">${n.title}</span><div style="display:flex;gap:5px;margin-left:auto"><span class="dal-badge dal-${n.dal}">DAL-${n.dal}</span></div></div><div class="tree-children" id="ch-${n.id}"><div class="tree-l4-list">${(n.children||[]).map(l4=>renderTreeL4(l4)).join('')}</div></div></div>`;
+}
+function renderTreeL4(n){
+  const s=PD.statusMap[n.id]||'OPEN';
+  return`<div class="tree-l4" onclick="openDet('${n.id}')"><span class="tree-l4-id">${n.id}</span><span class="tree-l4-title">${n.title}</span><span class="moc-chip moc-${n.moc||'TEST'}">${n.moc||'TEST'}</span><span class="dal-badge dal-${n.dal}">DAL-${n.dal}</span><span class="sbadge s-${s}">${s}</span></div>`;
+}
+
+function togTree(id,hdr){const el=document.getElementById(id);if(!el)return;el.classList.toggle('open');const ex=hdr.querySelector('.tree-exp');if(ex)ex.classList.toggle('open');}
+function countK(n){let c=0;(n.children||[]).forEach(ch=>{c++;c+=countK(ch);});return c;}
+
+// ═══════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════
+const ARP_PROCS=['P1:Aircraft Function Dev','P2:Safety Assessment (AFHA)','P3:System Dev (PSSA/SSA)','P4:FHA/FTA/FMEA','P5:DAL Assignment & CCA','P6:Verification & Validation','P7:Config Management'];
+
+function renderDash(){
+  const tot=PD.allReqs.length;
+  const ver=PD.allReqs.filter(r=>['VERIFIED','CLOSED'].includes(PD.statusMap[r.id])).length;
+  const ip=PD.allReqs.filter(r=>PD.statusMap[r.id]==='IN-PROG').length;
+  const pct=tot?Math.round((ver/tot)*100):0;
+  document.getElementById('kd-total').textContent=tot;
+  document.getElementById('kd-ver').textContent=ver;
+  document.getElementById('kd-ip').textContent=ip;
+  document.getElementById('kd-cov').textContent=pct+'%';
+  const lvBars=document.getElementById('dash-lv-bars');
+  if(tot){
+    lvBars.innerHTML=['L1','L2','L3','L4'].map(l=>{
+      const lr=PD.allReqs.filter(r=>r.level===l);
+      const lv=lr.filter(r=>['VERIFIED','CLOSED'].includes(PD.statusMap[r.id])).length;
+      const lp=lr.length?Math.round((lv/lr.length)*100):0;
+      return`<div class="lv-row"><span class="lv-tag lv-${l}">${l}</span><div class="lv-bar"><div class="lv-fill ${l}" style="width:${lp}%"></div></div><span class="lv-pct">${lp}%</span><span style="font-family:var(--mono);font-size:9px;color:var(--dim)">${lv}/${lr.length}</span></div>`;
+    }).join('');
+  }
+  document.getElementById('dash-arp').innerHTML=ARP_PROCS.map(p=>{
+    const[id,name]=p.split(':');const pc=Math.round(Math.random()*35);
+    return`<div class="lv-row"><span style="font-family:var(--mono);font-size:8px;color:var(--dim);width:20px;flex-shrink:0">${id}</span><span style="font-size:11px;color:var(--muted);flex:1">${name}</span><div class="lv-bar" style="width:70px"><div style="height:100%;width:${pc}%;background:var(--cyan)"></div></div><span class="lv-pct">${pc}%</span></div>`;
+  }).join('');
+  // Activity
+  const feed=document.getElementById('dash-activity');
+  if(PD.activity.length){
+    feed.innerHTML=PD.activity.slice(0,6).map(a=>`<div class="act-item"><div class="act-dot"></div><div class="act-text">${a.text}</div><div class="act-time">${a.time}</div></div>`).join('');
+  }
+}
+
+function updateSidebarStats(){
+  const tot=PD.allReqs.length;
+  const ver=PD.allReqs.filter(r=>['VERIFIED','CLOSED'].includes(PD.statusMap[r.id])).length;
+  const pct=tot?Math.round((ver/tot)*100):0;
+  document.getElementById('asb-stat-total').textContent=tot;
+  document.getElementById('asb-stat-ver').textContent=ver;
+  document.getElementById('asb-proj-pct').textContent=pct+'% compliance';
+  document.getElementById('asb-prog-fill').style.width=pct+'%';
+  document.getElementById('st-reqs').textContent=tot;
+  document.getElementById('st-cov').textContent=pct+'%';
+  renderHub();
+}
+
+function addAct(icon,text){
+  const t=new Date().toLocaleTimeString();
+  PD.activity.unshift({icon,text,time:t});
+  if(PD.activity.length>10)PD.activity.pop();
+  savePD();
+}
+
+// ═══════════════════════════════════════════════════
+// TRACKER
+// ═══════════════════════════════════════════════════
+function renderTracker(){
+  const tbody=document.getElementById('tr-body');
+  const empty=document.getElementById('tr-empty');
+  if(!PD.allReqs.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  const fl=document.getElementById('f-lv').value;
+  const fs=document.getElementById('f-st').value;
+  const fd=document.getElementById('f-dal').value;
+  const fq=(document.getElementById('f-q').value||'').toLowerCase();
+  let rows=PD.allReqs.filter(r=>{
+    if(fl!=='all'&&r.level!==fl)return false;
+    if(fs!=='all'&&(PD.statusMap[r.id]||'OPEN')!==fs)return false;
+    if(fd!=='all'&&r.dal!==fd)return false;
+    if(fq&&!r.id.toLowerCase().includes(fq)&&!(r.title||'').toLowerCase().includes(fq))return false;
+    return true;
+  });
+  document.getElementById('tr-ct').textContent=`${rows.length} / ${PD.allReqs.length}`;
+  const lvC={L1:'var(--red)',L2:'var(--amber)',L3:'var(--green)',L4:'var(--cyan)'};
+  const sb={OPEN:'s-OPEN','IN-PROG':'s-IN-PROG',VERIFIED:'s-VERIFIED',CLOSED:'s-CLOSED'};
+  tbody.innerHTML=rows.map(r=>{
+    const s=PD.statusMap[r.id]||'OPEN';
+    const mocs=(Array.isArray(r.moc)?r.moc:[r.moc]).filter(Boolean);
+    const pct=s==='VERIFIED'||s==='CLOSED'?100:s==='IN-PROG'?50:0;
+    const fc=pct===100?'var(--green)':pct===50?'var(--amber)':'var(--b1)';
+    return`<tr class="crow" onclick="openDet('${r.id}')">
+      <td style="font-family:var(--mono);font-size:9px;font-weight:600;color:${lvC[r.level]}">${r.id}</td>
+      <td><span class="lv-tag lv-${r.level}">${r.level}</span></td>
+      <td style="font-weight:600;max-width:260px">${r.title||''}</td>
+      <td style="font-family:var(--mono);font-size:9px;color:var(--dim)">${(r.dom||'').split(' ')[0]}</td>
+      <td><span class="dal-badge dal-${r.dal}">DAL-${r.dal}</span></td>
+      <td>${mocs.map(m=>`<span class="moc-chip moc-${m}">${m}</span>`).join('')}</td>
+      <td><span class="sbadge ${sb[s]||'s-OPEN'}">${s}</span></td>
+      <td><div class="mini-bar"><div class="mini-fill" style="width:${pct}%;background:${fc}"></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// COMPLIANCE PATHS
+// ═══════════════════════════════════════════════════
+function renderComplianceView(){
+  const l1s=PD.allReqs.filter(r=>r.level==='L1');
+  const list=document.getElementById('comp-l1-list');
+  if(!l1s.length){list.innerHTML='<div style="color:var(--dim);font-family:var(--mono);font-size:10px;padding:10px;text-align:center">Generate requirements first</div>';return;}
+  list.innerHTML=l1s.map(r=>`<div class="asb-item" style="padding:7px 10px;border-left:3px solid transparent" onclick="selectL1Comp('${r.id}',this)"><span style="font-family:var(--mono);font-size:9px;color:var(--cyan);width:70px;flex-shrink:0">${r.id}</span><span style="font-size:12px">${r.title}</span></div>`).join('');
+}
+
+function filterCompL1(){
+  const q=(document.getElementById('comp-q').value||'').toLowerCase();
+  document.querySelectorAll('#comp-l1-list .asb-item').forEach(el=>{el.style.display=(!q||el.textContent.toLowerCase().includes(q))?'':'none';});
+}
+
+function selectL1Comp(id,el){
+  document.querySelectorAll('#comp-l1-list .asb-item').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active'); renderCompPath(id);
+}
+
+function renderCompPath(l1id){
+  const l1node=findNode(l1id,RMS_TREE);if(!l1node)return;
+  const l4ids=collectL4s(l1node);
+  const ver=l4ids.filter(i=>['VERIFIED','CLOSED'].includes(PD.statusMap[i]));
+  const ip=l4ids.filter(i=>PD.statusMap[i]==='IN-PROG');
+  const pct=l4ids.length?Math.round((ver.length/l4ids.length)*100):0;
+  const ckC=(ids)=>{const d=ids.filter(i=>['VERIFIED','CLOSED'].includes(PD.statusMap[i]));return d.length===ids.length&&ids.length>0?'ck-done':d.length>0?'ck-part':'ck-open';};
+  const ckI=(cls)=>cls==='ck-done'?'✓':cls==='ck-part'?'~':'○';
+
+  let html=`<div class="panel">
+  <div class="path-l1-box">
+    <div class="path-lbl">L1 — Airworthiness Objective</div>
+    <div class="path-title">${l1node.title}</div>
+    <div class="path-desc">${l1node.text}</div>
+    <div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap"><span class="dal-badge dal-${l1node.dal}">DAL-${l1node.dal}</span><span style="font-family:var(--mono);font-size:9px;color:var(--red)">${l1node.ref||''}</span></div>
+  </div>`;
+
+  (l1node.children||[]).forEach(l2=>{
+    const l4s2=collectL4s(l2);const ck2=ckC(l4s2);
+    html+=`<div class="path-l2-wrap"><div class="path-l2-box"><div style="display:flex;align-items:center;gap:8px"><div class="ck ${ck2}">${ckI(ck2)}</div><div style="flex:1"><div class="path-lbl">L2 — ${l2.id}</div><div class="path-title" style="font-size:12px">${l2.title}</div></div><span class="dal-badge dal-${l2.dal}">DAL-${l2.dal}</span></div>
+    <div class="path-l3-group">`;
+    (l2.children||[]).forEach(l3=>{
+      const l4s3=(l3.children||[]);const done3=l4s3.filter(l=>['VERIFIED','CLOSED'].includes(PD.statusMap[l.id]));
+      const ck3=done3.length===l4s3.length&&l4s3.length>0?'ck-done':done3.length>0?'ck-part':'ck-open';
+      html+=`<div class="path-l3-box"><div class="ck ${ck3}" style="width:13px;height:13px;font-size:8px">${ckI(ck3)}</div><span class="path-lbl">L3: ${l3.id}</span><span class="path-l3-title">${l3.title}</span></div>
+      <div class="path-l4-group">`;
+      (l3.children||[]).forEach(l4=>{
+        const s4=PD.statusMap[l4.id]||'OPEN';const ck4=['VERIFIED','CLOSED'].includes(s4)?'ck-done':s4==='IN-PROG'?'ck-part':'ck-open';
+        html+=`<div class="path-l4-box" onclick="openDet('${l4.id}')"><div class="ck ${ck4}" style="width:12px;height:12px;font-size:7px">${ckI(ck4)}</div><span class="path-lbl">${l4.id}</span><span class="path-l4-title">${l4.title}</span><span class="moc-chip moc-${l4.moc||'TEST'}">${l4.moc||'TEST'}</span><span class="sbadge s-${s4}" style="font-size:8px">${s4}</span></div>`;
+      });
+      html+=`</div>`;
+    });
+    html+=`</div></div></div>`;
+  });
+  html+=`</div>`;
+  const tipCls=pct===100?'alert-ok':pct>=50?'alert-warn':'alert-info';
+  document.getElementById('comp-path-area').innerHTML=`<div class="alert ${tipCls}" style="margin-bottom:12px">${pct===100?'✓ All L4 tests complete — ready for authority submittal.':pct+`% of L4 tests verified. Click any L4 to update status.`}</div>`+html;
+
+  document.getElementById('comp-summary').innerHTML=`<div class="panel-hdr"><div class="panel-hdr-icon">▦</div><div class="panel-hdr-label">Coverage — ${l1id}</div></div>
+  <div class="panel-body">
+    <div style="text-align:center;margin-bottom:14px"><div style="font-family:var(--disp);font-size:44px;color:${pct===100?'var(--green)':pct>50?'var(--amber)':'var(--cyan)'}">${pct}%</div><div style="font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:1.5px">L4 COVERAGE</div></div>
+    ${[['Verified/Closed','var(--green)',ver.length],['In Progress','var(--amber)',ip.length],['Open','var(--cyan)',l4ids.length-ver.length-ip.length],['Total L4','var(--dim)',l4ids.length]].map(([l,c,v])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:12px"><div style="width:9px;height:9px;background:${c};flex-shrink:0"></div><div style="flex:1;color:var(--muted)">${l}</div><div style="font-family:var(--mono);font-size:10px;color:var(--text)">${v}</div></div>`).join('')}
+    <hr style="border:none;border-top:1px solid var(--b1);margin:12px 0">
+    <div style="font-family:var(--mono);font-size:9px;color:var(--dim);line-height:2">• AFHA → PSSA → SSA<br>• V&V per ARP 4754A §5<br>• DAL per ARP 4761</div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════
+// TRACE MATRIX
+// ═══════════════════════════════════════════════════
+function renderMatrix(){
+  const l1s=PD.allReqs.filter(r=>r.level==='L1').slice(0,8);
+  const l4s=PD.allReqs.filter(r=>r.level==='L4').slice(0,16);
+  if(!l1s.length){return;}
+  let html=`<table class="trace-table"><thead><tr><th style="text-align:left">L4 Test</th>${l1s.map(r=>`<th style="writing-mode:vertical-rl;max-width:24px;white-space:nowrap;font-size:7px;color:var(--red)">${r.id}</th>`).join('')}</tr></thead><tbody>`;
+  l4s.forEach(l4=>{
+    const s=PD.statusMap[l4.id]||'OPEN';
+    html+=`<tr><td style="font-family:var(--mono);font-size:9px"><span style="color:var(--cyan)">${l4.id}</span> ${l4.title||''}</td>`;
+    l1s.forEach(l1=>{
+      const linked=containsId(l1,l4.id);
+      if(!linked){html+=`<td style="color:var(--b2)">—</td>`;return;}
+      const ic=s==='VERIFIED'||s==='CLOSED'?'✓':s==='IN-PROG'?'~':'○';
+      const c=s==='VERIFIED'||s==='CLOSED'?'var(--green)':s==='IN-PROG'?'var(--amber)':'var(--cyan)';
+      html+=`<td style="color:${c};font-size:13px;background:${c}0d">${ic}</td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table><div style="margin-top:9px;font-family:var(--mono);font-size:9px;color:var(--dim)">L4 tests (${l4s.length}) × L1 objectives (${l1s.length}). <span style="color:var(--green)">✓ Verified</span> · <span style="color:var(--amber)">~ In Progress</span> · <span style="color:var(--cyan)">○ Open</span></div>`;
+  document.getElementById('matrix-area').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════
+// GAP ANALYSIS
+// ═══════════════════════════════════════════════════
+function renderGaps(){
+  if(!PD.allReqs.length)return;
+  const l1s=PD.allReqs.filter(r=>r.level==='L1');
+  let html='';let gapCount=0;
+  l1s.forEach(l1=>{
+    const node=findNode(l1.id,RMS_TREE);if(!node)return;
+    const l4s=collectL4s(node);
+    const ver=l4s.filter(i=>['VERIFIED','CLOSED'].includes(PD.statusMap[i]));
+    const open=l4s.filter(i=>PD.statusMap[i]==='OPEN');
+    const pct=l4s.length?Math.round((ver.length/l4s.length)*100):0;
+    if(pct<100)gapCount++;
+    const cls=pct===100?'gap-ok':pct>=50?'gap-part':'gap-bad';
+    const pc=pct===100?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
+    html+=`<div class="gap-item ${cls}"><div class="gap-header"><span style="font-family:var(--mono);font-size:10px;font-weight:600;color:var(--red)">${l1.id}</span><span style="font-size:13px;font-weight:600;flex:1">${l1.title}</span><span style="font-family:var(--mono);font-size:11px;color:${pc}">${pct}%</span></div><div class="gap-prog"><div class="gap-prog-fill" style="width:${pct}%;background:${pc}"></div></div>${open.length?`<div class="gap-id-chips">Missing: ${open.slice(0,7).map(i=>`<span class="gap-id-chip">${i}</span>`).join('')}${open.length>7?` +${open.length-7} more`:''}</div>`:`<div style="font-size:11px;color:var(--green);font-weight:600">✓ All L4 verification methods complete</div>`}</div>`;
+  });
+  document.getElementById('gap-area').innerHTML=html;
+  document.getElementById('anav-gaps-badge').textContent=gapCount||'✓';
+}
+
+// ═══════════════════════════════════════════════════
+// DETAIL PANEL
+// ═══════════════════════════════════════════════════
+function openDet(id){
+  const req=PD.allReqs.find(r=>r.id===id);if(!req)return;
+  const s=PD.statusMap[id]||'OPEN';
+  const evList=PD.evidenceMap[id]||[];
+  const node=findNode(id,RMS_TREE);
+  const kids=(node?.children)||[];
+  const mocArr=(Array.isArray(req.moc)?req.moc:[req.moc]).filter(Boolean);
+  const authArr=(Array.isArray(req.auth)?req.auth:[]);
+  const flags={faa:'🇺🇸',easa:'🇪🇺',dgca:'🇮🇳',caac:'🇨🇳'};
+  const lvC={L1:'var(--red)',L2:'var(--amber)',L3:'var(--green)',L4:'var(--cyan)'}[req.level]||'var(--cyan)';
+  const sb={OPEN:'s-OPEN','IN-PROG':'s-IN-PROG',VERIFIED:'s-VERIFIED',CLOSED:'s-CLOSED'};
+  const mocDesc={TEST:'Physical testing. Evidence: test plan + approved test report.',ANALYSIS:'Engineering analysis. Evidence: report with independent review.',SIM:'HILS / Iron Bird simulation. Evidence: HILS test report, validated model.',INSPECT:'Document/code review. Evidence: review records, DER sign-off.'};
+
+  document.getElementById('det-head-content').innerHTML=`<div class="det-id" style="color:${lvC}">${req.id} · ${req.level} · DAL-${req.dal}</div><div class="det-title">${req.title||''}</div>`;
+  document.getElementById('det-body').innerHTML=`
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">${mocArr.map(m=>`<span class="moc-chip moc-${m}">${m}</span>`).join('')}<span class="sbadge ${sb[s]||'s-OPEN'}">${s}</span>${authArr.map(a=>`<span style="font-size:13px">${flags[a.toLowerCase()]||a}</span>`).join('')}</div>
+    <div class="det-sec"><div class="det-sec-title">Requirement Statement</div><div class="det-text">${req.text||'—'}</div></div>
+    ${req.ref?`<div class="det-sec"><div class="det-sec-title">Regulatory Reference</div><div class="det-text" style="font-family:var(--mono);font-size:10px;color:var(--cyan)">${req.ref}</div></div>`:''}
+    <div class="det-sec"><div class="det-sec-title">Means of Compliance (ARP 4754A)</div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${mocArr.map(m=>`<span class="moc-chip moc-${m}">${m}</span>`).join('')}</div><div class="det-text" style="font-size:12px">${mocArr.map(m=>`<strong>${m}:</strong> ${mocDesc[m]||'See ARP 4754A §5.'}`).join('<br>')}</div></div>
+    ${kids.length?`<div class="det-sec"><div class="det-sec-title">Child Requirements (${kids.length})</div><div class="child-list">${kids.map(c=>{const cs=PD.statusMap[c.id]||'OPEN';return`<div class="child-item" onclick="openDet('${c.id}')"><span style="font-family:var(--mono);font-size:9px;color:var(--green)">${c.id}</span><span style="flex:1">${c.title}</span><span class="sbadge ${sb[cs]||'s-OPEN'}">${cs}</span></div>`;}).join('')}</div></div>`:''}
+    <div class="det-sec"><div class="det-sec-title">Status</div><div class="status-opts">${['OPEN','IN-PROG','VERIFIED','CLOSED'].map(o=>`<div class="sopt${s===o?' sel-'+o:''}" onclick="setStatus('${id}','${o}')">${o}</div>`).join('')}</div></div>
+    <div class="det-sec"><div class="det-sec-title">Evidence / Artefacts</div>
+      <div class="ev-list" id="ev-${id}">${evList.length?evList.map(e=>`<div class="ev-item"><span>📄</span><span style="flex:1">${e.name}</span><span style="font-family:var(--mono);font-size:9px;color:var(--dim)">${e.date}</span></div>`).join(''):`<div style="font-size:11px;color:var(--dim);padding:6px 0">No evidence attached yet.</div>`}</div>
+      <button class="add-ev-btn" onclick="addEv('${id}')">+ ATTACH EVIDENCE / DOCUMENT REFERENCE</button>
+    </div>
+    ${req.level==='L4'?`<div class="det-sec"><div class="det-sec-title">ARP 4754A Compliance Contribution</div><div class="det-text" style="font-size:12px">Completing this L4 verification contributes to the parent L3 requirement, which closes an L2 objective under an L1 airworthiness goal. Mark <strong style="color:var(--green)">VERIFIED</strong> once the test/analysis report is DER-approved.</div></div>`:''}`;
+  document.getElementById('det-overlay').classList.add('open');
+}
+
+function setStatus(id,st){
+  PD.statusMap[id]=st;
+  addAct('◉',`Status: <strong>${id}</strong> → ${st}`);
+  savePD();updateSidebarStats();renderDash();openDet(id);
+}
+
+function addEv(id){
+  const n=prompt('Enter document/report name or reference:');if(!n)return;
+  if(!PD.evidenceMap[id])PD.evidenceMap[id]=[];
+  PD.evidenceMap[id].push({name:n,date:new Date().toLocaleDateString()});
+  addAct('📄',`Evidence added to <strong>${id}</strong>`);
+  savePD();openDet(id);
+}
+
+function closeDetOv(e){if(e.target===document.getElementById('det-overlay'))closeDet();}
+function closeDet(){document.getElementById('det-overlay').classList.remove('open');}
+
+// ═══════════════════════════════════════════════════
+// EXPORT — Multiple Formats
+// ═══════════════════════════════════════════════════
+function renderExportSummary(){
+  const tot=PD.allReqs.length;
+  const ver=PD.allReqs.filter(r=>['VERIFIED','CLOSED'].includes(PD.statusMap[r.id])).length;
+  const open=PD.allReqs.filter(r=>PD.statusMap[r.id]==='OPEN').length;
+  const pct=tot?Math.round((ver/tot)*100):0;
+  document.getElementById('exp-total').textContent=tot;
+  document.getElementById('exp-ver').textContent=ver;
+  document.getElementById('exp-open').textContent=open;
+  document.getElementById('exp-pct').textContent=pct+'%';
+}
+
+function doExport(fmt){
+  const proj=getProj();const pname=proj.name||'project';
+  if(fmt==='print'){window.print();return;}
+  if(fmt==='csv'){
+    const rows=[['ID','Level','Domain','Title','DAL','Auth','MOC','Status','Evidence','Description']];
+    PD.allReqs.forEach(r=>rows.push([r.id,r.level,r.dom||'',r.title||'',r.dal||'',(r.auth||[]).join(';'),(Array.isArray(r.moc)?r.moc:[r.moc]).filter(Boolean).join(';'),PD.statusMap[r.id]||'OPEN',(PD.evidenceMap[r.id]||[]).map(e=>e.name).join('; '),r.text||'']));
+    dlFile(rows.map(r=>r.map(c=>`"${(c||'').replace(/"/g,'""')}"`).join(',')).join('\n'),`${pname}-requirements.csv`,'text/csv');
+  } else if(fmt==='json'){
+    const data={project:proj,exported:new Date().toISOString(),requirements:PD.allReqs.map(r=>({...r,status:PD.statusMap[r.id]||'OPEN',evidence:PD.evidenceMap[r.id]||[]}))};
+    dlFile(JSON.stringify(data,null,2),`${pname}-requirements.json`,'application/json');
+  } else if(fmt==='md'){
+    let md=`# ${pname} — Certification Requirements\n\n*Generated by CERTnav · ${new Date().toLocaleDateString()}*\n\n`;
+    const domains=[...new Set(PD.allReqs.map(r=>r.dom||''))];
+    domains.forEach(d=>{
+      md+=`## ${d}\n\n`;
+      PD.allReqs.filter(r=>r.dom===d).forEach(r=>{
+        const s=PD.statusMap[r.id]||'OPEN';
+        md+=`### ${r.id} — ${r.title||''} \`[${r.level}]\` \`DAL-${r.dal}\` \`${s}\`\n\n${r.text||''}\n\n`;
+        if(r.ref)md+=`> **Reference:** ${r.ref}\n\n`;
+        const mocs=(Array.isArray(r.moc)?r.moc:[r.moc]).filter(Boolean);
+        if(mocs.length)md+=`**MOC:** ${mocs.join(', ')}\n\n`;
+        const ev=PD.evidenceMap[r.id]||[];
+        if(ev.length)md+=`**Evidence:** ${ev.map(e=>e.name).join(', ')}\n\n`;
+        md+=`---\n\n`;
+      });
+    });
+    dlFile(md,`${pname}-requirements.md`,'text/markdown');
+  } else if(fmt==='xml'){
+    let xml=`<?xml version="1.0" encoding="UTF-8"?>\n<REQ_IF xmlns="http://www.omg.org/spec/ReqIF/20110401/reqif.xsd">\n<HEADER><TITLE>${pname}</TITLE><CREATION-TIME>${new Date().toISOString()}</CREATION-TIME><SOURCE-TOOL>CERTnav ARP 4754A Tool</SOURCE-TOOL></HEADER>\n<CORE-CONTENT><SPEC-OBJECTS>\n`;
+    PD.allReqs.forEach(r=>{
+      const s=PD.statusMap[r.id]||'OPEN';
+      xml+=`  <SPEC-OBJECT><IDENTIFIER>${r.id}</IDENTIFIER><VALUES>\n`;
+      xml+=`    <ATTRIBUTE-VALUE-STRING THE-VALUE="${(r.title||'').replace(/"/g,'&quot;')}" DEFINITION="NAME"/>\n`;
+      xml+=`    <ATTRIBUTE-VALUE-STRING THE-VALUE="${(r.text||'').replace(/"/g,'&quot;')}" DEFINITION="TEXT"/>\n`;
+      xml+=`    <ATTRIBUTE-VALUE-STRING THE-VALUE="${r.level}" DEFINITION="LEVEL"/>\n`;
+      xml+=`    <ATTRIBUTE-VALUE-STRING THE-VALUE="${r.dal||''}" DEFINITION="DAL"/>\n`;
+      xml+=`    <ATTRIBUTE-VALUE-STRING THE-VALUE="${s}" DEFINITION="STATUS"/>\n`;
+      xml+=`    <ATTRIBUTE-VALUE-STRING THE-VALUE="${(r.auth||[]).join(',')||''}" DEFINITION="AUTHORITY"/>\n`;
+      xml+=`  </VALUES></SPEC-OBJECT>\n`;
+    });
+    xml+=`</SPEC-OBJECTS></CORE-CONTENT>\n</REQ_IF>`;
+    dlFile(xml,`${pname}-requirements.reqif`,'application/xml');
+  } else if(fmt==='html'){
+    const tot=PD.allReqs.length;const ver=PD.allReqs.filter(r=>['VERIFIED','CLOSED'].includes(PD.statusMap[r.id])).length;
+    const pct=tot?Math.round((ver/tot)*100):0;
+    let body=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${pname} — Compliance Report</title><style>body{font-family:Arial,sans-serif;font-size:13px;color:#1a1d23;background:#f4f5f7;margin:0;padding:24px}h1{font-size:22px;color:#0066bb;margin-bottom:4px}h2{font-size:14px;color:#3a5a78;border-bottom:1px solid #c0d0e0;padding-bottom:6px;margin:20px 0 10px}table{width:100%;border-collapse:collapse;margin-bottom:16px}th{background:#eaf0f7;border:1px solid #c0d0e0;padding:7px 10px;font-size:11px;text-align:left}td{border:1px solid #dde6ef;padding:7px 10px;font-size:11px;vertical-align:top}.s-OPEN{color:#0066bb}.s-VERIFIED,.s-CLOSED{color:#006633}.s-IN-PROG{color:#995500}.kpi{display:inline-block;background:#fff;border:1px solid #c0d0e0;padding:10px 18px;margin:4px;text-align:center}.kv{font-size:24px;font-weight:700;color:#0066bb}.kl{font-size:10px;color:#6888a8;text-transform:uppercase}</style></head><body>`;
+    body+=`<h1>${pname} — Certification Compliance Report</h1><p style="color:#6888a8;font-size:11px">Generated: ${new Date().toLocaleString()} · CERTAV ARP 4754A Tool</p>`;
+    body+=`<div style="margin:16px 0"><div class="kpi"><div class="kv">${tot}</div><div class="kl">Total Reqs</div></div><div class="kpi"><div class="kv" style="color:#006633">${ver}</div><div class="kl">Verified</div></div><div class="kpi"><div class="kv">${pct}%</div><div class="kl">Coverage</div></div></div>`;
+    const doms=[...new Set(PD.allReqs.map(r=>r.dom||''))];
+    doms.forEach(d=>{
+      body+=`<h2>${d}</h2><table><thead><tr><th>ID</th><th>Level</th><th>Title</th><th>DAL</th><th>MOC</th><th>Status</th><th>Evidence</th></tr></thead><tbody>`;
+      PD.allReqs.filter(r=>r.dom===d).forEach(r=>{
+        const s=PD.statusMap[r.id]||'OPEN';const ev=PD.evidenceMap[r.id]||[];
+        body+=`<tr><td style="font-family:monospace;font-size:10px;color:#0066bb">${r.id}</td><td>${r.level}</td><td><strong>${r.title||''}</strong><br><span style="color:#6888a8">${r.text||''}</span></td><td>${r.dal||''}</td><td>${(Array.isArray(r.moc)?r.moc:[r.moc]).filter(Boolean).join(', ')}</td><td class="s-${s}">${s}</td><td>${ev.map(e=>e.name).join(', ')||'—'}</td></tr>`;
+      });
+      body+=`</tbody></table>`;
+    });
+    body+=`</body></html>`;
+    dlFile(body,`${pname}-compliance-report.html`,'text/html');
+  }
+}
+
+function dlFile(content,filename,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=filename;a.click();}
+
+// ═══════════════════════════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════════════════════════
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+</script>
+</body>
+</html>
