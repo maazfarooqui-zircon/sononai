@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Certiq · Noise & Vibration Certification</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:wght@300;400;500;600&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -298,9 +299,106 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
 .st-dot{width:5px;height:5px;border-radius:50%;background:#00cc88;animation:pulse 2s infinite;display:inline-block;margin-right:4px}
 .st-val{color:#6ec6ff}
 .st-right{margin-left:auto}
+
+/* ══ LOGIN SCREEN */
+#pg-login{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+#pg-login.hidden{display:none}
+.login-card{background:var(--s1);border:1px solid var(--b1);width:440px;max-width:100%;box-shadow:0 8px 40px rgba(0,0,0,.12)}
+.login-card-hdr{background:var(--navy);padding:24px 28px 20px}
+.login-card-brand{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.login-card-logo{width:30px;height:30px;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.login-card-logo svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:1.8}
+.login-card-name{font-family:var(--disp);font-size:18px;font-weight:900;letter-spacing:5px;color:#fff}
+.login-card-sub{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:rgba(200,220,240,.5);text-transform:uppercase}
+.login-tabs{display:flex;border-bottom:1px solid var(--b1);background:var(--navy)}
+.login-tab{flex:1;font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(200,220,240,.45);padding:11px;border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;transition:all .2s;text-transform:uppercase}
+.login-tab:hover{color:rgba(200,220,240,.8);background:rgba(255,255,255,.04)}
+.login-tab.active{color:#6ec6ff;border-bottom-color:#6ec6ff;background:rgba(110,198,255,.06)}
+.login-body{padding:24px 28px 28px}
+.login-panel{display:none}
+.login-panel.active{display:block}
+.login-msg{font-family:var(--mono);font-size:10px;padding:7px 11px;margin-bottom:12px;display:none;border:1px solid;border-left:3px solid;line-height:1.5}
+.login-msg.err{color:var(--red);background:var(--redG);border-color:rgba(204,17,51,.2);border-left-color:var(--red)}
+.login-msg.ok{color:var(--green);background:var(--greenG);border-color:rgba(0,102,51,.2);border-left-color:var(--green)}
+.login-msg.info{color:var(--blue);background:var(--blueG);border-color:rgba(0,85,170,.2);border-left-color:var(--blue)}
+.login-lbl{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;display:block}
+.login-inp{width:100%;background:var(--s2);border:1px solid var(--b2);color:var(--text);font-family:var(--mono);font-size:13px;padding:9px 12px;outline:none;margin-bottom:13px;transition:border-color .2s}
+.login-inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blueB)}
+.login-inp::placeholder{color:var(--dim)}
+.login-submit{width:100%;padding:12px;font-family:var(--disp);font-size:10px;font-weight:700;letter-spacing:3px;background:var(--blue);border:none;color:#fff;cursor:pointer;transition:all .25s;text-transform:uppercase;margin-top:2px}
+.login-submit:hover{background:#0044cc;box-shadow:0 3px 14px rgba(0,85,170,.35)}
+.login-submit:disabled{opacity:.45;cursor:not-allowed}
+.login-divider{border:none;border-top:1px solid var(--b1);margin:16px 0}
+.login-foot{font-family:var(--mono);font-size:8px;color:var(--dim);text-align:center;letter-spacing:1px;line-height:1.9}
+.login-link{color:var(--blue);cursor:pointer;text-decoration:underline}
+.login-loading{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;padding:6px;display:none;letter-spacing:1.5px}
+
+/* ══ USER BADGE in header */
+.hdr-user{display:none;align-items:center;gap:7px;font-family:var(--mono);font-size:9px;color:rgba(200,220,240,.7);cursor:pointer;padding:4px 10px;border:1px solid rgba(255,255,255,.12);transition:all .2s}
+.hdr-user:hover{border-color:rgba(255,255,255,.3);color:#fff}
+.hdr-avatar{width:24px;height:24px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:10px;font-weight:700;flex-shrink:0}
+.hdr-logout{font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:3px 8px;border:1px solid rgba(255,255,255,.15);color:rgba(200,220,240,.5);cursor:pointer;background:transparent;text-transform:uppercase;transition:all .2s}
+.hdr-logout:hover{border-color:rgba(255,51,85,.5);color:#ff6680}
 </style>
 </head>
 <body>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="pg-login">
+  <div class="login-card">
+    <div class="login-card-hdr">
+      <div class="login-card-brand">
+        <div class="login-card-logo">
+          <svg viewBox="0 0 22 22"><polygon points="11,2 20,7 20,15 11,20 2,15 2,7"/><line x1="11" y1="2" x2="11" y2="20"/><line x1="2" y1="7" x2="20" y2="15"/><line x1="20" y1="7" x2="2" y2="15"/></svg>
+        </div>
+        <div class="login-card-name">Certiq</div>
+      </div>
+      <div class="login-card-sub">Noise &amp; Vibration Certification · ARP 4754A · ICAO Annex 16</div>
+    </div>
+    <div class="login-tabs">
+      <button class="login-tab active" id="ltab-signin" onclick="switchTab('signin')">SIGN IN</button>
+      <button class="login-tab" id="ltab-register" onclick="switchTab('register')">REGISTER</button>
+    </div>
+    <div class="login-body">
+      <div class="login-msg" id="login-msg"></div>
+
+      <!-- SIGN IN -->
+      <div class="login-panel active" id="lpanel-signin">
+        <label class="login-lbl">Email</label>
+        <input class="login-inp" id="li-email" type="email" placeholder="engineer@company.com" autocomplete="email">
+        <label class="login-lbl">Password</label>
+        <input class="login-inp" id="li-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+        <button class="login-submit" id="btn-signin" onclick="doSignIn()">SIGN IN →</button>
+        <div class="login-loading" id="load-signin">AUTHENTICATING…</div>
+        <hr class="login-divider">
+        <div class="login-foot">
+          Forgot password? <span class="login-link" onclick="doReset()">Send reset email</span>
+        </div>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="login-panel" id="lpanel-register">
+        <label class="login-lbl">Full Name</label>
+        <input class="login-inp" id="li-name" type="text" placeholder="Jane Engineer" autocomplete="name">
+        <label class="login-lbl">Email</label>
+        <input class="login-inp" id="li-reg-email" type="email" placeholder="engineer@company.com" autocomplete="email">
+        <label class="login-lbl">Password <span style="font-family:var(--body);font-size:10px;color:var(--dim);text-transform:none;letter-spacing:0">(min 6 characters)</span></label>
+        <input class="login-inp" id="li-reg-pass" type="password" placeholder="••••••••" autocomplete="new-password">
+        <label class="login-lbl">Confirm Password</label>
+        <input class="login-inp" id="li-reg-pass2" type="password" placeholder="••••••••" autocomplete="new-password">
+        <button class="login-submit" id="btn-register" onclick="doRegister()">CREATE ACCOUNT →</button>
+        <div class="login-loading" id="load-register">CREATING ACCOUNT…</div>
+      </div>
+
+      <div style="margin-top:16px;text-align:center;border-top:1px solid var(--b1);padding-top:12px">
+        <span style="font-family:var(--mono);font-size:7px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase">Secured by Supabase Auth · Data persists per account</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="pg-app" style="display:none">
 
 <header id="hdr">
   <div class="brand">
@@ -314,6 +412,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
     <div class="hdr-badge live">● LIVE</div>
     <div class="hdr-badge" id="hdr-reqs">0 reqs</div>
     <div class="hdr-badge" id="hdr-cov">0% coverage</div>
+    <div class="hdr-user" id="hdr-user" style="display:flex">
+      <div class="hdr-avatar" id="hdr-avatar">?</div>
+      <span id="hdr-username">User</span>
+      <button class="hdr-logout" onclick="doSignOut()">↩ Logout</button>
+    </div>
   </div>
 </header>
 
@@ -537,6 +640,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
   <div class="st-right">Certiq Noise &amp; Vibration · ARP 4754A · ICAO Annex 16</div>
 </div>
 
+</div><!-- /pg-app -->
+
 <div class="det-ov" id="det-ov" onclick="if(event.target===this)closeDet()">
   <div class="det-panel" id="det-panel">
     <div class="det-hdr">
@@ -737,17 +842,19 @@ var ALL = flatAll(RMS);
 function getSt(id) { return statusMap[id] || 'OPEN'; }
 
 function saveState() {
+  if (!USER_ID) return;
   try {
-    localStorage.setItem('cq_noise_st', JSON.stringify(statusMap));
-    localStorage.setItem('cq_noise_ev', JSON.stringify(evidenceMap));
-    localStorage.setItem('cq_noise_rm', JSON.stringify(roadmapDone));
+    localStorage.setItem('cq_' + USER_ID + '_st', JSON.stringify(statusMap));
+    localStorage.setItem('cq_' + USER_ID + '_ev', JSON.stringify(evidenceMap));
+    localStorage.setItem('cq_' + USER_ID + '_rm', JSON.stringify(roadmapDone));
   } catch(e) {}
 }
 function loadState() {
+  if (!USER_ID) return;
   try {
-    var s = localStorage.getItem('cq_noise_st');
-    var e = localStorage.getItem('cq_noise_ev');
-    var r = localStorage.getItem('cq_noise_rm');
+    var s = localStorage.getItem('cq_' + USER_ID + '_st');
+    var e = localStorage.getItem('cq_' + USER_ID + '_ev');
+    var r = localStorage.getItem('cq_' + USER_ID + '_rm');
     if (s) statusMap = JSON.parse(s);
     if (e) evidenceMap = JSON.parse(e);
     if (r) roadmapDone = JSON.parse(r);
@@ -1663,16 +1770,176 @@ function exportReport() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// INIT
+// SUPABASE AUTH
 // ═══════════════════════════════════════════════════════════
-loadState();
-buildOctInputs();
-renderStandards();
-renderICAO();
-updateStats();
-renderDash();
-calcMargin();
-renderRMS();
+var SUPA_URL = 'https://wiphtdgqtsuuspuomqab.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpcGh0ZGdxdHN1dXNwdW9tcWFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0Mzk3MzYsImV4cCI6MjA4OTAxNTczNn0.eCpGhjr9eqx5-Wc8gX7CjSp7EgFJxfB2WLz4n7KDeME';
+var _sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+var CURRENT_USER = null;
+var USER_ID = null; // drives localStorage namespace
+
+// -- Display helpers
+function displayName(user) {
+  if (!user) return 'User';
+  return user.user_metadata && (user.user_metadata.full_name || user.user_metadata.name)
+    ? (user.user_metadata.full_name || user.user_metadata.name)
+    : (user.email ? user.email.split('@')[0] : 'User');
+}
+function initials(user) {
+  var n = displayName(user);
+  return n.split(/\s+/).filter(Boolean).map(function(w) { return w[0]; }).join('').toUpperCase().slice(0,2) || '?';
+}
+
+// -- Message bar
+function showMsg(text, type) {
+  var el = document.getElementById('login-msg');
+  el.textContent = text;
+  el.className = 'login-msg ' + (type || 'err');
+  el.style.display = 'block';
+}
+function clearMsg() {
+  var el = document.getElementById('login-msg');
+  el.style.display = 'none';
+  el.textContent = '';
+}
+
+// -- Tab switching
+function switchTab(t) {
+  clearMsg();
+  document.getElementById('ltab-signin').classList.toggle('active', t === 'signin');
+  document.getElementById('ltab-register').classList.toggle('active', t === 'register');
+  document.getElementById('lpanel-signin').classList.toggle('active', t === 'signin');
+  document.getElementById('lpanel-register').classList.toggle('active', t === 'register');
+}
+
+// -- Loading state
+function setBusy(panel, busy) {
+  var btn = document.getElementById('btn-' + panel);
+  var ldr = document.getElementById('load-' + panel);
+  if (btn) { btn.disabled = busy; btn.style.opacity = busy ? '0.45' : '1'; }
+  if (ldr) ldr.style.display = busy ? 'block' : 'none';
+}
+
+// -- Sign In
+function doSignIn() {
+  clearMsg();
+  var email = (document.getElementById('li-email').value || '').trim();
+  var pass  = (document.getElementById('li-pass').value  || '').trim();
+  if (!email || !pass) { showMsg('Please enter your email and password.'); return; }
+  setBusy('signin', true);
+  _sb.auth.signInWithPassword({ email: email, password: pass }).then(function(res) {
+    setBusy('signin', false);
+    if (res.error) { showMsg(res.error.message || 'Sign in failed. Check your credentials.'); return; }
+    CURRENT_USER = res.data.user;
+    USER_ID = res.data.user.id;
+    clearMsg();
+    showApp();
+  });
+}
+
+// -- Register
+function doRegister() {
+  clearMsg();
+  var name  = (document.getElementById('li-name').value      || '').trim();
+  var email = (document.getElementById('li-reg-email').value || '').trim();
+  var pass  = (document.getElementById('li-reg-pass').value  || '').trim();
+  var pass2 = (document.getElementById('li-reg-pass2').value || '').trim();
+  if (!email || !pass) { showMsg('Email and password are required.'); return; }
+  if (pass.length < 6) { showMsg('Password must be at least 6 characters.'); return; }
+  if (pass !== pass2)  { showMsg('Passwords do not match.'); return; }
+  setBusy('register', true);
+  _sb.auth.signUp({
+    email: email, password: pass,
+    options: { data: { full_name: name || email.split('@')[0] } }
+  }).then(function(res) {
+    setBusy('register', false);
+    if (res.error) { showMsg(res.error.message || 'Registration failed.'); return; }
+    if (res.data.session) {
+      CURRENT_USER = res.data.user;
+      USER_ID = res.data.user.id;
+      clearMsg();
+      showApp();
+    } else {
+      // Email confirmation required
+      showMsg('Account created! Please check your email to confirm, then sign in.', 'ok');
+      switchTab('signin');
+    }
+  });
+}
+
+// -- Password reset
+function doReset() {
+  clearMsg();
+  var email = (document.getElementById('li-email').value || '').trim();
+  if (!email) { showMsg('Enter your email address above first.', 'info'); return; }
+  _sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.href }).then(function(res) {
+    if (res.error) { showMsg(res.error.message || 'Reset failed.'); return; }
+    showMsg('Password reset email sent — check your inbox.', 'ok');
+  });
+}
+
+// -- Sign Out
+function doSignOut() {
+  _sb.auth.signOut().then(function() {
+    CURRENT_USER = null;
+    USER_ID = null;
+    document.getElementById('pg-app').style.display = 'none';
+    document.getElementById('pg-login').classList.remove('hidden');
+    document.getElementById('li-email').value = '';
+    document.getElementById('li-pass').value = '';
+    clearMsg();
+    switchTab('signin');
+  });
+}
+
+// -- Show app after successful auth
+function showApp() {
+  document.getElementById('pg-login').classList.add('hidden');
+  document.getElementById('pg-app').style.display = 'block';
+  // Set user info in header
+  var dn = displayName(CURRENT_USER);
+  var ini = initials(CURRENT_USER);
+  document.getElementById('hdr-avatar').textContent = ini;
+  document.getElementById('hdr-username').textContent = dn;
+  // Keyed storage now safe — load and init
+  loadState();
+  buildOctInputs();
+  renderStandards();
+  renderICAO();
+  updateStats();
+  renderDash();
+  calcMargin();
+  renderRMS();
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT — check for existing session on page load
+// ═══════════════════════════════════════════════════════════
+(function init() {
+  // Keyboard shortcuts on login
+  document.getElementById('li-pass').addEventListener('keydown', function(e) { if (e.key === 'Enter') doSignIn(); });
+  document.getElementById('li-email').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('li-pass').focus(); });
+  document.getElementById('li-reg-pass2').addEventListener('keydown', function(e) { if (e.key === 'Enter') doRegister(); });
+
+  // Restore existing Supabase session (stays logged in after refresh)
+  _sb.auth.getSession().then(function(res) {
+    if (res.data && res.data.session && res.data.session.user) {
+      CURRENT_USER = res.data.session.user;
+      USER_ID = res.data.session.user.id;
+      showApp();
+    }
+  });
+
+  // React to auth state changes (e.g. email confirmation redirect)
+  _sb.auth.onAuthStateChange(function(event, session) {
+    if (session && session.user && !CURRENT_USER) {
+      CURRENT_USER = session.user;
+      USER_ID = session.user.id;
+      showApp();
+    }
+  });
+})();
 </script>
 </body>
 </html>
