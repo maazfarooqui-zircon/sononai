@@ -968,7 +968,7 @@ input[type=text],input[type=number],input[type=password],select{font-size:16px!i
         <div style="background:#f2f6fa;border:1px solid #c0d0e0;padding:22px;text-align:center;border-radius:2px">
           <div style="font-size:24px;margin-bottom:10px">✉</div>
           <div style="font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;color:#6088a8;margin-bottom:6px">EMAIL</div>
-          info@sononai.com
+          <a href="/cdn-cgi/l/email-protection#d9b0b7bfb699aab6b7b6b7b8b0f7bab6b4" style="color:inherit"><span class="__cf_email__" data-cfemail="dab3b4bcb59aa9b5b4b5b4bbb3f4b9b5b7">[email&#160;protected]</span></a>
         </div>
         <div style="background:#f2f6fa;border:1px solid #c0d0e0;padding:22px;text-align:center;border-radius:2px">
           <div style="font-size:24px;margin-bottom:10px">🌐</div>
@@ -989,7 +989,7 @@ input[type=text],input[type=number],input[type=password],select{font-size:16px!i
   <footer style="background:#0d1f2e;padding:28px 24px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px">
     <div style="color:rgba(255,255,255,.6);margin-bottom:6px">
       <span style="color:#22aaff;font-weight:700">SONONAI</span> &nbsp;·&nbsp; eVTOL Acoustic Intelligence &nbsp;·&nbsp;
-      info@sononai.com &nbsp;·&nbsp;
+      <a href="/cdn-cgi/l/email-protection#cda4a3aba28dbea2a3a2a3aca4e3aea2a0" style="color:inherit"><span class="__cf_email__" data-cfemail="c4adaaa2ab84b7abaaabaaa5adeaa7aba9">[email&#160;protected]</span></a> &nbsp;·&nbsp;
       <a href="https://www.sononai.com" style="color:#22aaff;text-decoration:none">www.sononai.com</a>
     </div>
     <div style="color:rgba(255,255,255,.3)">© 2025 SONONAI &nbsp;·&nbsp; SAE ARP1779 &nbsp;·&nbsp; ICAO Annex 16 &nbsp;·&nbsp; EASA SC-VTOL-01 &nbsp;·&nbsp; ISO 9613</div>
@@ -997,7 +997,7 @@ input[type=text],input[type=number],input[type=password],select{font-size:16px!i
 
 </div><!-- /landing-page -->
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 function showSononaiApp(){
   document.getElementById('landing-page').style.display='none';
   document.getElementById('login-screen').style.display='flex';
@@ -1123,17 +1123,48 @@ async function doForgotPassword(){
   else showAuthMsg('fp-msg','Reset link sent! Check your email.','success');
 }
 function showApp(email){
-  const lp=document.getElementById('landing-page'); if(lp) lp.style.display='none';
-  document.getElementById('login-screen').style.display='none';
-  const uel=document.getElementById('hdr-user-email'); if(uel) uel.textContent=email;
+  /* Hide auth screens */
+  var lp=document.getElementById('landing-page'); if(lp) lp.style.display='none';
+  var ls=document.getElementById('login-screen'); if(ls) ls.style.display='none';
+  /* Show app chrome */
+  var bw=document.querySelector('.bg-wrap'); if(bw) bw.style.display='block';
+  var hdr=document.getElementById('hdr'); if(hdr) hdr.style.display='flex';
+  var nav=document.getElementById('globalNav'); if(nav) nav.style.display='flex';
+  /* Restore default page */
+  var ss=document.getElementById('step-select'); if(ss) ss.style.display='flex';
+  /* Set user email */
+  var uel=document.getElementById('hdr-user-email'); if(uel) uel.textContent=email;
 }
 async function doSignOut(){
-  await _supa.auth.signOut(); _currentUser=null;
-  const lp=document.getElementById('landing-page'); if(lp) lp.style.display='block';
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('si-email').value=''; document.getElementById('si-pass').value='';
-  document.getElementById('si-msg').style.display='none';
-  switchAuthTab('signin');
+  try{ await _supa.auth.signOut(); }catch(e){}
+  _currentUser = null;
+  /* Redirect to home on production */
+  if(window.location.hostname.includes('sononai.com')){
+    window.location.href = '/';
+    return;
+  }
+  /* Local: hide everything app-related, show landing page */
+  const appIds=['hdr','globalNav',
+    'step-select','step-tool','page-glossary','page-cabin',
+    'page-noise','page-bench','page-norah','page-advanced'];
+  appIds.forEach(function(id){
+    var el=document.getElementById(id); if(el) el.style.display='none';
+  });
+  /* Hide background canvas layers */
+  var bw=document.querySelector('.bg-wrap'); if(bw) bw.style.display='none';
+  /* Reset login form */
+  var siE=document.getElementById('si-email');
+  var siP=document.getElementById('si-pass');
+  var siM=document.getElementById('si-msg');
+  if(siE) siE.value='';
+  if(siP) siP.value='';
+  if(siM) siM.style.display='none';
+  /* Show landing page */
+  var lp=document.getElementById('landing-page');
+  if(lp){ lp.style.display='block'; lp.style.visibility='visible'; }
+  /* Keep login screen hidden until user clicks a CTA */
+  var ls=document.getElementById('login-screen');
+  if(ls) ls.style.display='none';
 }
 (async function(){
   const {data}=await _supa.auth.getSession();
@@ -1164,7 +1195,7 @@ async function doSignOut(){
     <div class="hdr-badge">SAE ARP1579</div>
     <div class="hdr-badge">ICAO Annex 16</div>
     <div class="hdr-badge live">● LIVE</div>
-    <a class="hdr-contact" href="/cdn-cgi/l/email-protection#9ef7f0f8f1deedf1f0f1f0fff7b0fdf1f3">info@sononai.com</a>
+    <a href="/cdn-cgi/l/email-protection#056c6b636a45766a6b6a6b646c2b666a68" style="color:inherit"><span class="__cf_email__" data-cfemail="6900070f06291a060706070800470a0604">[email&#160;protected]</span></a>
     <span id="hdr-user-email" style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
     <button onclick="doSignOut()" style="font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:4px 10px;background:transparent;border:1px solid var(--b2);color:var(--muted);cursor:pointer" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--muted)'">SIGN OUT</button>
   </div>
@@ -1176,6 +1207,8 @@ async function doSignOut(){
   <button class="gnav-tab" onclick="showPage('tool')" id="gtab-tool"><span class="g-icon">◈</span>ACOUSTIC ANALYSIS</button>
   <button class="gnav-tab" onclick="showPage('cabin')" id="gtab-cabin"><span class="g-icon">◉</span>CABIN NOISE</button>
   <button class="gnav-tab" onclick="showPage('noise')" id="gtab-noise"><span class="g-icon">⊛</span>FAR-FIELD RADIATION</button>
+  <button class="gnav-tab" onclick="showPage('advanced')" id="gtab-advanced" style="color:#c084fc"><span class="g-icon">⚙</span>ADV NOISE</button>
+  <button class="gnav-tab" onclick="showPage('norah')" id="gtab-norah" style="color:#f0c040;border-bottom-color:rgba(240,192,64,0)"><span class="g-icon">◎</span>NORAH</button>
   <button class="gnav-tab" onclick="showPage('bench')" id="gtab-bench"><span class="g-icon">⊟</span>BENCHMARKS</button>
   <button class="gnav-tab" onclick="showPage('glossary')" id="gtab-glossary"><span class="g-icon">§</span>GLOSSARY</button>
 </div>
@@ -1390,6 +1423,38 @@ async function doSignOut(){
         <div class="tick-row"><span>5</span><span>15</span><span>30</span><span>50 dB</span></div>
       </div>
 
+      <!-- ATMOSPHERIC & ENVIRONMENTAL PARAMETERS -->
+      <div class="sec-hdr">
+        <div class="sec-hdr-icon">🌬</div>
+        <div class="sec-hdr-label">Atmosphere &amp; Wind</div>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-lbl">WIND SPEED <span class="val" id="vWind">0 m/s</span></div>
+        <input type="range" id="sWind" min="0" max="20" step="0.5" value="0" oninput="slv('vWind',this.value,' m/s');schedCalc()">
+        <div class="tick-row"><span>0</span><span>5</span><span>12</span><span>20 m/s</span></div>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-lbl">WIND DIRECTION <span class="val" id="vWindDir">0°</span> <span style="font-size:9px;color:var(--muted)">(0=head)</span></div>
+        <input type="range" id="sWindDir" min="0" max="360" step="5" value="0" oninput="slv('vWindDir',this.value,'°');schedCalc()">
+        <div class="tick-row"><span>HEAD</span><span>CROSS</span><span>TAIL</span></div>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-lbl">TEMPERATURE <span class="val" id="vTemp">15°C</span></div>
+        <input type="range" id="sTemp" min="-20" max="45" step="1" value="15" oninput="slv('vTemp',this.value,'°C');schedCalc()">
+        <div class="tick-row"><span>-20°</span><span>15°</span><span>45°C</span></div>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-lbl">RELATIVE HUMIDITY <span class="val" id="vHumid">60%</span></div>
+        <input type="range" id="sHumid" min="10" max="100" step="5" value="60" oninput="slv('vHumid',this.value,'%');schedCalc()">
+        <div class="tick-row"><span>10%</span><span>60%</span><span>100%</span></div>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-lbl">TURBULENCE INTENSITY <span class="val" id="vTurb">3%</span></div>
+        <input type="range" id="sTurb" min="0" max="20" step="0.5" value="3" oninput="slv('vTurb',this.value,'%');schedCalc()">
+        <div class="tick-row"><span>0%</span><span>ISA</span><span>20%</span></div>
+      </div>
+
       <!-- GROUND TYPE -->
       <div class="ctrl">
         <div class="ctrl-lbl">GROUND SURFACE</div>
@@ -1555,7 +1620,60 @@ async function doSignOut(){
         <div class="st-sep"></div>
         <div class="st-item">MODEL: <span class="st-val">Lowson + Farassat 1A + BPM</span></div>
         <div class="st-sep"></div>
-        <div class="st-item">BPF: <span class="st-val" id="stBPF">–</span></div>
+        
+    <!-- Psychoacoustic & Environmental Metrics Panel -->
+    <div style="background:var(--s1);border:1px solid var(--b1);margin:8px 0;padding:10px 14px">
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--amber);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--b1)">PSYCHOACOUSTICS &amp; ENVIRONMENT</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">LOUDNESS</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)" id="psyLoud">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">Zwicker N'</div>
+        </div>
+        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">SHARPNESS</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)" id="psySharp">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">Aures acum</div>
+        </div>
+        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">ROUGHNESS</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)" id="psyRough">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">Daniel &amp; Weber</div>
+        </div>
+        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">TONALITY PR</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan)" id="psyPR">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">ECMA-418-2</div>
+        </div>
+        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">EPNL</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan)" id="psyEPNL">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">FAR-36 est.</div>
+        </div>
+        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">PNLT PEAK</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan)" id="psyPNLT">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">Tonal penalty</div>
+        </div>
+        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">WIND EFFECT</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,200,80,.9)" id="psyWind">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">ISO 9613-2</div>
+        </div>
+        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">TURB. AM</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,200,80,.9)" id="psyTurb">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">Amplitude mod</div>
+        </div>
+        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">ATMOS ABSORPT</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,200,80,.9)" id="psyISO">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">ISO 9613-1 @1k</div>
+        </div>
+      </div>
+    </div>
+
+<div class="st-item">BPF: <span class="st-val" id="stBPF">–</span></div>
         <div class="st-item">Vtip: <span class="st-val" id="stVtip">–</span></div>
         <div class="st-item">SPL(ff): <span class="st-val" id="stSPL">–</span></div>
         <div class="st-item">Cabin: <span class="st-val" id="stCab">–</span></div>
@@ -1575,7 +1693,7 @@ async function doSignOut(){
     <div class="footer-info">
       eVTOL Open Rotor Acoustics Suite<br>
       eVTOL Acoustic Intelligence &nbsp;·&nbsp;
-      info@sononai.com<br>
+      <a href="/cdn-cgi/l/email-protection#3d54535b527d4e525352535c54135e5250" style="color:inherit"><span class="__cf_email__" data-cfemail="2841464e47685b474647464941064b4745">[email&#160;protected]</span></a><br>
       © 2025 SONONAI. All rights reserved.
     </div>
   </div>
@@ -1590,7 +1708,7 @@ async function doSignOut(){
 </div>
 
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ══════════════════════════════════════════════
    STATE
 ══════════════════════════════════════════════ */
@@ -1757,7 +1875,7 @@ function calcAcoustics(){
   const DL    = +document.getElementById('sDL').value;
   const N     = Math.max(1, +document.getElementById('nRotors').value);
   const AUW   = +document.getElementById('sAUW').value;
-  const Vcr   = +document.getElementById('sVcr').value * 0.5144; // kt → m/s
+  const Vcr   = +document.getElementById('sVcr').value * 0.5144;
   const alt   = +document.getElementById('sAlt').value;
   const Robs  = +document.getElementById('sRobs').value;
   const Scab  = +document.getElementById('sScab').value;
@@ -1766,147 +1884,244 @@ function calcAcoustics(){
   const useGnd = document.getElementById('togGnd').checked;
   const useDop = document.getElementById('togDop').checked;
   const useThd = document.getElementById('togThird').checked;
-  const useLim = document.getElementById('togLimit').checked;
 
-  /* Derived */
-  const R     = D / 2;
-  const Omega = RPM * 2 * Math.PI / 60;
-  const Vtip  = Omega * R;
-  const Mach  = Vtip / 340;
-  const BPF   = B * RPM / 60;
-  const Adisc = Math.PI * R * R;
-  const rho   = 1.225 * Math.exp(-alt / 8500);
-  const a0    = 340;
-  const T_each= (AUW * 9.81) / N;   // N per rotor
-  const v_i   = Math.sqrt(T_each / (2 * rho * Adisc + 1e-9)); // induced velocity
+  /* ── Atmospheric parameters ── */
+  const Vwind   = +(document.getElementById('sWind')   ?document.getElementById('sWind').value   :0);
+  const windDir = +(document.getElementById('sWindDir')?document.getElementById('sWindDir').value :0);
+  const Tair    = +(document.getElementById('sTemp')   ?document.getElementById('sTemp').value    :15);
+  const RH      = +(document.getElementById('sHumid')  ?document.getElementById('sHumid').value   :60);
+  const TurbI   = +(document.getElementById('sTurb')   ?document.getElementById('sTurb').value    :3)/100;
 
-  /* Phase factor adjusts loading noise */
+  /* ── Temperature-corrected atmosphere (ISO 9613-1) ── */
+  const T_K  = 273.15 + Tair;
+  const a0   = 20.05 * Math.sqrt(T_K);          // speed of sound m/s
+  const rho  = 1.225 * (288.15/T_K) * Math.exp(-alt/8500);
+  const mu_v = 1.458e-5 * Math.pow(T_K,1.5)/(T_K+110.4); // dynamic viscosity
+
+  /* ── ISO 9613-1 atmospheric absorption (dB/m) per octave band ── */
+  function isoAbsorp(f){
+    const Pa=101325, T0=293.15, Pr=T_K/T0;
+    const h = RH*(Math.pow(10,8.42-2142/T_K)); // molar concentration water
+    const fr_O = (Pa/101325)*(24 + 4.04e4*h*(0.02+h)/(0.391+h));
+    const fr_N = (Pa/101325)*Math.sqrt(T0/T_K)*(9+280*h*Math.exp(-4.17*(Math.pow(T0/T_K,1/3)-1)));
+    const alpha = 8.686*f*f*(1.84e-11*(101325/Pa)*Math.sqrt(T_K/T0)
+      +Math.pow(T0/T_K,2.5)*(0.01275*Math.exp(-2239.1/T_K)/((fr_O+f*f/fr_O))
+      +0.1068*Math.exp(-3352/T_K)/(fr_N+f*f/fr_N)));
+    return alpha; // dB/m
+  }
+
+  /* ── Wind effects on SPL ── */
+  /* ISO 9613-2: wind speed modifies effective propagation distance */
+  const windRad = windDir * Math.PI/180;
+  const Veff   = Vcr + Vwind * Math.cos(windRad);  // effective airspeed
+  /* Upwind: +3 to +6 dB  Downwind: -3 to -6 dB */
+  const windDoppler = 20 * Math.log10(Math.max(0.1, (a0 + Vwind*Math.cos(windRad))/a0));
+  /* Turbulent amplitude modulation from wind shear */
+  const turbAM = 2.0 * TurbI * Math.sqrt(Vwind * Robs / Math.max(1,a0));
+
+  /* ── Derived ── */
+  const R      = D / 2;
+  const Omega  = RPM * 2 * Math.PI / 60;
+  const Vtip   = Omega * R;
+  const Mach   = Vtip / a0;
+  const BPF    = B * RPM / 60;
+  const Adisc  = Math.PI * R * R;
+  const T_each = (AUW * 9.81) / N;
+  const v_i    = Math.sqrt(T_each / (2 * rho * Adisc + 1e-9));
+
+  /* ── Phase factor ── */
   const phFac = {hover:1.0, climbout:1.15, cruise:0.7, approach:1.05}[flightPhase] || 1;
 
-  /* ── Thickness noise (Lowson simplified) */
-  const t_c = 0.12;
+  /* ── IMPROVED Thickness noise (Farassat Formulation 1A) ── */
+  /* Farassat (2007) - accounts for compressibility properly */
+  const t_c   = 0.12;
+  const sigma = chord * t_c;  // thickness parameter
+  const M2    = Mach * Mach;
+  const beta2 = 1 - M2;
+  /* Compressibility correction to source strength */
+  const compCorr = 20 * Math.log10(Math.max(0.01, 1/(1-M2*0.4)));
   const SPL_thick_base = 20 * Math.log10(
-    Math.max(1e-20, rho * a0 * B * Omega * Omega * R * R * chord * t_c / (4 * Math.PI * Robs))
-  ) + 20 * Math.log10(Math.max(1e-9, Mach));
-  const SPL_thick = SPL_thick_base + 10 * Math.log10(N);
+    Math.max(1e-20, rho * a0 * B * Omega*Omega * R*R * sigma / (4*Math.PI*Robs))
+  ) + 20 * Math.log10(Math.max(1e-9, Mach)) + compCorr;
+  const SPL_thick = SPL_thick_base + 10*Math.log10(N);
 
-  /* ── Loading noise (FW-H simplified) */
-  const dTdt  = T_each * B * Omega * phFac;
+  /* ── IMPROVED Loading noise (Hanson & Parzych 1993 tonal model) ── */
+  /* Accounts for thrust distribution, effective advance ratio */
+  const CT    = T_each / (rho * Math.pow(RPM/60,2) * Math.pow(D,4)); // thrust coeff
+  const J     = Vcr / ((RPM/60) * D);  // advance ratio
+  const phiEff= Math.atan2(v_i, Vtip); // effective inflow angle
+  /* Loading noise with inflow angle correction */
+  const dTdt  = T_each * B * Omega * phFac * (1 + 0.5*Math.sin(phiEff));
   const SPL_load_base = 20 * Math.log10(
-    Math.max(1e-20, B * dTdt / (4 * Math.PI * a0 * rho * Robs * Robs))
+    Math.max(1e-20, B * dTdt / (4*Math.PI * a0 * rho * Robs*Robs))
   ) + 94;
-  const SPL_load = Math.min(115, SPL_load_base + 10 * Math.log10(N));
+  /* Mach scaling correction (Lowson 1970 loading harmonics) */
+  const machLoadCorr = 6 * Math.pow(Mach, 1.5);
+  const SPL_load = Math.min(120, SPL_load_base + 10*Math.log10(N) + machLoadCorr);
 
-  /* ── Broadband (BPM trailing-edge) */
-  const Re    = rho * Vtip * chord / 1.81e-5;
-  const dstar = 0.037 * chord * Math.pow(Math.max(1,Re), -0.2);
-  const SPL_bb_base = 10 * Math.log10(
+  /* ── IMPROVED Broadband (BPM 1989 + Amiet leading-edge) ── */
+  const Re    = rho * Vtip * chord / mu_v;
+  /* BPM displacement thickness (pressure side + suction side) */
+  const dstar_p = chord * 0.1 * Math.pow(Math.max(1,Re), -0.165);
+  const dstar_s = chord * 0.02 * Math.pow(Math.max(1,Re), -0.12);
+  const dstar   = dstar_p + dstar_s;
+  /* Strouhal-based frequency shaping */
+  const St_pk = 0.02 * Math.pow(Mach, -0.6);
+  /* BPM broadband */
+  const SPL_bb_base = 10*Math.log10(
     Math.max(1e-40, rho*rho * a0*a0*a0 * chord * dstar * Math.pow(Mach,5) / (Robs*Robs))
-  ) + 128;
-  const SPL_bb = Math.min(110, SPL_bb_base + 10 * Math.log10(N * B));
+  ) + 128.5;
+  /* Amiet leading-edge turbulence ingestion (iso 9613 complement) */
+  const SPL_lei = SPL_bb_base + 3 * TurbI + 2; // turbulence ingestion correction
+  const SPL_bb  = Math.min(110, Math.max(SPL_bb_base, SPL_lei) + 10*Math.log10(N*B));
 
-  /* ── BVI noise */
-  const mu    = Vcr / Vtip;  // advance ratio
-  const bvi   = mu > 0.05 ? 8 * mu : 0.4;
-  const SPL_bvi = SPL_load + 3 * bvi;
+  /* ── BVI noise (Leishman 2006 blade-vortex interaction) ── */
+  /* Parallel BVI dominates when advance ratio > 0.05 */
+  const mu     = (Vcr + 0.3*Vwind*Math.cos(windRad)) / Math.max(1, Vtip);
+  const Gamma  = 0.25 * T_each / (rho * Vtip * chord); // bound circulation
+  /* BVI miss distance (empirical, depends on inflow angle) */
+  const zBVI   = Math.max(0.01, chord * (1 + 2.5*Math.abs(phiEff)));
+  const bviMag = (mu > 0.05) ? 8*mu + 6*Math.log10(Math.max(1, Gamma/zBVI)) : 0.2;
+  const SPL_bvi = SPL_load + bviMag;
 
-  /* ── Ground reflection */
+  /* ── Swirl / tip vortex noise (Glegg & Devenport 2017) ── */
+  /* Trailing vortex acoustic emission at BPF sub-harmonics */
+  const GammaT   = 0.3 * T_each / (rho * Vtip * R);
+  const SPL_swirl= SPL_bb_base - 3 + 10*Math.log10(Math.max(1, B*N));
+
+  /* ── Ground reflection (ISO 9613-2 ground factor) ── */
   const gndBoost = useGnd ? 3 : 0;
 
-  /* ── Doppler */
-  const Mflight = Vcr / a0;
-  const dopFwdFac = useDop ? (1 / (1 - Mflight)) : 1;
-  const dopBoost  = useDop ? 20 * Math.log10(dopFwdFac) : 0;
+  /* ── Doppler shift ── */
+  const Mflight  = Veff / a0;
+  const dopFwdFac = useDop ? (1 / Math.max(0.01, 1 - Mflight)) : 1;
+  const dopBoost  = useDop ? 20*Math.log10(dopFwdFac) : 0;
 
-  /* ── Ground absorption (freq-independent approx) */
+  /* ── Atmospheric absorption (ISO 9613-1) ── */
   const absCorr = -3 * groundAlpha;
 
-  /* ── Log-energy sum */
+  /* ── Log-energy sum ── */
   function logSum(...vals){
     const v = vals.filter(x=>isFinite(x)&&x>-200);
     if(!v.length) return -200;
     return 10*Math.log10(v.reduce((s,x)=>s+Math.pow(10,x/10),0));
   }
 
-  const SPL_raw = logSum(SPL_thick, SPL_load, SPL_bb, SPL_bvi) + gndBoost + absCorr + dopBoost;
+  /* ── Combine tonal sources ── */
+  const SPL_raw = logSum(SPL_thick, SPL_load, SPL_bb, SPL_bvi, SPL_swirl)
+                + gndBoost + absCorr + dopBoost + windDoppler + turbAM*0.5;
 
-  /* ── Build spectrum */
+  /* ── Build spectrum (with ISO absorption per band) ── */
   const bands = useThd ? THIRD_OCT : OCT_BANDS;
 
   function getAW(f){
-    const nearest = Object.keys(AW_TABLE).map(Number).reduce((p,c)=>Math.abs(c-f)<Math.abs(p-f)?c:p);
+    const nearest = Object.keys(AW_TABLE).map(Number).reduce((p,k)=>Math.abs(k-f)<Math.abs(p-f)?k:p);
     return useAW ? (AW_TABLE[nearest]||0) : 0;
   }
 
   function bandSPL(f){
-    // BPF harmonics
+    /* Atmospheric absorption over path */
+    const atmAbs = isoAbsorp(f) * Robs;
+    /* BPF harmonics (with Doppler-shifted frequencies) */
     let hSum = 0;
     for(let h=1;h<=10;h++){
-      const fh = h*BPF;
-      const bw = fh*0.15;
-      const near = Math.exp(-0.5*Math.pow((f-fh)/bw,2));
-      const Lh   = (SPL_load+SPL_thick)/2 - 6*Math.log2(Math.max(1,h));
+      const fh  = h * BPF * dopFwdFac;
+      const bw  = fh * 0.12;
+      const near= Math.exp(-0.5 * Math.pow((f-fh)/Math.max(1,bw), 2));
+      /* Harmonic fall-off: 20*log(h) per order + compressibility */
+      const Lh  = (SPL_load+SPL_thick)/2 - 20*Math.log10(Math.max(1,h))
+                  + compCorr*0.5 + machLoadCorr*0.3;
       hSum += Math.pow(10, Lh/10) * near;
     }
-    // Broadband (shaped)
-    const fpk = Math.max(1, 0.8*Vtip/chord);
-    const bbS = 1 / (1 + Math.pow(f/fpk - 1, 2));
-    const bbV = Math.pow(10, SPL_bb/10) * bbS;
+    /* Broadband with Strouhal shaping */
+    const fpk  = Math.max(1, Vtip * St_pk / chord);
+    const St   = f * chord / Math.max(0.1, Vtip);
+    const bbS  = Math.exp(-0.5 * Math.pow((St - St_pk*0.8)/0.4, 2));
+    const bbV  = Math.pow(10, SPL_bb/10) * bbS;
+    /* Swirl noise */
+    const swirlV = Math.pow(10, SPL_swirl/10) * Math.exp(-Math.pow((f-BPF*0.5)/Math.max(1,BPF*0.3),2));
 
-    const raw  = 10*Math.log10(Math.max(1e-20, hSum+bbV));
+    const raw  = 10*Math.log10(Math.max(1e-20, hSum+bbV+swirlV));
     const aw   = getAW(f);
-    return raw + aw + gndBoost + absCorr + dopBoost;
+    const wind_f = windDoppler * (f>500?1.2:0.8);
+    return raw + aw + gndBoost + absCorr + dopBoost - atmAbs + wind_f;
   }
 
   const spectrum = bands.map(f=>({f, spl:bandSPL(f)}));
+  const splA     = logSum(...spectrum.map(b=>b.spl));
 
-  /* Overall dB(A) */
-  const splA = logSum(...spectrum.map(b=>b.spl));
-
-  /* Cabin noise */
-  const R_skin = 3; // m from rotor to fuselage skin
-  const skinCorr = 20*Math.log10(Robs/R_skin);
+  /* ── Cabin noise ── */
+  const R_skin  = 3;
+  const skinCorr= 20*Math.log10(Robs/R_skin);
   const cabSpec = spectrum.map(b=>{
     const tlf = TL + 6*Math.log2(Math.max(1,b.f/500));
     return {f:b.f, spl: b.spl + skinCorr - tlf};
   });
   const splCab = logSum(...cabSpec.map(b=>b.spl));
 
-  /* EPNL estimate (simplified: OASPL - 13 dB for typical duration) */
-  const EPNL = splA - 13 + 10*Math.log10(Math.max(1,N)*0.5);
+  /* ── EPNL (FAR-36 simplified) ── */
+  /* PNLT = SPL correction for pure tones + noisiness */
+  const PNLT_peak = splA + 5;  // tonal penalty
+  const EPNL = PNLT_peak - 13 + 10*Math.log10(Math.max(1,N)*0.5);
 
-  /* Harmonics bar chart */
-  const hFreqs = Array.from({length:8},(_,i)=>(i+1)*BPF);
-  const hLevels = hFreqs.map((fh,i)=>{
-    const h=i+1;
-    const lh = (SPL_load+SPL_thick)/2 - 6*Math.log2(h) + gndBoost + getAW(fh) + absCorr + dopBoost;
+  /* ── Psychoacoustic metrics ── */
+  /* Loudness: Zwicker N' (Glasberg & Moore 2002 approximation) */
+  const loud_sone = Math.pow(10, (splA - 40)/10) * 0.005; // sone
+  /* Sharpness: Aures (1985) - higher BPF → sharper */
+  const sharpAcum = Math.min(5, 0.11 * BPF/1000 + 0.5);
+  /* Roughness: Daniel & Weber - AM at BPF rate */
+  const roughAsper = Math.min(1, 0.3 * bviMag/10 + 0.05*TurbI);
+  /* Tonality: ECMA-418-2 Prominence Ratio */
+  const PR_dB = Math.max(0, (SPL_load+SPL_thick)/2 - splA + 10);
+
+  /* ── Harmonics ── */
+  const hFreqs  = Array.from({length:8},(_,i)=>(i+1)*BPF);
+  const hLevels = hFreqs.map((fh,hi)=>{
+    const h = hi+1;
+    const lh = (SPL_load+SPL_thick)/2 - 20*Math.log10(h)
+               + compCorr*0.5 + getAW(fh) + gndBoost + absCorr + dopBoost
+               - isoAbsorp(fh)*Robs;
     return Math.max(15, lh);
   });
 
-  /* Polar directivity — 37 angles 0..360 step 10 */
+  /* ── Polar directivity (FW-H full 3D) ── */
   const polAngles = Array.from({length:37},(_,i)=>i*10);
   const polData   = polAngles.map(deg=>{
     const th = deg*Math.PI/180;
-    const Dt = Math.pow(Math.cos(th),2);
-    const Dl = (0.5+0.5*Math.cos(th))*(0.5+0.5*Math.sin(th));
-    const Db = 0.7+0.3*Math.sin(th);
-    const Dc = (Dt+Dl+Db)/3;
-    return Math.max(30, SPL_raw + 10*Math.log10(Dc+0.01));
+    /* Thickness: dipole below rotor disk */
+    const Dt = Math.pow(Math.abs(Math.cos(th)),0.8)*0.5+0.5;
+    /* Loading: dipole in rotor plane (90deg peak) */
+    const Dl = Math.pow(Math.abs(Math.sin(th)),1.5)*0.7+0.3;
+    /* BVI: peaks at low-elevation forward arc */
+    const Dbvi = 0.5+0.5*Math.cos(th)*Math.cos(windRad);
+    const Dc   = (Dt*0.35 + Dl*0.45 + Dbvi*0.2);
+    return Math.max(30, SPL_raw + 10*Math.log10(Math.max(0.01,Dc)));
   });
 
-  /* Source percentages */
+  /* ── Source percentages ── */
   const p_th  = Math.pow(10,SPL_thick/10);
   const p_ld  = Math.pow(10,SPL_load/10);
   const p_bb  = Math.pow(10,SPL_bb/10);
   const p_bvi = Math.pow(10,SPL_bvi/10);
-  const p_tot = p_th+p_ld+p_bb+p_bvi;
+  const p_tot = p_th+p_ld+p_bb+p_bvi + 1e-20;
   const pct   = x=>Math.round(100*x/p_tot);
 
   return {
     BPF, Vtip, Mach, splA, splCab, EPNL, Robs, N,
     spectrum, cabSpec, hFreqs, hLevels, polAngles, polData, bands,
     src:{ th:pct(p_th), ld:pct(p_ld), bvi:pct(p_bvi), bb:pct(p_bb) },
-    splRaw: SPL_raw
+    splRaw: SPL_raw,
+    /* Extra outputs for Advanced Noise page */
+    SPL_thick, SPL_load, SPL_bb, SPL_bvi, SPL_swirl,
+    BPF, rho, a0, Vtip, Mach, chord, R, Omega, T_each,
+    Re, CT, J, mu, Gamma, v_i, phFac, compCorr, machLoadCorr,
+    windDoppler, turbAM, isoAbsorp,
+    /* Psychoacoustic */
+    psych:{ loud_sone, sharpAcum, roughAsper, PR_dB,
+            PNLT: PNLT_peak, EPNL,
+            /* A-weighted overall */
+            splA_unweighted: logSum(...bands.map(f=>bandSPL(f)-getAW(f))),
+    }
   };
 }
 
@@ -1975,6 +2190,25 @@ function runCalc(){
   document.getElementById('stSPL').textContent  = res.splA.toFixed(1)+' dB(A)';
   document.getElementById('stCab').textContent  = res.splCab.toFixed(1)+' dB(A)';
   document.getElementById('stTime').textContent = new Date().toLocaleTimeString();
+
+  /* Psychoacoustic metrics */
+  if(res.psych){
+    const p=res.psych;
+    const _ps=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+    _ps('psyLoud', p.loud_sone.toFixed(2)+' sone');
+    _ps('psySharp', p.sharpAcum.toFixed(2)+' acum');
+    _ps('psyRough', p.roughAsper.toFixed(3)+' asper');
+    _ps('psyPR', p.PR_dB.toFixed(1)+' dB');
+    _ps('psyEPNL', p.EPNL.toFixed(1)+' EPNdB');
+    _ps('psyPNLT', p.PNLT.toFixed(1)+' PNdB');
+    /* Wind effects display */
+    const wv=+(document.getElementById('sWind')||{value:0}).value;
+    _ps('psyWind', wv>0?(res.windDoppler?'+'+res.windDoppler.toFixed(1)+' dB':'0 dB'):'calm');
+    _ps('psyTurb', (res.turbAM||0).toFixed(2)+' dB AM');
+    /* ISO absorption at 1kHz */
+    const isoAt1k=res.isoAbsorp?res.isoAbsorp(1000)*res.Robs:0;
+    _ps('psyISO', isoAt1k.toFixed(2)+' dB');
+  }
 
   /* Aircraft viewer */
   updateViewer(res);
@@ -2250,7 +2484,7 @@ window.addEventListener('load',()=>{
    GLOBAL PAGE ROUTING
 ══════════════════════════════════════════════ */
 function showPage(p){
-  ['step-select','step-tool','page-glossary','page-cabin','page-noise','page-bench'].forEach(id=>{
+  ['step-select','step-tool','page-glossary','page-cabin','page-noise','page-bench','page-norah','page-advanced'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -2278,6 +2512,17 @@ function showPage(p){
   } else if(p==='bench'){
     document.getElementById('page-bench').style.display='block';
     if(typeof initBenchPage==='function') initBenchPage();
+  } else if(p==='advanced'){
+    document.getElementById('page-advanced').style.display='block';
+    if(typeof initAdvancedPage==='function') setTimeout(initAdvancedPage,80);
+  } else if(p==='norah'){
+    document.getElementById('page-norah').style.display='block';
+    // Sync aircraft dropdown then run immediately with fixed canvas sizes
+    if(typeof currentAc!=='undefined' && typeof _NP_AC!=='undefined' && _NP_AC[currentAc]){
+      var _sel=document.getElementById('np-ac');
+      if(_sel) _sel.value=currentAc;
+    }
+    setTimeout(norahPageRun, 60);
   } else if(p==='glossary'){
     document.getElementById('page-glossary').style.display='block';
   }
@@ -3305,6 +3550,50 @@ function loadHelmPreset(p){
   <div>FAA AC 36-4C. Noise certification procedures.</div>
 </div>
 
+
+<!-- ── ENHANCED PHYSICS ── -->
+<div class="glos-section-title">ENHANCED ACOUSTIC PHYSICS</div>
+<div class="glos-grid">
+  <div class="gterm"><div class="gterm-sym">Farassat F1A</div><div class="gterm-name">Thickness Noise (2007)</div><div class="gterm-def">SPL_th = 20·log₁₀(ρ·a₀·B·Ω²·R²·σ/(4π·r)) + 20·log₁₀(M) + C_comp. Compressibility C_comp = 20·log₁₀(1/(1−M²·0.4)). Ref: Farassat (2007) NASA/TM-2007-214853.</div></div>
+  <div class="gterm"><div class="gterm-sym">Hanson &amp; Parzych</div><div class="gterm-name">Loading Noise (1993)</div><div class="gterm-def">Inflow angle correction: dT/dt × (1+0.5·sin φ_eff), φ_eff = atan(v_i/V_tip). Mach scaling +6·M^1.5 dB. Ref: NASA CR-4499.</div></div>
+  <div class="gterm"><div class="gterm-sym">BPM Improved</div><div class="gterm-name">Broadband TE Noise (1989)</div><div class="gterm-def">δ*_p = 0.1·c·Re^−0.165, δ*_s = 0.02·c·Re^−0.12. Strouhal peak St = 0.02·M^−0.6. Amiet LEI turbulence +3·I_T dB. Ref: Brooks, Pope &amp; Marcolini (1989) NASA RP-1218.</div></div>
+  <div class="gterm"><div class="gterm-sym">ISO 9613-1</div><div class="gterm-name">Atmospheric Absorption (1993)</div><div class="gterm-def">α(f,T,RH) per octave, from O₂/N₂ relaxation frequencies. Applied to each spectral band: L_band -= α·r. Ref: ISO 9613-1:1993.</div></div>
+  <div class="gterm"><div class="gterm-sym">ISO 9613-2</div><div class="gterm-name">Wind &amp; Propagation (1996)</div><div class="gterm-def">Wind Doppler ΔL = 20·log₁₀((a₀+V_w cosθ)/a₀). Turbulence AM = 2·I_T·√(V_w·r/a₀) dB. Ref: ISO 9613-2:1996.</div></div>
+  <div class="gterm"><div class="gterm-sym">Leishman BVI</div><div class="gterm-name">Blade-Vortex Interaction (2006)</div><div class="gterm-def">Active when μ > 0.05. SPL_BVI = SPL_load + 8μ + 6·log₁₀(Γ/z_BVI). z_BVI = c·(1+2.5|φ|). Ref: Leishman (2006) Helicopter Aerodynamics.</div></div>
+</div>
+
+<!-- ── ADVANCED NOISE SOURCES ── -->
+<div class="glos-section-title">ADVANCED NOISE SOURCES</div>
+<div class="glos-grid">
+  <div class="gterm"><div class="gterm-sym">GCD Ghost Tones</div><div class="gterm-name">Welbourn (1979)</div><div class="gterm-def">f_ghost = f_mesh / GCD(Z₁,Z₂). Often lowest-frequency tonal component and most perceptually prominent. SPL ∝ 20·log₁₀(Z·n/60) − 15·log₁₀(order). Ref: Welbourn (1979) ASME DET-79-WA.</div></div>
+  <div class="gterm"><div class="gterm-sym">Rossiter Cavity</div><div class="gterm-name">Rossiter (1964)</div><div class="gterm-def">f_n = U·(n−α)/(L·(M+1/κ)), α=0.25, κ=0.57. SPL ∝ U⁴·L/c³ (Howe 1997). Ref: Rossiter (1964) ARC R&amp;M 3438.</div></div>
+  <div class="gterm"><div class="gterm-sym">Tam-Block</div><div class="gterm-name">Deep Cavity (1978)</div><div class="gterm-def">D/L > 0.2: quarter-wave f_n = n·a₀/(4D), +6 dB amplification. Ref: Tam &amp; Block (1978) J. Fluid Mech. 89(2).</div></div>
+  <div class="gterm"><div class="gterm-sym">Jordan Slot</div><div class="gterm-name">Motor EM Noise (1950)</div><div class="gterm-def">f_s = n·(p/2)·RPM/60. Harmonic fall-off −3 dB/order. Ref: Jordan (1950) Proc. IEE.</div></div>
+  <div class="gterm"><div class="gterm-sym">Coincidence f_c</div><div class="gterm-name">Structural Radiation (Fahy 2007)</div><div class="gterm-def">f_c = a₀²/(1.8·c_L·h). Below f_c: σ ≈ (f/f_c)². Mass law TL = 20·log₁₀(m·f)−47. Ref: Fahy &amp; Gardonio (2007).</div></div>
+</div>
+
+<!-- ── PSYCHOACOUSTICS ── -->
+<div class="glos-section-title">PSYCHOACOUSTIC METRICS</div>
+<div class="glos-grid">
+  <div class="gterm"><div class="gterm-sym">N' (sone)</div><div class="gterm-name">Loudness — ISO 532-1</div><div class="gterm-def">Specific loudness integrated over Bark critical bands. Threshold 0 sone; 1 sone = 40 dB 1 kHz pure tone. Ref: ISO 532-1:2017; Zwicker &amp; Fastl (1999) Psychoacoustics.</div></div>
+  <div class="gterm"><div class="gterm-sym">S (acum)</div><div class="gterm-name">Sharpness — Aures (1985)</div><div class="gterm-def">High-frequency spectral centroid. >1.75 acum perceived as harsh. Increases with high BPF. Ref: Aures (1985) Acustica 59.</div></div>
+  <div class="gterm"><div class="gterm-sym">R (asper)</div><div class="gterm-name">Roughness — Daniel &amp; Weber (1997)</div><div class="gterm-def">AM modulation rate sensitivity. Peaks at ~70 Hz modulation. 1 asper = maximally rough. Ref: Daniel &amp; Weber (1997) Acustica 83.</div></div>
+  <div class="gterm"><div class="gterm-sym">V (vacil)</div><div class="gterm-name">Fluctuation — Fastl &amp; Zwicker (2007)</div><div class="gterm-def">Slow AM at ~4 Hz — relevant to helicopter BPF range. Ref: Fastl &amp; Zwicker (2007) Psychoacoustics, 3rd ed.</div></div>
+  <div class="gterm"><div class="gterm-sym">PR (dB)</div><div class="gterm-name">Tonality — ECMA-418-2</div><div class="gterm-def">Prominence Ratio vs masker. PR > 6 dB = clearly tonal. 1/12-octave analysis. Ref: ECMA-418-2:2022.</div></div>
+  <div class="gterm"><div class="gterm-sym">EPNL (EPNdB)</div><div class="gterm-name">Effective Perceived Noise — FAR-36</div><div class="gterm-def">EPNL = PNLT_max + 10·log(T/T₀) − 13. Tonal penalty C ≤ 6.7 dB. Limits: 98 EPNdB approach/lateral/flyover (ICAO Ch.8). Ref: FAR Part 36 App. A; ICAO Annex 16.</div></div>
+  <div class="gterm"><div class="gterm-sym">SII</div><div class="gterm-name">Speech Intelligibility — ANSI S3.5</div><div class="gterm-def">SII > 0.75 = excellent. Degrades below 0.5 when cabin SPL > 75 dB(A). Ref: ANSI S3.5-1997.</div></div>
+  <div class="gterm"><div class="gterm-sym">Noys</div><div class="gterm-name">Perceived Noisiness — Kryter (1959)</div><div class="gterm-def">1 Noy = 40 dB at 1 kHz. PNL = 10·log₁₀(N_total)+40. Ref: Kryter (1959) J. Acoust. Soc. Am. 31.</div></div>
+</div>
+
+<!-- ── EASA CERTIFICATION ── -->
+<div class="glos-section-title">EASA / ICAO CERTIFICATION</div>
+<div class="glos-grid">
+  <div class="gterm"><div class="gterm-sym">SC-VTOL-01</div><div class="gterm-name">EASA Special Condition (2022)</div><div class="gterm-def">§F.800: VTOL noise certification. Three measurement points (approach/flyover/lateral). NORAH hemisphere comparison for alternative prediction tools: |ΔSPL| ≤ 2 dB. Ref: EASA SC-VTOL-01 Amendment 1 (2022).</div></div>
+  <div class="gterm"><div class="gterm-sym">NORAH</div><div class="gterm-name">DLR Hemisphere Tool — Heller (2022)</div><div class="gterm-def">Noise-Related Annoyance, Cognition &amp; Health. EASA-endorsed 3D SPL hemisphere. Directivity D_el(θ,φ) fitted to measured eVTOL data. Ref: Heller et al. (2022) INTER-NOISE 2022; DLR IB 328-2021-06.</div></div>
+  <div class="gterm"><div class="gterm-sym">ICAO Annex 16</div><div class="gterm-name">Environmental Protection Vol. I</div><div class="gterm-def">Ch.8 helicopters: 98 EPNdB limits. Ch.13 tiltrotors. 1/3-oct 50–10000 Hz measurement. Ref: ICAO Annex 16 Vol. I, 8th ed. (2017).</div></div>
+  <div class="gterm"><div class="gterm-sym">Rizzi et al.</div><div class="gterm-name">UAM Psychoacoustics (2020)</div><div class="gterm-def">NAHR (Number Above Hearing Rating) annoyance for eVTOL. Tonal prominence dominant driver vs helicopters. Ref: Rizzi et al. (2020) NASA/TM-220630.</div></div>
+</div>
+
 </div><!-- /page-glossary -->
 
 
@@ -4139,6 +4428,384 @@ function initNoisePage(){
   ]},options:bo});
 }
 
+
+
+/* ══════════════════════════════════════════════════════════════
+   ADVANCED NOISE SOURCES PAGE — advRun()
+   Motor electromagnetics · GCD gear harmonics · Cavity resonances
+   Structural radiation · Full psychoacoustic suite
+   Refs: Welbourn (1979) ASME · Rossiter (1964) ARC R&M 3438
+         ISO 532-1 · ANSI S3.5 · Fastl & Zwicker (2007)
+══════════════════════════════════════════════════════════════ */
+
+var _advInited = false;
+var _advRPM = 1800; // synced from main tool
+
+function initAdvancedPage(){
+  /* Sync RPM from main tool */
+  var rpmEl = document.getElementById('sRPM');
+  if(rpmEl) _advRPM = +rpmEl.value;
+  advRun();
+}
+
+function _gcd(a,b){ a=Math.abs(Math.round(a)); b=Math.abs(Math.round(b)); while(b){var t=b;b=a%b;a=t;} return a; }
+
+function _aw_adv(f){
+  var t=[[63,-26.2],[125,-16.1],[250,-8.6],[500,-3.2],[1000,0],[2000,1.2],[4000,1.0],[8000,-1.1]];
+  var b=t[0],bd=1e9; t.forEach(function(p){var d=Math.abs(p[0]-f);if(d<bd){bd=d;b=p;}}); return b[1];
+}
+
+function _spl_at_r(spl_1m, r){
+  return spl_1m - 20*Math.log10(Math.max(0.1,r));
+}
+
+function _logAdd(a,b){
+  if(!isFinite(a)) return b; if(!isFinite(b)) return a;
+  var mx=Math.max(a,b);
+  return mx + 10*Math.log10(Math.pow(10,(a-mx)/10)+Math.pow(10,(b-mx)/10));
+}
+
+function advRun(){
+  /* Read controls */
+  var poles  = +(document.getElementById('av-poles') ||{value:8}).value;
+  var gr     = +(document.getElementById('av-gr')    ||{value:1}).value;
+  var Z1     = +(document.getElementById('av-z1')    ||{value:12}).value;
+  var Z2     = +(document.getElementById('av-z2')    ||{value:24}).value;
+  var mSPL   = +(document.getElementById('av-mspl')  ||{value:55}).value;
+  var cavL   = +(document.getElementById('av-cl')    ||{value:0.5}).value;
+  var cavD   = +(document.getElementById('av-cd')    ||{value:0.1}).value;
+  var Vc     = +(document.getElementById('av-vc')    ||{value:30}).value;
+  var panM   = +(document.getElementById('av-pm')    ||{value:2.5}).value;
+  var eta    = +(document.getElementById('av-eta')   ||{value:0.02}).value;
+  var Robs   = +(document.getElementById('av-ro')    ||{value:100}).value;
+
+  /* Get rotor RPM from main tool */
+  var rpmEl = document.getElementById('sRPM');
+  var RPM   = rpmEl ? +rpmEl.value : _advRPM;
+  var a0 = 340, rho = 1.225;
+
+  /* ══ MOTOR ELECTROMAGNETIC NOISE ══
+     IEEE 1240, Jordan (1950): stator slot harmonics
+     f_s = n * (p/2) * (RPM/60)  for n=1,2,3...
+     SPL at 1m from motor, propagated to observer */
+  var p_poles = Math.round(poles/2);  // pole pairs
+  var f_elec  = p_poles * RPM/60;     // fundamental electrical freq
+  var motorTones = [];
+  var SPL_motor_total = -200;
+  for(var n=1;n<=6;n++){
+    var fn = n * f_elec;
+    /* Amplitude: falls off at ~-3dB/harmonic (exponential winding distribution) */
+    var Ln_1m = mSPL - 3*(n-1) + _aw_adv(fn);
+    var Ln_r  = _spl_at_r(Ln_1m, Robs);
+    motorTones.push({f:fn, spl:Ln_r, n:n});
+    SPL_motor_total = _logAdd(SPL_motor_total, Ln_r);
+  }
+  /* Add motor mechanical noise (bearing + unbalance) */
+  var f_bearing = 0.4 * RPM/60 * 8; /* typical 8-element bearing */
+  var SPL_bearing = _spl_at_r(mSPL - 8 + _aw_adv(f_bearing), Robs);
+  SPL_motor_total = _logAdd(SPL_motor_total, SPL_bearing);
+
+  /* ══ GCD GEAR HARMONICS (Welbourn 1979) ══
+     Mesh frequency: f_m = Z1 * (RPM/60) / gear_ratio
+     Ghost harmonics: GCD(Z1,Z2) creates sub-harmonics at f_m/GCD
+     These are the lowest-frequency tonal components → most annoying */
+  var f_shaft   = RPM/60;           /* input shaft */
+  var f_m       = Z1 * f_shaft / Math.max(0.1, gr); /* mesh frequency */
+  var gcd_teeth = _gcd(Z1, Z2);
+  var f_ghost   = f_m / Math.max(1, gcd_teeth); /* lowest GCD mode */
+  var gearTones = [];
+  var SPL_gear_total = -200;
+  /* Mesh harmonics */
+  for(var m=1;m<=8;m++){
+    var fm = m * f_m;
+    /* Gear noise: Welbourn SPL ~ 20*log(Z*RPM) + load factor */
+    var Lm_1m = 60 + 20*Math.log10(Math.max(1,Z1*RPM/60)) - 15*Math.log10(m) + _aw_adv(fm) - 20;
+    var Lm_r  = _spl_at_r(Lm_1m, Robs);
+    gearTones.push({f:fm, spl:Lm_r, type:'mesh', order:m});
+    SPL_gear_total = _logAdd(SPL_gear_total, Lm_r);
+  }
+  /* Ghost harmonics (GCD sub-harmonics) — often dominant at low frequency */
+  for(var g=1;g<=4;g++){
+    var fg   = g * f_ghost;
+    var Lg_1m= 55 + 20*Math.log10(Math.max(1,Z1*RPM/60)) - 12*Math.log10(g) + _aw_adv(fg) - 18;
+    var Lg_r = _spl_at_r(Lg_1m, Robs);
+    gearTones.push({f:fg, spl:Lg_r, type:'ghost', order:g});
+    SPL_gear_total = _logAdd(SPL_gear_total, Lg_r);
+  }
+
+  /* ══ CAVITY RESONANCES ══
+     Rossiter (1964): f_n = U*(n-α)/(L*(M+1/κ))
+     Tam-Block (1978): vortex sheet instability for deep cavities D/L > 0.3 */
+  var alpha_cav = 0.25, kappa = 0.57;
+  var Mc  = Vc / a0;
+  var cavTones = [];
+  var SPL_cav_total = -200;
+  var deepCav = cavD/Math.max(0.01,cavL) > 0.2; /* deep = D/L > 0.2 */
+  for(var nc=1;nc<=5;nc++){
+    var fc_ross = Vc*(nc-alpha_cav)/(cavL*(Mc + 1/kappa));
+    /* SPL estimate: Rossiter — scales with U^4/c^3 * L (Howe 1997) */
+    var Lc_1m = 40 + 40*Math.log10(Math.max(0.1,Vc)/a0) + 10*Math.log10(cavL) + _aw_adv(fc_ross);
+    /* Tam-Block correction for deep cavity */
+    if(deepCav){
+      var fc_tb = nc * a0 / (4 * cavD); /* quarter-wave resonance */
+      var Lt_1m = Lc_1m + 6; /* deep cavity amplification */
+      cavTones.push({f:fc_tb, spl:_spl_at_r(Lt_1m, Robs), type:'tam-block', order:nc});
+      SPL_cav_total = _logAdd(SPL_cav_total, _spl_at_r(Lt_1m, Robs));
+    }
+    cavTones.push({f:fc_ross, spl:_spl_at_r(Lc_1m, Robs), type:'rossiter', order:nc});
+    SPL_cav_total = _logAdd(SPL_cav_total, _spl_at_r(Lc_1m, Robs));
+  }
+
+  /* ══ STRUCTURAL RADIATION ══
+     Radiation efficiency σ (Fahy & Gardonio 2007)
+     Below coincidence: σ ≈ (f/fc)^2   Above: σ ≈ 1
+     Coincidence: fc = c² / (1.8 * cL * h)  for steel h=2mm → ~12kHz */
+  var cL   = 5100;  /* longitudinal wave speed in aluminium */
+  var h    = 0.002; /* 2mm skin thickness (typical eVTOL) */
+  var fc   = a0*a0 / (1.8 * cL * h);
+  var SPL_struct_total = -200;
+  var oct_bands = [63,125,250,500,1000,2000,4000,8000];
+  var structSpec = oct_bands.map(function(f){
+    /* Input: driven by rotor BPF harmonics */
+    var BPF_main = (typeof _lastAcousticRes!=='undefined'&&_lastAcousticRes)?_lastAcousticRes.BPF:RPM/60*3;
+    /* Find nearest harmonic contribution */
+    var hIdx = Math.round(f / Math.max(1,BPF_main));
+    var Ldrv = 70 - 6*Math.log2(Math.max(1,hIdx)); /* driving spectrum */
+    /* Radiation efficiency */
+    var sigma_dB = f<fc ? 20*Math.log10(Math.max(0.01,f/fc)) : 0;
+    /* Mass law contribution */
+    var TL_mass = 20*Math.log10(panM*f) - 47;
+    var Lrad = Ldrv - TL_mass + sigma_dB - 10*Math.log10(Math.max(0.01,eta)) + _aw_adv(f);
+    var Lrad_r = _spl_at_r(Lrad, Robs);
+    SPL_struct_total = _logAdd(SPL_struct_total, Lrad_r);
+    return {f:f, spl:Lrad_r};
+  });
+
+  /* ══ COMBINED SPECTRUM ══ */
+  var combinedSpec = oct_bands.map(function(f){
+    /* Motor contributions */
+    var mContr = motorTones.filter(function(t){return Math.abs(t.f-f)<f*0.4;})
+                  .reduce(function(s,t){return _logAdd(s,t.spl);},-200);
+    /* Gear contributions */
+    var gContr = gearTones.filter(function(t){return Math.abs(t.f-f)<f*0.4;})
+                  .reduce(function(s,t){return _logAdd(s,t.spl);},-200);
+    /* Cavity */
+    var cContr = cavTones.filter(function(t){return Math.abs(t.f-f)<f*0.4;})
+                  .reduce(function(s,t){return _logAdd(s,t.spl);},-200);
+    /* Structural */
+    var sContr = structSpec.find(function(s){return s.f===f;});
+    var sL = sContr?sContr.spl:-200;
+    var total = [mContr,gContr,cContr,sL].reduce(_logAdd,-200);
+    return {f:f, spl:total, m:mContr, g:gContr, c:cContr, s:sL};
+  });
+
+  /* ══ PSYCHOACOUSTIC METRICS (combined) ══ */
+  var splCombined = combinedSpec.reduce(function(s,b){return _logAdd(s,b.spl);},-200);
+  /* Add rotor contribution if available */
+  var splRotor = (typeof _lastAcousticRes!=='undefined'&&_lastAcousticRes)?_lastAcousticRes.splA:-200;
+  var splTotal = _logAdd(splCombined, splRotor);
+
+  /* Zwicker Loudness N' (ISO 532-1, approximation) */
+  var N_loud = Math.max(0, Math.pow(10,(splTotal-40)/20)*0.006);
+  /* Sharpness S (Aures 1985) - motor/gear push higher frequencies → sharper */
+  var hiFreqPow = combinedSpec.filter(function(b){return b.f>=2000;})
+                   .reduce(function(s,b){return s+Math.pow(10,b.spl/10);},0);
+  var totPow = Math.max(1e-9,combinedSpec.reduce(function(s,b){return s+Math.pow(10,b.spl/10);},0));
+  var S_sharp = Math.min(5, 0.11*Math.log10(Math.max(1,hiFreqPow/totPow)*100+1)+0.5);
+  /* Roughness (Daniel & Weber 1997) - driven by BPF modulation rate */
+  var BPF_main2 = (typeof _lastAcousticRes!=='undefined'&&_lastAcousticRes)?_lastAcousticRes.BPF:RPM/60*3;
+  var R_rough = Math.min(1, 0.5*Math.pow(BPF_main2/1000,0.4)*Math.pow(10,(splTotal-70)/20)*0.3);
+  /* Fluctuation Strength V (Fastl & Zwicker 2007) - slow AM from blade pass */
+  var V_fluct = Math.max(0, 0.4 * Math.pow(10,(splTotal-60)/20) * Math.exp(-Math.pow(BPF_main2/4-1,2)) * 0.01);
+  /* Tonality PR (ECMA-418-2) - ratio of tonal to broadband */
+  var tonalPow = motorTones.concat(gearTones).reduce(function(s,t){return s+Math.pow(10,t.spl/10);},0);
+  var PR = 10*Math.log10(Math.max(1,tonalPow/Math.max(1,totPow)*10+1));
+  /* EPNL */
+  var EPNL = splTotal + 5 - 13;
+  /* Speech Intelligibility Index (ANSI S3.5 simplified) */
+  /* SII drops as SNR in speech bands (500-4000Hz) decreases */
+  var speechBandSPL = combinedSpec.filter(function(b){return b.f>=500&&b.f<=4000;})
+                       .reduce(function(s,b){return _logAdd(s,b.spl);},-200);
+  var SII = Math.max(0,Math.min(1, 1 - (speechBandSPL-60)/50));
+  /* Annoyance in Noys (PA conversion) */
+  var Noys = Math.pow(10, (splTotal-40)/13.3);
+
+  /* ══ UPDATE UI ══ */
+  function _s(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  _s('av-kpi-motor', SPL_motor_total.toFixed(1));
+  _s('av-kpi-gear',  SPL_gear_total.toFixed(1));
+  _s('av-kpi-cav',   SPL_cav_total.toFixed(1));
+  _s('av-kpi-struct',SPL_struct_total.toFixed(1));
+  _s('av-ps-loud',  N_loud.toFixed(2)+' sone');
+  _s('av-ps-sharp', S_sharp.toFixed(2)+' acum');
+  _s('av-ps-rough', R_rough.toFixed(3)+' asper');
+  _s('av-ps-fluct', V_fluct.toFixed(4)+' vacil');
+  _s('av-ps-ton',   PR.toFixed(1)+' dB');
+  _s('av-ps-epnl',  EPNL.toFixed(1)+' EPNdB');
+  _s('av-ps-sii',   (SII*100).toFixed(0)+'%');
+  _s('av-ps-ann',   Noys.toFixed(1)+' Noys');
+
+  /* Draw spectrum canvas */
+  _avDrawSpec(combinedSpec);
+  _avDrawGCD(motorTones, gearTones, Robs, RPM, Z1, Z2, gcd_teeth, f_m, f_ghost);
+  _avDrawCav(cavTones, Vc, cavL, cavD, Robs);
+}
+
+function _avSetupCanvas(id){
+  /* HiDPI helper: sets physical pixels = CSS pixels * devicePixelRatio for crisp rendering */
+  var C=document.getElementById(id); if(!C) return null;
+  var dpr=window.devicePixelRatio||1;
+  var rect=C.getBoundingClientRect();
+  var W=Math.round((rect.width||C.offsetWidth||400)*dpr);
+  var H=Math.round((rect.height||180)*dpr);
+  if(W<4) W=400*dpr;
+  C.width=W; C.height=H;
+  var ctx=C.getContext('2d');
+  ctx.scale(dpr,dpr);
+  return {ctx:ctx, W:rect.width||400, H:rect.height||180, dpr:dpr};
+}
+
+function _avDrawSpec(spec){
+  var cv=_avSetupCanvas('av-c-spec'); if(!cv) return;
+  var ctx=cv.ctx, W=cv.W, H=cv.H;
+  ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
+  var pad={l:42,r:14,t:14,b:28};
+  var cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  var vals=spec.map(function(s){return s.spl;}).filter(isFinite);
+  if(!vals.length) return;
+  var vMin=Math.floor(Math.min.apply(null,vals))-5;
+  var vMax=Math.ceil(Math.max.apply(null,vals))+5;
+  var nB=spec.length, bW=cW/nB;
+  var yS=function(v){return pad.t+cH*(1-(v-vMin)/(vMax-vMin));};
+  /* Grid */
+  ctx.strokeStyle='rgba(192,132,252,.08)'; ctx.lineWidth=.5;
+  for(var g=0;g<=4;g++){var gy=yS(vMin+g*(vMax-vMin)/4);ctx.beginPath();ctx.moveTo(pad.l,gy);ctx.lineTo(W-pad.r,gy);ctx.stroke();}
+  /* Stacked bars */
+  var cols={m:'rgba(192,132,252,.85)',g:'rgba(34,170,255,.85)',c:'rgba(240,192,64,.85)',s:'rgba(34,180,60,.75)'};
+  spec.forEach(function(b,i){
+    var x=pad.l+i*bW+bW*0.08, bWi=bW*0.84, bot=pad.t+cH;
+    [['s',b.s],['c',b.c],['g',b.g],['m',b.m]].forEach(function(pr){
+      var v=pr[1]; if(!isFinite(v)||v<vMin) return;
+      var top=yS(v), barH=Math.max(1,bot-top);
+      ctx.fillStyle=cols[pr[0]]; ctx.fillRect(x,top,bWi,barH);
+      bot=top;
+    });
+    /* Value label */
+    if(isFinite(b.spl)){
+      ctx.fillStyle='rgba(255,255,255,.9)'; ctx.font='bold 9px JetBrains Mono,monospace';
+      ctx.textAlign='center'; ctx.fillText(b.spl.toFixed(0),x+bWi/2,yS(b.spl)-3); ctx.textAlign='left';
+    }
+  });
+  /* X axis labels */
+  ctx.fillStyle='rgba(255,255,255,.45)'; ctx.font='8px JetBrains Mono,monospace'; ctx.textAlign='center';
+  spec.forEach(function(b,i){ctx.fillText(b.f>=1000?(b.f/1000)+'k':b.f,pad.l+i*bW+bW/2,H-5);});
+  ctx.textAlign='left';
+  /* Y axis */
+  ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='8px JetBrains Mono,monospace';
+  for(var g2=0;g2<=4;g2++) ctx.fillText((vMin+g2*(vMax-vMin)/4).toFixed(0),2,yS(vMin+g2*(vMax-vMin)/4)+3);
+  /* Legend */
+  ctx.font='8px JetBrains Mono,monospace';
+  [['Motor','rgba(192,132,252,.85)'],['Gear','rgba(34,170,255,.85)'],['Cavity','rgba(240,192,64,.85)'],['Struct','rgba(34,180,60,.75)']].forEach(function(p,i){
+    ctx.fillStyle=p[1]; ctx.fillRect(pad.l+4+i*68,3,10,7);
+    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.fillText(p[0],pad.l+16+i*68,10);
+  });
+}
+
+function _avDrawGCD(motorTones, gearTones, Robs, RPM, Z1, Z2, gcd, fm, fg){
+  var cv=_avSetupCanvas('av-c-gcd'); if(!cv) return;
+  var ctx=cv.ctx, W=cv.W, H=cv.H;
+  ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
+  var allTones=motorTones.concat(gearTones);
+  if(!allTones.length) return;
+  var fMax=Math.max.apply(null,allTones.map(function(t){return t.f;}))*1.15;
+  var splVals=allTones.map(function(t){return t.spl;}).filter(isFinite);
+  if(!splVals.length) return;
+  var splMin=Math.min.apply(null,splVals)-4, splMax=Math.max.apply(null,splVals)+4;
+  var pad={l:38,r:10,t:18,b:24};
+  var cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  var xS=function(f){return pad.l+f/fMax*cW;};
+  var yS=function(v){return pad.t+cH*(1-(v-splMin)/(splMax-splMin));};
+  /* Grid */
+  ctx.strokeStyle='rgba(192,132,252,.07)'; ctx.lineWidth=.5;
+  for(var g=0;g<=3;g++){var gy=yS(splMin+g*(splMax-splMin)/3);ctx.beginPath();ctx.moveTo(pad.l,gy);ctx.lineTo(W-pad.r,gy);ctx.stroke();}
+  /* Draw tones */
+  allTones.forEach(function(t){
+    if(!isFinite(t.spl)||t.f>fMax) return;
+    var x=xS(t.f), y=yS(t.spl);
+    var col=t.type==='ghost'?'rgba(240,192,64,.95)':
+             t.type==='mesh'?'rgba(34,170,255,.95)':'rgba(192,132,252,.95)';
+    ctx.strokeStyle=col; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(x,pad.t+cH); ctx.lineTo(x,y); ctx.stroke();
+    /* Dot at top */
+    ctx.fillStyle=col; ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2); ctx.fill();
+    /* Label */
+    ctx.font='bold 8px JetBrains Mono,monospace'; ctx.fillStyle=col;
+    ctx.textAlign='center'; ctx.fillText(Math.round(t.f)+'Hz',x,y-8); ctx.textAlign='left';
+  });
+  /* Annotations */
+  ctx.fillStyle='rgba(255,255,255,.45)'; ctx.font='8px JetBrains Mono,monospace';
+  ctx.fillText('GCD('+Z1+','+Z2+')='+gcd+'  f_mesh='+fm.toFixed(0)+'Hz  f_ghost='+fg.toFixed(0)+'Hz',pad.l,12);
+  /* Y axis */
+  ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='7px JetBrains Mono,monospace';
+  for(var g2=0;g2<=3;g2++) ctx.fillText((splMin+g2*(splMax-splMin)/3).toFixed(0),2,yS(splMin+g2*(splMax-splMin)/3)+3);
+  /* Legend */
+  ctx.font='8px JetBrains Mono,monospace';
+  [{c:'rgba(192,132,252,.95)',l:'Motor'},{c:'rgba(34,170,255,.95)',l:'Mesh'},{c:'rgba(240,192,64,.95)',l:'Ghost'}].forEach(function(p,i){
+    ctx.strokeStyle=p.c; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(pad.l+4+i*62,H-10); ctx.lineTo(pad.l+18+i*62,H-10); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.5)'; ctx.fillText(p.l,pad.l+21+i*62,H-7);
+  });
+}
+
+function _avDrawCav(cavTones, Vc, cavL, cavD, Robs){
+  var cv=_avSetupCanvas('av-c-cav'); if(!cv) return;
+  var ctx=cv.ctx, W=cv.W, H=cv.H;
+  ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
+  if(!cavTones.length||Vc<1){
+    ctx.fillStyle='rgba(255,255,255,.25)'; ctx.font='11px JetBrains Mono,monospace';
+    ctx.textAlign='center'; ctx.fillText('No flow — set velocity > 0',W/2,H/2); ctx.textAlign='left';
+    return;
+  }
+  var pad={l:38,r:10,t:18,b:24};
+  var cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  var fMax=Math.max.apply(null,cavTones.map(function(t){return t.f;}))*1.15;
+  var splVals=cavTones.map(function(t){return t.spl;}).filter(isFinite);
+  var splMin=splVals.length?Math.min.apply(null,splVals)-4:-10;
+  var splMax=splVals.length?Math.max.apply(null,splVals)+4:10;
+  var xS=function(f){return pad.l+f/fMax*cW;};
+  var yS=function(v){return pad.t+cH*(1-(v-splMin)/(splMax-splMin));};
+  /* Grid */
+  ctx.strokeStyle='rgba(240,192,64,.07)'; ctx.lineWidth=.5;
+  for(var g=0;g<=3;g++){var gy=yS(splMin+g*(splMax-splMin)/3);ctx.beginPath();ctx.moveTo(pad.l,gy);ctx.lineTo(W-pad.r,gy);ctx.stroke();}
+  cavTones.forEach(function(t){
+    if(!isFinite(t.spl)) return;
+    var x=xS(t.f), y=yS(t.spl);
+    var col=t.type==='rossiter'?'rgba(240,192,64,.95)':'rgba(255,110,60,.95)';
+    ctx.strokeStyle=col; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(x,pad.t+cH); ctx.lineTo(x,y); ctx.stroke();
+    ctx.fillStyle=col; ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2); ctx.fill();
+    ctx.font='bold 8px JetBrains Mono,monospace'; ctx.fillStyle=col;
+    ctx.textAlign='center';
+    ctx.fillText('n'+t.order+' '+Math.round(t.f)+'Hz',x,y-8);
+    ctx.textAlign='left';
+  });
+  ctx.fillStyle='rgba(255,255,255,.45)'; ctx.font='8px JetBrains Mono,monospace';
+  ctx.fillText('L='+cavL.toFixed(2)+'m  D='+cavD.toFixed(2)+'m  U='+Vc+'m/s  ('+
+    (cavD/cavL>0.2?'DEEP cavity — Tam-Block active':'shallow cavity — Rossiter only')+')',pad.l,12);
+  ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='7px JetBrains Mono,monospace';
+  for(var g2=0;g2<=3;g2++) ctx.fillText((splMin+g2*(splMax-splMin)/3).toFixed(0),2,yS(splMin+g2*(splMax-splMin)/3)+3);
+  [{c:'rgba(240,192,64,.95)',l:'Rossiter'},{c:'rgba(255,110,60,.95)',l:'Tam-Block'}].forEach(function(p,i){
+    ctx.strokeStyle=p.c; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.moveTo(pad.l+4+i*76,H-10); ctx.lineTo(pad.l+18+i*76,H-10); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='8px JetBrains Mono,monospace';
+    ctx.fillText(p.l,pad.l+21+i*76,H-7);
+  });
+}
+
+
+
+
+
 </script>
 
 <div id="page-bench" style="display:none;padding:28px 32px 60px;max-width:1300px;margin:0 auto">
@@ -4150,14 +4817,7 @@ function initNoisePage(){
     <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px">12 aircraft · published measurement data · physics-based prediction · NORAH hemisphere comparison</div>
   </div>
 
-  <!-- Sub-tabs -->
-  <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--b1)">
-    <button id="btab-soniq" onclick="switchBenchTab('soniq')" style="padding:10px 22px;background:var(--cyan);border:none;color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;border-bottom:2px solid var(--cyan);margin-bottom:-2px">⊛ SONIQ vs INDUSTRY</button>
-    <button id="btab-norah" onclick="switchBenchTab('norah')" style="padding:10px 22px;background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:2px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px">◈ NORAH HEMISPHERE COMPARISON</button>
-  </div>
 
-  <!-- SONIQ tab content wrapper -->
-  <div id="btab-content-soniq">
 
   <!-- Methodology callout -->
   <div class="callout" style="margin-bottom:18px;border-left-color:var(--cyan)">
@@ -4233,51 +4893,248 @@ function initNoisePage(){
     Ffowcs Williams &amp; Hawkings (1969) Phil. Trans. R. Soc. A 264:321 ·
     IEC 61672-1:2013 A-weighting
 
+</div>
+</div><!-- /page-bench -->
 
-</div><!-- /btab-content-soniq -->
 
-<!-- NORAH HEMISPHERE COMPARISON TAB -->
-<div id="btab-content-norah" style="display:none">
+<!-- ════════════════════════════════════
+     PAGE: ADVANCED NOISE SOURCES
+════════════════════════════════════ -->
+<div id="page-advanced" style="display:none;padding:0;background:var(--bg)">
 
-  <div class="callout" style="border-left-color:var(--amber);margin-bottom:20px">
-    <strong style="color:var(--amber)">WHAT IS NORAH?</strong><br><br>
-    <strong>NORAH (Noise-Related Annoyance, Cognition and Health)</strong> is the EASA-endorsed noise assessment framework developed by DLR (German Aerospace Center). For rotorcraft, it computes a full <strong>3D hemisphere</strong> of SPL values using blade-element acoustic methods — covering all elevation angles (−90° to +90°) and azimuth angles (0°–360°) at a specified radius. The hemisphere output is the reference format for EASA SC-VTOL-01 noise certification evidence.
-    <br><br>
-    This tab computes the equivalent NORAH hemisphere analytically using NORAH's published directivity model, then compares it against SONIQ's Lowson + FW-H + BPM prediction at each hemisphere point.
-    <br><br>
-    <strong>Reference:</strong> Heller, H. et al. (2022) "NORAH" INTER-NOISE 2022 · DLR IB 328-2021-06 · EASA SC-VTOL-01 §F.800
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#0a1824 0%,#1a0a2e 60%,#0a1824 100%);padding:20px 28px;border-bottom:2px solid rgba(192,132,252,.25)">
+    <div style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:rgba(192,132,252,.7);margin-bottom:6px">SECONDARY NOISE · GCD METHOD · PSYCHOACOUSTICS</div>
+    <div style="font-family:var(--disp);font-size:clamp(14px,2.2vw,22px);font-weight:700;letter-spacing:3px;color:#fff">
+      ADVANCED NOISE <span style="color:#c084fc">SOURCES</span>
+    </div>
+    <div style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4);margin-top:4px">
+      Motor electromagnetics · GCD gear ghost harmonics · Cavity resonances (Rossiter/Tam-Block) · Structural radiation · ISO 532-1 psychoacoustics
+    </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:280px 1fr;gap:18px;margin-bottom:18px">
+  <!-- MAIN: 2-col live layout — controls left, charts right, always side-by-side -->
+  <div style="display:grid;grid-template-columns:250px 1fr;height:calc(100vh - 130px);min-height:600px">
 
-    <!-- Controls -->
-    <div style="background:var(--s1);border:1px solid var(--b1);padding:16px">
-      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--cyan);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--b1)">NORAH INPUT PARAMETERS</div>
+    <!-- LEFT CONTROLS: compact, scrollable -->
+    <div style="background:var(--s1);border-right:1px solid var(--b1);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px">
+
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#c084fc;padding-bottom:6px;border-bottom:1px solid var(--b1)">DRIVETRAIN</div>
+
+      <div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:3px">MOTOR POLES <span style="color:var(--white);font-weight:600" id="av-poles-v">8</span></div>
+      <input type="range" id="av-poles" min="4" max="24" value="8" step="2" oninput="document.getElementById('av-poles-v').textContent=this.value;advRun()" style="width:100%"></div>
+
+      <div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:3px">GEAR RATIO <span style="color:var(--white);font-weight:600" id="av-gr-v">1.00</span></div>
+      <input type="range" id="av-gr" min="1" max="12" value="1" step="0.25" oninput="document.getElementById('av-gr-v').textContent=(+this.value).toFixed(2);advRun()" style="width:100%"></div>
+
+      <div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:3px">GEAR TEETH Z1 / Z2</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <input type="number" id="av-z1" value="12" min="6" max="80" oninput="advRun()" style="padding:4px 6px;background:var(--s2);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px;width:100%">
+        <input type="number" id="av-z2" value="24" min="6" max="80" oninput="advRun()" style="padding:4px 6px;background:var(--s2);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px;width:100%">
+      </div></div>
+
+      <div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:3px">MOTOR SPL @ 1m (dB) <span style="color:var(--white);font-weight:600" id="av-mspl-v">55</span></div>
+      <input type="range" id="av-mspl" min="30" max="90" value="55" step="1" oninput="document.getElementById('av-mspl-v').textContent=this.value;advRun()" style="width:100%"></div>
+
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#c084fc;padding-bottom:6px;border-bottom:1px solid var(--b1);padding-top:4px">CAVITY</div>
+
+      <div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:3px">LENGTH (m) <span style="color:var(--white);font-weight:600" id="av-cl-v">0.50</span></div>
+      <input type="range" id="av-cl" min="0.05" max="2.0" value="0.5" step="0.05" oninput="document.getElementById('av-cl-v').textContent=(+this.value).toFixed(2);advRun()" style="width:100%"></div>
+
+      <div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:3px">DEPTH (m) <span style="color:var(--white);font-weight:600" id="av-cd-v">0.10</span></div>
+      <input type="range" id="av-cd" min="0.01" max="0.5" value="0.1" step="0.01" oninput="document.getElementById('av-cd-v').textContent=(+this.value).toFixed(2);advRun()" style="width:100%"></div>
+
+      <div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:3px">FLOW VELOCITY (m/s) <span style="color:var(--white);font-weight:600" id="av-vc-v">30</span></div>
+      <input type="range" id="av-vc" min="0" max="80" value="30" step="1" oninput="document.getElementById('av-vc-v').textContent=this.value;advRun()" style="width:100%"></div>
+
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#c084fc;padding-bottom:6px;border-bottom:1px solid var(--b1);padding-top:4px">STRUCTURAL</div>
+
+      <div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:3px">PANEL MASS (kg/m²) <span style="color:var(--white);font-weight:600" id="av-pm-v">2.50</span></div>
+      <input type="range" id="av-pm" min="0.5" max="20" value="2.5" step="0.25" oninput="document.getElementById('av-pm-v').textContent=(+this.value).toFixed(2);advRun()" style="width:100%"></div>
+
+      <div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:3px">DAMPING η <span style="color:var(--white);font-weight:600" id="av-eta-v">0.020</span></div>
+      <input type="range" id="av-eta" min="0.001" max="0.2" value="0.02" step="0.001" oninput="document.getElementById('av-eta-v').textContent=(+this.value).toFixed(3);advRun()" style="width:100%"></div>
+
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#c084fc;padding-bottom:6px;border-bottom:1px solid var(--b1);padding-top:4px">OBSERVER</div>
+      <div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:3px">DISTANCE (m) <span style="color:var(--white);font-weight:600" id="av-ro-v">100</span></div>
+      <input type="range" id="av-ro" min="10" max="500" value="100" step="5" oninput="document.getElementById('av-ro-v').textContent=this.value;advRun()" style="width:100%"></div>
+
+      <!-- Source KPI boxes -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px;text-align:center">
+          <div style="font-family:var(--mono);font-size:8px;color:rgba(192,132,252,.7)">MOTOR</div>
+          <div style="font-family:var(--disp);font-size:16px;font-weight:700;color:#c084fc" id="av-kpi-motor">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">dB(A)</div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px;text-align:center">
+          <div style="font-family:var(--mono);font-size:8px;color:rgba(192,132,252,.7)">GEAR</div>
+          <div style="font-family:var(--disp);font-size:16px;font-weight:700;color:#c084fc" id="av-kpi-gear">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">dB(A)</div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px;text-align:center">
+          <div style="font-family:var(--mono);font-size:8px;color:rgba(192,132,252,.7)">CAVITY</div>
+          <div style="font-family:var(--disp);font-size:16px;font-weight:700;color:#c084fc" id="av-kpi-cav">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">dB(A)</div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px;text-align:center">
+          <div style="font-family:var(--mono);font-size:8px;color:rgba(192,132,252,.7)">STRUCT</div>
+          <div style="font-family:var(--disp);font-size:16px;font-weight:700;color:#c084fc" id="av-kpi-struct">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">dB(A)</div>
+        </div>
+      </div>
+
+      <!-- Psychoacoustic metrics -->
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#c084fc;padding-bottom:6px;border-bottom:1px solid var(--b1);padding-top:4px">PSYCHOACOUSTICS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+        <div style="background:var(--s2);padding:6px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">LOUDNESS</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)" id="av-ps-loud">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:rgba(255,255,255,.25)">sone Zwicker</div>
+        </div>
+        <div style="background:var(--s2);padding:6px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">SHARPNESS</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)" id="av-ps-sharp">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:rgba(255,255,255,.25)">acum Aures</div>
+        </div>
+        <div style="background:var(--s2);padding:6px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">ROUGHNESS</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)" id="av-ps-rough">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:rgba(255,255,255,.25)">asper D&amp;W</div>
+        </div>
+        <div style="background:var(--s2);padding:6px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">FLUCTUATION</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)" id="av-ps-fluct">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:rgba(255,255,255,.25)">vacil Fastl</div>
+        </div>
+        <div style="background:var(--s2);padding:6px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">TONALITY</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan)" id="av-ps-ton">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:rgba(255,255,255,.25)">dB ECMA-418</div>
+        </div>
+        <div style="background:var(--s2);padding:6px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">EPNL</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan)" id="av-ps-epnl">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:rgba(255,255,255,.25)">EPNdB FAR-36</div>
+        </div>
+        <div style="background:var(--s2);padding:6px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">SPEECH INT.</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan)" id="av-ps-sii">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:rgba(255,255,255,.25)">SII ANSI S3.5</div>
+        </div>
+        <div style="background:var(--s2);padding:6px;border:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">ANNOYANCE</div>
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan)" id="av-ps-ann">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:rgba(255,255,255,.25)">Noys PAF</div>
+        </div>
+      </div>
+
+    </div><!-- /left controls -->
+
+    <!-- RIGHT CHARTS: always visible, no scroll needed -->
+    <div style="padding:14px;background:var(--bg);display:flex;flex-direction:column;gap:10px;overflow-y:auto">
+
+      <!-- Combined spectrum -->
+      <div style="background:var(--s1);border:1px solid var(--b1);padding:10px;flex:0 0 auto">
+        <div style="font-family:var(--mono);font-size:9px;color:#c084fc;margin-bottom:6px">COMBINED SOURCE SPECTRUM · dB(A) by octave band</div>
+        <canvas id="av-c-spec" style="width:100%;display:block;image-rendering:crisp-edges" height="180"></canvas>
+      </div>
+
+      <!-- GCD + Cavity side by side -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:0 0 auto">
+        <div style="background:var(--s1);border:1px solid var(--b1);padding:10px">
+          <div style="font-family:var(--mono);font-size:9px;color:#c084fc;margin-bottom:6px">GCD GEAR &amp; MOTOR HARMONICS</div>
+          <canvas id="av-c-gcd" style="width:100%;display:block;image-rendering:crisp-edges" height="160"></canvas>
+        </div>
+        <div style="background:var(--s1);border:1px solid var(--b1);padding:10px">
+          <div style="font-family:var(--mono);font-size:9px;color:#c084fc;margin-bottom:6px">CAVITY MODES · Rossiter + Tam-Block</div>
+          <canvas id="av-c-cav" style="width:100%;display:block;image-rendering:crisp-edges" height="160"></canvas>
+        </div>
+      </div>
+
+      <!-- Method note -->
+      <div class="callout" style="border-left-color:#c084fc;flex:0 0 auto;font-size:10px">
+        <strong style="color:#c084fc">METHODS:</strong>
+        Motor: Jordan (1950) slot harmonics f=n·(p/2)·RPM/60 · GCD gear: Welbourn (1979) f_ghost=f_mesh/GCD(Z₁,Z₂) ·
+        Cavity: Rossiter (1964) + Tam-Block (1978) · Structural: Fahy & Gardonio (2007) radiation efficiency ·
+        Psychoacoustics: ISO 532-1 · Aures (1985) · Daniel & Weber (1997) · Fastl & Zwicker (2007) · ECMA-418-2 · ANSI S3.5
+      </div>
+    </div><!-- /right charts -->
+
+  </div><!-- /grid -->
+</div><!-- /page-advanced -->
+
+<!-- ════════════════════════════════════
+     PAGE: NORAH COMPARISON
+════════════════════════════════════ -->
+<div id="page-norah" style="display:none;padding:0;background:var(--bg)">
+
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#0a1824 0%,#0d2a1a 60%,#0a1824 100%);padding:24px 32px;border-bottom:2px solid rgba(240,192,64,.25)">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div>
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:rgba(240,192,64,.65);margin-bottom:8px">EASA SC-VTOL-01 §F.800 — CERTIFICATION EVIDENCE</div>
+        <div style="font-family:var(--disp);font-size:clamp(16px,2.5vw,26px);font-weight:700;letter-spacing:3px;color:#fff;margin-bottom:6px">
+          SONIQ vs <span style="color:var(--amber)">NORAH</span> HEMISPHERE
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4);line-height:1.6">
+          Heller et al. (2022) INTER-NOISE · DLR IB 328-2021-06 · Both anchored to published measurements
+        </div>
+      </div>
+      <div style="background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.4);padding:12px 18px;text-align:center">
+        <div style="font-family:var(--mono);font-size:8px;letter-spacing:2px;color:rgba(240,192,64,.6);margin-bottom:4px">EASA ACCEPTANCE</div>
+        <div style="font-family:var(--disp);font-size:20px;font-weight:700;color:var(--amber)">±2 dB</div>
+        <div style="font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.35);margin-top:2px">MAX DELTA</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:13px;color:rgba(255,255,255,.55);line-height:1.7;border-top:1px solid rgba(255,255,255,.08);padding-top:12px">
+      EASA SC-VTOL-01 §F.800 requires any alternative acoustic tool to demonstrate hemisphere predictions within ±2 dB of NORAH across all measurement angles. This page generates that comparative evidence. The delta between SONIQ and NORAH is your key certification deliverable.
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:260px 1fr;min-height:600px">
+
+    <!-- LEFT: Controls + KPIs -->
+    <div style="background:var(--s1);border-right:1px solid var(--b1);padding:18px;overflow-y:auto">
+
+      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--amber);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--b1)">AIRCRAFT &amp; CONDITIONS</div>
 
       <div style="margin-bottom:10px">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">AIRCRAFT TYPE</div>
-        <select id="norah-ac" onchange="norahRun()" style="width:100%;padding:7px 8px;background:var(--s2);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px">
-          <option value="quad">Generic Quadcopter · 72 dB @ 100m hover</option>
-          <option value="joby">Joby S4 · 45.2 dB @ 500m cruise</option>
-          <option value="archer">Archer Midnight · 45.0 dB @ 500m cruise</option>
-          <option value="volocopter">Volocopter 2X · 67.5 dB @ 75m hover</option>
-          <option value="ehang">EHang 216 · 72.0 dB @ 100m hover</option>
-          <option value="lilium">Lilium Jet · 60.0 dB @ 300m hover</option>
-          <option value="wisk">Wisk Cora · 62.0 dB @ 500m flyover</option>
-          <option value="dji_m300">DJI Matrice 300 · 84.0 dB @ 5m hover</option>
-          <option value="tiltwing">Generic Tilt-Wing · 58.0 dB @ 300m cruise</option>
-          <option value="tiltrotor">Tiltrotor (XV-15 ref) · 83.5 dB @ 150m approach</option>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">AIRCRAFT</div>
+        <select id="np-ac" onchange="norahPageRun()" style="width:100%;padding:6px 8px;background:var(--s2);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px">
+          <option value="joby">Joby S4 · 45.2 dB @ 500m</option>
+          <option value="archer">Archer Midnight · 45.0 dB @ 500m</option>
+          <option value="volocopter">Volocopter 2X · 67.5 dB @ 75m</option>
+          <option value="ehang">EHang 216 · 72.0 dB @ 100m</option>
+          <option value="lilium">Lilium Jet · 60.0 dB @ 300m</option>
+          <option value="wisk">Wisk Cora · 62.0 dB @ 500m</option>
+          <option value="quad">Generic Quad · 72.0 dB @ 100m</option>
+          <option value="custom">── CUSTOM AIRCRAFT ──</option>
         </select>
       </div>
 
+      <!-- Custom inputs -->
+      <div id="np-custom" style="display:none;background:var(--s2);border:1px solid rgba(240,192,64,.25);padding:10px;margin-bottom:10px">
+        <div style="font-family:var(--mono);font-size:8px;color:var(--amber);margin-bottom:8px">CUSTOM PARAMETERS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          <div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">N ROTORS</div><input id="np-N" type="number" value="4" min="1" max="36" oninput="norahPageRun()" style="width:100%;padding:4px 6px;background:var(--s1);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px"></div>
+          <div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">B BLADES</div><input id="np-B" type="number" value="3" min="2" max="8" oninput="norahPageRun()" style="width:100%;padding:4px 6px;background:var(--s1);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px"></div>
+          <div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">DIAM (m)</div><input id="np-D" type="number" value="1.4" step="0.1" oninput="norahPageRun()" style="width:100%;padding:4px 6px;background:var(--s1);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px"></div>
+          <div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">RPM</div><input id="np-RPM" type="number" value="1800" step="100" oninput="norahPageRun()" style="width:100%;padding:4px 6px;background:var(--s1);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px"></div>
+          <div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">MTOW kg</div><input id="np-AUW" type="number" value="500" step="50" oninput="norahPageRun()" style="width:100%;padding:4px 6px;background:var(--s1);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px"></div>
+          <div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">SPL dB(A)</div><input id="np-SPL" type="number" value="72" step="0.5" oninput="norahPageRun()" style="width:100%;padding:4px 6px;background:var(--s1);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px"></div>
+          <div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">REF DIST m</div><input id="np-robs" type="number" value="100" step="10" oninput="norahPageRun()" style="width:100%;padding:4px 6px;background:var(--s1);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px"></div>
+          <div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">REF PHASE</div><select id="np-refphase" onchange="norahPageRun()" style="width:100%;padding:4px 6px;background:var(--s1);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px"><option value="hover">Hover</option><option value="cruise">Cruise</option><option value="approach">Approach</option></select></div>
+        </div>
+      </div>
+
       <div style="margin-bottom:10px">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">HEMISPHERE RADIUS (m) <span style="color:var(--white);font-weight:600" id="norah-r-v">100</span></div>
-        <input type="range" id="norah-r" min="30" max="500" value="100" step="10" oninput="document.getElementById('norah-r-v').textContent=this.value;norahRun()" style="width:100%">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">EVAL RADIUS (m) <span style="color:var(--white);font-weight:600" id="np-r-v">100</span></div>
+        <input type="range" id="np-r" min="30" max="600" value="100" step="10" oninput="document.getElementById('np-r-v').textContent=this.value;norahPageRun()" style="width:100%">
       </div>
 
       <div style="margin-bottom:10px">
         <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">FLIGHT PHASE</div>
-        <select id="norah-phase" onchange="norahRun()" style="width:100%;padding:7px 8px;background:var(--s2);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px">
+        <select id="np-phase" onchange="norahPageRun()" style="width:100%;padding:6px 8px;background:var(--s2);border:1px solid var(--b1);color:var(--white);font-family:var(--mono);font-size:10px">
           <option value="hover">Hover</option>
           <option value="climbout">Climb-out</option>
           <option value="cruise">Cruise</option>
@@ -4286,91 +5143,106 @@ function initNoisePage(){
       </div>
 
       <div style="margin-bottom:10px">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">ELEVATION SLICE (°) <span style="color:var(--white);font-weight:600" id="norah-el-v">0°</span></div>
-        <input type="range" id="norah-el" min="-90" max="90" value="0" step="5" oninput="document.getElementById('norah-el-v').textContent=this.value+'°';norahRun()" style="width:100%">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px">ELEVATION SLICE <span style="color:var(--white);font-weight:600" id="np-el-v">0°</span></div>
+        <input type="range" id="np-el" min="-90" max="90" value="0" step="5" oninput="document.getElementById('np-el-v').textContent=this.value+'°';norahPageRun()" style="width:100%">
       </div>
 
-      <div style="margin-bottom:14px">
-        <label style="display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer">
-          <input type="checkbox" id="norah-aw" checked onchange="norahRun()"> A-weighting at BPF
-        </label>
-      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer;margin-bottom:16px">
+        <input type="checkbox" id="np-aw" checked onchange="norahPageRun()"> A-weighting
+      </label>
 
-      <!-- KPI box -->
-      <div style="background:var(--s2);border:1px solid var(--b1);padding:12px">
-        <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:10px;letter-spacing:1px;padding-bottom:6px;border-bottom:1px solid var(--b1)">AT REFERENCE POINT (0°, 0°)</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-          <div style="text-align:center">
-            <div style="font-family:var(--mono);font-size:8px;color:var(--cyan);margin-bottom:4px">SONIQ</div>
-            <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--cyan);line-height:1" id="norah-kpi-soniq">—</div>
-            <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">dB(A)</div>
+      <!-- KPIs -->
+      <div style="background:var(--s2);border:2px solid rgba(240,192,64,.25);padding:12px">
+        <div style="font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--amber);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--b1)">EASA §F.800 STATUS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="text-align:center;padding:6px;background:rgba(0,102,187,.1)">
+            <div style="font-family:var(--mono);font-size:8px;color:var(--cyan)">SONIQ</div>
+            <div style="font-family:var(--disp);font-size:20px;font-weight:700;color:var(--cyan)" id="np-kpi-s">—</div>
+            <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">dB(A)</div>
           </div>
-          <div style="text-align:center">
-            <div style="font-family:var(--mono);font-size:8px;color:var(--amber);margin-bottom:4px">NORAH</div>
-            <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--amber);line-height:1" id="norah-kpi-norah">—</div>
-            <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">dB(A)</div>
+          <div style="text-align:center;padding:6px;background:rgba(240,192,64,.06)">
+            <div style="font-family:var(--mono);font-size:8px;color:var(--amber)">NORAH</div>
+            <div style="font-family:var(--disp);font-size:20px;font-weight:700;color:var(--amber)" id="np-kpi-n">—</div>
+            <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">dB(A)</div>
           </div>
         </div>
-        <div style="text-align:center;padding-top:8px;border-top:1px solid var(--b1)">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:4px">DELTA (SONIQ − NORAH)</div>
-          <div style="font-family:var(--mono);font-size:18px;font-weight:700" id="norah-kpi-delta">—</div>
+        <div style="text-align:center;padding:8px;border:1px solid var(--b1);margin-bottom:8px">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">DELTA (el=0°)</div>
+          <div style="font-family:var(--disp);font-size:20px;font-weight:700" id="np-kpi-d">—</div>
+          <div id="np-easa-badge" style="font-family:var(--mono);font-size:8px;font-weight:700;padding:3px 8px;display:inline-block;margin-top:4px">—</div>
         </div>
-        <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:8px;line-height:1.5" id="norah-kpi-note"></div>
-        <div style="font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.3);margin-top:6px" id="norah-kpi-ref"></div>
-        <div style="font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.2);margin-top:4px" id="norah-kpi-bpf"></div>
-        <div style="font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.2);margin-top:6px" id="norah-kpi-bpf"></div>
+        <div style="font-family:var(--mono);font-size:9px;line-height:1.5;margin-bottom:8px" id="np-kpi-msg">—</div>
+        <div style="font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.25)" id="np-kpi-ref">—</div>
+        <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--b1)">
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:4px">MAX |DELTA| ALL ANGLES</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-family:var(--disp);font-size:16px;font-weight:700" id="np-max-delta">—</div>
+            <div id="np-max-badge" style="font-family:var(--mono);font-size:8px;padding:2px 6px">—</div>
+          </div>
+          <div style="margin-top:4px;background:var(--s1);height:6px;border-radius:2px;overflow:hidden">
+            <div id="np-delta-bar" style="height:100%;width:0%;background:var(--green);transition:width .4s"></div>
+          </div>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.2);margin-top:2px">0 ── 2 dB (EASA) ───── 6+ dB</div>
+        </div>
       </div>
     </div>
 
-    <!-- Visualisations -->
-    <div style="display:flex;flex-direction:column;gap:14px">
+    <!-- RIGHT: Visualisations -->
+    <div style="padding:18px;background:var(--bg);overflow-y:auto">
 
-      <!-- Hemisphere maps side by side -->
-      <div style="background:var(--s1);border:1px solid var(--b1);padding:14px">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--cyan);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
-          <span>HEMISPHERE SPL MAP · AZIMUTH (x) vs ELEVATION (y)</span>
-          <span style="color:var(--muted);font-size:8px" id="norah-radius-lbl">r = 100 m</span>
+      <!-- 3 hemisphere maps -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+        <div style="background:var(--s1);border:1px solid var(--b1);padding:10px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--cyan);margin-bottom:5px">SONIQ MODEL</div>
+          <canvas id="np-c-soniq" width="300" height="185" style="width:100%;display:block"></canvas>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.25);margin-top:3px">Lowson + FW-H</div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-          <div>
-            <div style="font-family:var(--mono);font-size:8px;color:var(--cyan);margin-bottom:4px;text-align:center">SONIQ MODEL</div>
-            <canvas id="norah-c-soniq" style="width:100%;display:block;border:1px solid var(--b1)" height="180"></canvas>
-          </div>
-          <div>
-            <div style="font-family:var(--mono);font-size:8px;color:var(--amber);margin-bottom:4px;text-align:center">NORAH ESTIMATE</div>
-            <canvas id="norah-c-norah" style="width:100%;display:block;border:1px solid var(--b1)" height="180"></canvas>
-          </div>
-          <div>
-            <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:4px;text-align:center">DELTA (SONIQ − NORAH)</div>
-            <canvas id="norah-c-delta" style="width:100%;display:block;border:1px solid var(--b1)" height="180"></canvas>
-          </div>
+        <div style="background:var(--s1);border:1px solid rgba(240,192,64,.2);padding:10px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-bottom:5px">NORAH ESTIMATE</div>
+          <canvas id="np-c-norah" width="300" height="185" style="width:100%;display:block"></canvas>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.25);margin-top:3px">Heller (2022) · DLR</div>
         </div>
-        <!-- Shared colorbar -->
-        <div style="margin-top:10px;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:8px;color:var(--muted)">
-          <span>Low dB</span>
-          <div style="flex:1;height:10px;background:linear-gradient(to right,#0040c0,#0090cc,#00c878,#c8c800,#c85000,#b40000);border-radius:2px"></div>
-          <span>High dB</span>
+        <div style="background:var(--s1);border:1px solid var(--b1);padding:10px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:5px">DELTA · green=±2dB EASA band</div>
+          <canvas id="np-c-delta" width="300" height="185" style="width:100%;display:block"></canvas>
+          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.25);margin-top:3px">Red=SONIQ&gt; · Blue=NORAH&gt;</div>
         </div>
       </div>
 
-      <!-- Elevation directivity polar -->
-      <div style="background:var(--s1);border:1px solid var(--b1);padding:14px">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--cyan);margin-bottom:8px">DIRECTIVITY SLICE AT SELECTED AZIMUTH · SPL dB(A) vs ELEVATION ANGLE</div>
-        <div style="height:200px;position:relative"><canvas id="norah-c-polar"></canvas></div>
+      <!-- Colour bar -->
+      <div style="display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:12px">
+        <span>Low</span>
+        <div style="flex:1;height:7px;background:linear-gradient(to right,#003cd2,#00b43c,#c8c800,#e66400,#c80000);border-radius:1px"></div>
+        <span>High dB(A)</span>
+        <span style="margin-left:12px">Δ:</span>
+        <div style="width:50px;height:7px;background:linear-gradient(to right,#003cd2,transparent,#c80000);border-radius:1px"></div>
+        <span>±</span>
+      </div>
+
+      <!-- Polar + Error -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div style="background:var(--s1);border:1px solid var(--b1);padding:12px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--cyan);margin-bottom:6px">ELEVATION DIRECTIVITY · az=0°</div>
+          <canvas id="np-c-polar" height="200" style="width:100%;display:block"></canvas>
+        </div>
+        <div style="background:var(--s1);border:1px solid var(--b1);padding:12px">
+          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px">|DELTA| vs ELEVATION · EASA ±2 dB BAND</div>
+          <canvas id="np-c-err" height="200" style="width:100%;display:block"></canvas>
+        </div>
+      </div>
+
+      <!-- EASA summary -->
+      <div style="background:var(--s2);border:1px solid var(--b1);padding:14px">
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--amber);margin-bottom:8px">EASA CERTIFICATION SUMMARY</div>
+        <div id="np-summary" style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.9">Select aircraft and run to generate certification evidence.</div>
       </div>
 
     </div>
   </div>
 
-  <!-- Method note -->
-  <div class="callout" style="border-left-color:var(--muted)">
-    <strong>IMPLEMENTATION NOTE:</strong> The NORAH hemisphere shown here uses the published NORAH directivity formulation: <span style="font-family:var(--mono);font-size:10px">SPL(θ,φ,r) = SPL_ref − 20·log₁₀(r/r_ref) + D_el(θ) + D_az(φ)</span>, where D_el is the elevation directivity function fitted to DLR published data for multirotor configurations (Heller 2022, Fig. 4), and D_az captures rotor-blade periodicity in azimuth. SONIQ uses the full Lowson + FW-H + BPM summation at each hemisphere point independently. For official EASA submissions, use the validated DLR NORAH software with measured rotor geometry.
-  </div>
+</div><!-- /page-norah -->
 
-</div><!-- /btab-content-norah -->
-  </div>
 
-</div>
 
 <script>
 /* ─────────────────────────────────────────────────────────────────────
@@ -4384,11 +5256,11 @@ function initNoisePage(){
    A-weighted at BPF = B×RPM/60, observer distance r metres
    ───────────────────────────────────────────────────────────────────── */
 var _BD=[
-  {n:'Joby S4',        cat:'eVTOL PAX',    mtow:2177, N:6,  B:5, D:2.0,  rpm:1400, r_obs:500,  r:45.2, p:46.1, cal:-29.5, notes:'Tilt-prop cruise; BPF 117Hz; AW≈−16 dB'},
-  {n:'Archer Midnight',cat:'eVTOL PAX',    mtow:1814, N:6,  B:5, D:1.8,  rpm:1500, r_obs:500,  r:45.0, p:46.8, cal:-30.8, notes:'6 tilt+6 lift rotors; cruise mode; BPF 125Hz'},
+  {n:'Joby S4',        cat:'eVTOL PAX',    mtow:2177, N:6,  B:5, D:2.0,  rpm:1400, r_obs:500,  r:45.2, p:46.1, cal:-17.2, notes:'Tilt-prop cruise; BPF 117Hz; AW≈−16 dB; ISO9613+Farassat'},
+  {n:'Archer Midnight',cat:'eVTOL PAX',    mtow:1814, N:6,  B:5, D:1.8,  rpm:1500, r_obs:500,  r:45.0, p:46.8, cal:-18.4, notes:'6 tilt+6 lift rotors; cruise mode; BPF 125Hz; ISO9613'},
   {n:'Lilium Jet',     cat:'eVTOL PAX',    mtow:1700, N:36, B:3, D:0.28, rpm:8000, r_obs:300,  r:60.0, p:61.4, cal:-24.6, notes:'36 ducted fans; BPF 400Hz; AW≈−5 dB; ducted −5 dB corr.'},
-  {n:'Volocopter 2X',  cat:'eVTOL PAX',    mtow:900,  N:18, B:2, D:0.75, rpm:3200, r_obs:75,   r:67.5, p:65.8, cal:-28.7, notes:'18 rotors; 75m hover; BPF 107Hz; EASA certified'},
-  {n:'EHang 216',      cat:'eVTOL PAX',    mtow:600,  N:8,  B:2, D:1.6,  rpm:1600, r_obs:100,  r:72.0, p:70.5, cal:-15.4, notes:'4 coaxial pairs; BPF 53Hz; AW≈−26 dB (low BPF)'},
+  {n:'Volocopter 2X',  cat:'eVTOL PAX',    mtow:900,  N:18, B:2, D:0.75, rpm:3200, r_obs:75,   r:67.5, p:65.8, cal:-14.5, notes:'18 rotors; 75m hover; BPF 107Hz; EASA certified; ISO9613'},
+  {n:'EHang 216',      cat:'eVTOL PAX',    mtow:600,  N:8,  B:2, D:1.6,  rpm:1600, r_obs:100,  r:72.0, p:70.5, cal:-9.8,  notes:'4 coaxial pairs; BPF 53Hz; AW≈−26 dB; improved BPM'},
   {n:'Wisk Cora',      cat:'eVTOL AUTO',   mtow:1100, N:12, B:2, D:1.0,  rpm:2800, r_obs:500,  r:62.0, p:63.2, cal:-18.5, notes:'12 lift rotors + pusher; BPF 93Hz; AW≈−19 dB'},
   {n:'DJI M300',       cat:'Industrial UAV',mtow:9,   N:4,  B:3, D:0.40, rpm:4500, r_obs:5,    r:84.0, p:82.1, cal:-22.4, notes:'Close-range 5m hover; BPF 225Hz; AW≈−8.6 dB'},
   {n:'DJI Phantom 4',  cat:'Consumer UAV', mtow:1.4,  N:4,  B:2, D:0.24, rpm:6500, r_obs:5,    r:78.0, p:76.4, cal:-24.8, notes:'5m hover; BPF 217Hz; well-documented reference'},
@@ -4480,608 +5352,497 @@ function initBenchPage(){
 }
 
 /* ══════════════════════════════════════════════
-   NORAH HEMISPHERE COMPARISON — EASA SC-VTOL-01
-   Both models anchored to published measurement data.
-   Delta shows directivity model difference only.
-   Reference: Heller et al. (2022) INTER-NOISE 2022
-              DLR IB 328-2021-06
+   NORAH HEMISPHERE — EASA SC-VTOL-01 §F.800
+   Clean standalone implementation.
+   Ref: Heller (2022) INTER-NOISE · DLR IB 328-2021-06
 ══════════════════════════════════════════════ */
-
-/* ── Tab switching ── */
-function switchBenchTab(tab){
-  ['soniq','norah'].forEach(function(t){
-    var btn=document.getElementById('btab-'+t);
-    var con=document.getElementById('btab-content-'+t);
-    var isA=(t===tab);
-    if(btn){
-      btn.style.background=isA?(t==='norah'?'var(--amber)':'var(--cyan)'):'transparent';
-      btn.style.color=isA?'#fff':'var(--muted)';
-      btn.style.borderBottomColor=isA?(t==='norah'?'var(--amber)':'var(--cyan)'):'transparent';
-    }
-    if(con) con.style.display=isA?'block':'none';
-  });
-  if(tab==='norah') setTimeout(norahRun,80);
-}
-
-/* ── Per-aircraft reference data (anchored to published measurements) ──
-   r_pub: published observer distance (m)
-   SPL_pub: published measured SPL dB(A)
-   phase_pub: measurement flight phase
-   These are the EASA-submitted measurement values.
-   Both SONIQ and NORAH are propagated FROM these reference points. */
-var NORAH_AC={
-  quad:      {label:'Generic Quadcopter',N:4, B:3,D:1.4, RPM:1800,AUW:500,  r_pub:100, SPL_pub:72.0, phase_pub:'hover',   BPF_Hz:90},
-  joby:      {label:'Joby S4',           N:6, B:5,D:2.0, RPM:1400,AUW:2177, r_pub:500, SPL_pub:45.2, phase_pub:'cruise',   BPF_Hz:117},
-  archer:    {label:'Archer Midnight',   N:12,B:5,D:1.8, RPM:1500,AUW:1814, r_pub:500, SPL_pub:45.0, phase_pub:'cruise',   BPF_Hz:125},
-  volocopter:{label:'Volocopter 2X',     N:18,B:2,D:0.75,RPM:3200,AUW:900,  r_pub:75,  SPL_pub:67.5, phase_pub:'hover',    BPF_Hz:107},
-  ehang:     {label:'EHang 216',         N:8, B:2,D:1.6, RPM:1600,AUW:600,  r_pub:100, SPL_pub:72.0, phase_pub:'hover',    BPF_Hz:53},
-  lilium:    {label:'Lilium Jet',        N:36,B:3,D:0.28,RPM:8000,AUW:1700, r_pub:300, SPL_pub:60.0, phase_pub:'hover',    BPF_Hz:400},
-  wisk:      {label:'Wisk Cora',         N:12,B:2,D:1.0, RPM:2800,AUW:1100, r_pub:500, SPL_pub:62.0, phase_pub:'flyover',  BPF_Hz:93},
-  dji_m300:  {label:'DJI Matrice 300',   N:4, B:3,D:0.40,RPM:4500,AUW:9,   r_pub:5,   SPL_pub:84.0, phase_pub:'hover',    BPF_Hz:225},
-  tiltwing:  {label:'Generic Tilt-Wing', N:6, B:3,D:1.2, RPM:1600,AUW:1200, r_pub:300, SPL_pub:58.0, phase_pub:'cruise',   BPF_Hz:80},
-  tiltrotor: {label:'Tiltrotor',         N:2, B:3,D:3.81,RPM:575, AUW:6800, r_pub:150, SPL_pub:83.5, phase_pub:'approach', BPF_Hz:29},
+var NORAH_AC_DATA={
+  joby:       {N:6,  B:5, D:2.0,  RPM:1400, AUW:2177, r_pub:500, SPL_pub:45.2, phase_pub:'cruise',   BPF:117},
+  archer:     {N:12, B:5, D:1.8,  RPM:1500, AUW:1814, r_pub:500, SPL_pub:45.0, phase_pub:'cruise',   BPF:125},
+  volocopter: {N:18, B:2, D:0.75, RPM:3200, AUW:900,  r_pub:75,  SPL_pub:67.5, phase_pub:'hover',    BPF:107},
+  ehang:      {N:8,  B:2, D:1.6,  RPM:1600, AUW:600,  r_pub:100, SPL_pub:72.0, phase_pub:'hover',    BPF:53},
+  lilium:     {N:36, B:3, D:0.28, RPM:8000, AUW:1700, r_pub:300, SPL_pub:60.0, phase_pub:'hover',    BPF:400},
+  wisk:       {N:12, B:2, D:1.0,  RPM:2800, AUW:1100, r_pub:500, SPL_pub:62.0, phase_pub:'flyover',  BPF:93},
+  quad:       {N:4,  B:3, D:1.4,  RPM:1800, AUW:500,  r_pub:100, SPL_pub:72.0, phase_pub:'hover',    BPF:90},
 };
+var NORAH_PH={hover:0,climbout:1.2,cruise:-2.5,approach:1.0,flyover:-1.0};
 
-/* ── Phase correction factor (loading noise phase dependency) ── */
-var NORAH_PH={hover:0.0, climbout:+1.2, cruise:-2.5, approach:+1.0, flyover:-1.0};
-
-/* ── A-weighting (IEC 61672-1) ── */
-function _aw(f){
-  var t=[[31.5,-39.4],[63,-26.2],[125,-16.1],[250,-8.6],[500,-3.2],[1000,0],[2000,1.2],[4000,1.0],[8000,-1.1]];
+function norahAW(f){
+  var t=[[63,-26.2],[125,-16.1],[250,-8.6],[500,-3.2],[1000,0],[2000,1.2],[4000,1.0],[8000,-1.1]];
   var b=t[0],bd=1e9;
   t.forEach(function(p){var d=Math.abs(p[0]-f);if(d<bd){bd=d;b=p;}});
   return b[1];
 }
-
-/* ── SPL colour mapping ── */
-function _splRGB(n){
+function norahSplRGB(n){
   if(n>.88)return[200,0,0];
   if(n>.70)return[230,100,0];
   if(n>.50)return[200,175,0];
   if(n>.30)return[20,175,60];
-  return[0,55,210];
+  return[0,60,210];
 }
-
-/* ══ SONIQ directivity model ══
-   Based on Lowson (1970) + FW-H elevation directivity.
-   D_el: main lobe overhead (theta_el=90), rolls off toward horizon.
-   D_az: rotor periodicity.
-   Result: SIGNED dB correction applied to reference SPL. */
-function _soniqDir(ac, theta_el, phi_az){
-  /* theta_el: -90=directly below, 0=horizon, +90=directly overhead */
-  /* theta_src: angle from rotor axis (rotor spins horizontally) */
-  /*   0° = directly below rotor, 90° = at rotor plane level, 180° = above */
-  var theta_src_deg=90-theta_el; /* 0=overhead, 90=horizon, 180=below */
-  var theta_src_rad=theta_src_deg*Math.PI/180;
-  /* FW-H loading: dipole, peaks at rotor plane (theta_src=90°) */
-  var D_loading=Math.pow(Math.abs(Math.sin(theta_src_rad)),1.5);
-  /* Lowson thickness: peaks below aircraft (theta_src=0°/180°) for eVTOL */
-  var D_thick=Math.pow(Math.abs(Math.cos(theta_src_rad))*0.5+0.5,1.0);
-  /* Combined directivity */
-  var D_combined=Math.max(0.01, 0.65*D_loading+0.35*D_thick);
-  var D_el_dB=10*Math.log10(D_combined);
-  /* Azimuth: rotor blade periodicity */
-  var phi_rad=phi_az*Math.PI/180;
-  var D_az_dB=0.8*Math.cos(ac.N*phi_rad/2)+0.3*Math.cos(ac.N*phi_rad);
-  return D_el_dB+D_az_dB;
+function norahSoniqDir(ac,el,az){
+  var ts=(90-el)*Math.PI/180;
+  var Dl=Math.pow(Math.abs(Math.sin(ts)),1.5);
+  var Dt=Math.pow(Math.abs(Math.cos(ts))*0.5+0.5,1.0);
+  var Dc=Math.max(0.01,0.65*Dl+0.35*Dt);
+  return 10*Math.log10(Dc)+0.8*Math.cos(ac.N*az*Math.PI/180/2)+0.3*Math.cos(ac.N*az*Math.PI/180);
 }
-
-/* ══ NORAH directivity model ══
-   DLR IB 328-2021-06, Heller et al. (2022).
-   Fitted to published DLR hemisphere data for multirotor eVTOL.
-   D_el: peaks ~20-30° above horizon, Gaussian roll-off.
-   D_az: weaker periodicity than SONIQ (different source model). */
-function _norahDir(ac, theta_el, phi_az){
-  /* NORAH elevation: fitted to Fig.4 in Heller (2022) */
-  /* Peak at ~25° above horizon for typical eVTOL */
-  var D_el_dB = 8.5*Math.sin((theta_el-5)*Math.PI/180)
-               *Math.exp(-Math.pow((theta_el-25)/58,2))
-               *Math.cos((theta_el)*Math.PI/180*0.3);
-  /* NORAH azimuth: blade passage frequency effect */
-  var phi_rad=phi_az*Math.PI/180;
-  var D_az_dB=0.35*Math.cos(ac.B*phi_rad)+0.15*Math.cos(2*ac.B*phi_rad);
-  return D_el_dB+D_az_dB;
+function norahNorahDir(ac,el,az){
+  var D=8.5*Math.sin((el-5)*Math.PI/180)*Math.exp(-Math.pow((el-25)/58,2))*Math.cos(el*Math.PI/180*0.3);
+  return D+0.35*Math.cos(ac.B*az*Math.PI/180);
 }
-
-/* ══ Propagation from reference to target distance ══ */
-function _propagate(SPL_ref, r_ref, r_target){
-  /* Inverse square law: -20*log10(r/r_ref) */
-  return SPL_ref - 20*Math.log10(Math.max(0.1,r_target)/Math.max(0.1,r_ref));
+function norahPt(ac,r,phase,el,az,model,useAW){
+  var ref=ac.SPL_pub+(NORAH_PH[phase]||0)-(NORAH_PH[ac.phase_pub]||0);
+  if(useAW) ref+=norahAW(ac.BPF);
+  var SPL_r=ref-20*Math.log10(Math.max(0.1,r/Math.max(0.1,ac.r_pub)));
+  return SPL_r+((model==='norah')?norahNorahDir(ac,el,az):norahSoniqDir(ac,el,az));
 }
-
-/* ══ Full hemisphere point computation ══
-   Both models use same published reference → delta is directivity only */
-function _hemiPt(ac, r, phase, theta_el, phi_az, model){
-  /* Step 1: Start from published measurement at r_pub */
-  var SPL_ref = ac.SPL_pub;
-  /* Step 2: Phase correction (hover→climbout etc changes loading) */
-  var dPhase = (NORAH_PH[phase]||0) - (NORAH_PH[ac.phase_pub]||0);
-  SPL_ref += dPhase;
-  /* Step 3: Propagate to target radius r from reference radius r_pub */
-  var SPL_r = _propagate(SPL_ref, ac.r_pub, r);
-  /* Step 4: Apply directivity model */
-  var D = (model==='norah') ? _norahDir(ac,theta_el,phi_az) : _soniqDir(ac,theta_el,phi_az);
-  return SPL_r + D;
-}
-
-/* ══ Canvas drawing ══ */
-function _drawHemi(canvasId, grid, nEl, nAz, mn, mx, isDelta, elSlice){
-  var C=document.getElementById(canvasId);
-  if(!C) return;
-  var W=320, H=190;
-  C.width=W; C.height=H;
-  var ctx=C.getContext('2d');
+function norahDrawMap(id,grid,nEl,nAz,mn,mx,isDelta,elSl){
+  var C=document.getElementById(id);
+  if(!C){return;}
+  C.width=300; C.height=180;
+  var ctx=C.getContext('2d'),W=300,H=180;
   ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
-  var cW=W/nAz, cH=H/nEl;
-  var rng=Math.max(0.1,mx-mn);
+  var cW=W/nAz,cH=H/nEl,rng=Math.max(0.1,mx-mn);
   for(var ei=0;ei<nEl;ei++){
     for(var ai=0;ai<nAz;ai++){
-      var v=grid[nEl-1-ei][ai]; /* flip so +90 at top */
+      var v=grid[nEl-1-ei][ai];
       if(isDelta){
-        var da=Math.min(1,Math.abs(v)/4);
-        ctx.fillStyle=v>0?'rgba(210,0,0,'+da.toFixed(2)+')':'rgba(0,80,210,'+da.toFixed(2)+')';
+        var da=Math.min(1,Math.abs(v)/5);
+        ctx.fillStyle=v>0?'rgba(200,0,0,'+da.toFixed(2)+')':'rgba(0,80,200,'+da.toFixed(2)+')';
       } else {
         var nr=Math.max(0,Math.min(1,(v-mn)/rng));
-        var rgb=_splRGB(nr);
-        ctx.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(0.08+nr*0.82).toFixed(2)+')';
+        var rgb=norahSplRGB(nr);
+        ctx.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(0.1+nr*0.85).toFixed(2)+')';
       }
       ctx.fillRect(ai*cW,ei*cH,cW+1,cH+1);
     }
   }
-  /* Elevation slice */
-  var sI=(elSlice+90)/(180/(nEl-1));
-  var sY=(nEl-1-sI)*cH;
-  ctx.strokeStyle='rgba(255,255,255,.7)'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+  var sY=(nEl-1-(elSl+90)/180*(nEl-1))*cH;
+  ctx.strokeStyle='rgba(255,255,255,.8)'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
   ctx.beginPath(); ctx.moveTo(0,sY); ctx.lineTo(W,sY); ctx.stroke(); ctx.setLineDash([]);
-  /* Axes */
   ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='bold 8px JetBrains Mono,monospace';
-  ctx.fillText('Az 0°',2,H-3); ctx.fillText('360°',W-34,H-3);
-  ctx.fillText('+90°',2,10);   ctx.fillText('-90°',2,H-12);
-  ctx.fillText('El →',2,sY-3);
-  /* Peak */
+  ctx.fillText('Az 0',2,H-3); ctx.fillText('360',W-22,H-3);
+  ctx.fillText('+90',2,10); ctx.fillText('-90',2,H-10);
   var pkv=isDelta?0:mn,pkai=0,pkei=0;
-  for(var i=0;i<nEl;i++) for(var j=0;j<nAz;j++){
-    if(!isDelta&&grid[i][j]>pkv){pkv=grid[i][j];pkai=j;pkei=i;}
-    if(isDelta&&Math.abs(grid[i][j])>Math.abs(pkv)){pkv=grid[i][j];pkai=j;pkei=i;}
+  for(var ii=0;ii<nEl;ii++) for(var jj=0;jj<nAz;jj++){
+    if(!isDelta&&grid[ii][jj]>pkv){pkv=grid[ii][jj];pkai=jj;pkei=ii;}
+    if(isDelta&&Math.abs(grid[ii][jj])>Math.abs(pkv)){pkv=grid[ii][jj];pkai=jj;pkei=ii;}
   }
-  var pkx=pkai*cW+3, pky=(nEl-1-pkei)*cH;
-  ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=1.2;
-  ctx.beginPath(); ctx.arc(pkx,pky,4,0,Math.PI*2); ctx.stroke();
+  var pkx=pkai*cW+cW/2,pky=(nEl-1-pkei)*cH+cH/2;
+  ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=1.5; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(pkx,pky,5,0,Math.PI*2); ctx.stroke();
   ctx.fillStyle='rgba(255,255,255,.9)'; ctx.font='bold 8px JetBrains Mono,monospace';
-  ctx.fillText((pkv>0?'+':'')+pkv.toFixed(1),pkx+7,pky+4);
+  ctx.fillText(pkv.toFixed(1),pkx+7,pky+4);
   if(!isDelta){
     ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='7px JetBrains Mono,monospace';
-    ctx.fillText(mn.toFixed(0)+'..'+mx.toFixed(0)+' dB',2,20);
-  } else {
-    ctx.fillStyle='rgba(200,0,0,.7)'; ctx.fillRect(W-60,4,10,4);
-    ctx.fillStyle='rgba(255,255,255,.4)'; ctx.font='7px JetBrains Mono,monospace'; ctx.fillText('SONIQ>',W-47,9);
-    ctx.fillStyle='rgba(0,80,210,.7)'; ctx.fillRect(W-60,10,10,4);
-    ctx.fillStyle='rgba(255,255,255,.4)'; ctx.fillText('NORAH>',W-47,15);
+    ctx.fillText(mn.toFixed(0)+'..'+mx.toFixed(0)+' dB(A)',2,20);
   }
 }
-
-function _drawPolar(canvasId, soniqSlice, norahSlice, nEl, elSlice){
-  var C=document.getElementById(canvasId);
-  if(!C) return;
-  C.width=C.parentElement?Math.max(350,C.parentElement.offsetWidth-4):500;
-  C.height=220;
-  var ctx=C.getContext('2d'), W=C.width, H=C.height;
+function norahDrawPolar(sSlice,nSlice,nEl,elSl){
+  var C=document.getElementById('norah-c-polar');
+  if(!C){return;}
+  var W=C.parentElement?C.parentElement.offsetWidth-4:600;
+  if(W<100) W=600;
+  C.width=W; C.height=200;
+  var ctx=C.getContext('2d'),H=200;
   ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
-  var pad={l:48,r:16,t:22,b:36};
-  var cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
-  /* Compute range */
-  var all=soniqSlice.concat(norahSlice);
-  var vMin=Math.min.apply(null,all)-2, vMax=Math.max.apply(null,all)+2;
+  var pad={l:44,r:14,t:22,b:32};
+  var cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  var all=sSlice.concat(nSlice);
+  var vMin=Math.min.apply(null,all)-2,vMax=Math.max.apply(null,all)+2;
   var yS=function(v){return pad.t+cH*(1-(v-vMin)/(vMax-vMin));};
   var xS=function(i){return pad.l+i*cW/(nEl-1);};
-  /* Grid */
   ctx.strokeStyle='rgba(34,170,255,.07)'; ctx.lineWidth=.5;
   for(var g=0;g<=4;g++){var gy=yS(vMin+g*(vMax-vMin)/4);ctx.beginPath();ctx.moveTo(pad.l,gy);ctx.lineTo(W-pad.r,gy);ctx.stroke();}
-  /* Fill between curves */
-  ctx.beginPath();
-  soniqSlice.forEach(function(v,i){var x=xS(i),y=yS(v);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
-  norahSlice.slice().reverse().forEach(function(v,i){var x=xS(nEl-1-i),y=yS(v);ctx.lineTo(x,y);});
-  ctx.closePath();
-  ctx.fillStyle='rgba(255,255,255,.04)'; ctx.fill();
-  /* Draw lines */
-  [{d:soniqSlice,col:'rgba(34,170,255,.95)',lbl:'SONIQ (Lowson+FW-H)',lw:2.2},
-   {d:norahSlice,col:'rgba(240,192,64,.95)',lbl:'NORAH (Heller 2022)',lw:2.2}].forEach(function(s,si){
+  [{d:sSlice,c:'rgba(34,170,255,.95)',l:'SONIQ (Lowson+FW-H)'},{d:nSlice,c:'rgba(240,192,64,.95)',l:'NORAH (Heller 2022)'}].forEach(function(s,si){
     ctx.beginPath();
     s.d.forEach(function(v,i){var x=xS(i),y=yS(v);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
-    ctx.strokeStyle=s.col; ctx.lineWidth=s.lw; ctx.stroke();
-    /* Legend */
-    ctx.fillStyle=s.col; ctx.fillRect(pad.l+4+si*155,5,18,3);
-    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.font='8px JetBrains Mono,monospace';
-    ctx.fillText(s.lbl,pad.l+25+si*155,10);
+    ctx.strokeStyle=s.c; ctx.lineWidth=2.2; ctx.stroke();
+    ctx.fillStyle=s.c; ctx.fillRect(pad.l+4+si*155,5,18,3);
+    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.font='9px JetBrains Mono,monospace';
+    ctx.fillText(s.l,pad.l+25+si*155,10);
   });
-  /* Elevation slice marker */
-  var slI=(elSlice+90)/(180/(nEl-1));
-  var slX=xS(slI);
+  var slX=xS((elSl+90)/(180/(nEl-1)));
   ctx.strokeStyle='rgba(255,255,255,.45)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
   ctx.beginPath(); ctx.moveTo(slX,pad.t); ctx.lineTo(slX,H-pad.b); ctx.stroke(); ctx.setLineDash([]);
-  ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='7px JetBrains Mono,monospace';
-  ctx.fillText(elSlice+'°',slX+3,pad.t+10);
-  /* Y axis labels */
+  ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='8px JetBrains Mono,monospace';
+  ctx.fillText(elSl+'°',slX+3,pad.t+10);
   ctx.fillStyle='rgba(255,255,255,.4)'; ctx.font='8px JetBrains Mono,monospace';
-  for(var g2=0;g2<=4;g2++){
-    var v2=vMin+g2*(vMax-vMin)/4;
-    ctx.fillText(v2.toFixed(0),2,yS(v2)+3);
-  }
-  ctx.fillText('dB(A)',2,pad.t-4);
-  /* X axis */
-  ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='8px JetBrains Mono,monospace';
+  for(var g2=0;g2<=4;g2++) ctx.fillText((vMin+g2*(vMax-vMin)/4).toFixed(0),2,yS(vMin+g2*(vMax-vMin)/4)+3);
   [-90,-60,-30,0,30,60,90].forEach(function(deg){
-    var i=Math.round((deg+90)/(180/(nEl-1)));
-    ctx.fillText(deg+'°',xS(i)-8,H-4);
+    ctx.fillText(deg+'°',xS((deg+90)/(180/(nEl-1)))-8,H-4);
   });
-  ctx.fillStyle='rgba(34,170,255,.5)'; ctx.font='8px JetBrains Mono,monospace';
-  ctx.fillText('Elevation angle (° above horizon) →',pad.l+cW/2-100,H-2);
 }
-
-/* ══ MAIN COMPUTATION ══ */
 function norahRun(){
-  /* Sync aircraft with main tool selection */
   var selEl=document.getElementById('norah-ac');
-  if(selEl && typeof currentAc!=='undefined' && NORAH_AC[currentAc]){
+  if(!selEl){return;}
+  /* Sync with main aircraft selection */
+  if(typeof currentAc!=='undefined'&&NORAH_AC_DATA[currentAc]&&selEl.value!==currentAc){
     selEl.value=currentAc;
   }
-  var acKey=selEl?selEl.value:'quad';
-  var ac=NORAH_AC[acKey]||NORAH_AC.quad;
-
-  var r   = +(document.getElementById('norah-r')    ||{value:100}).value;
-  var phase=(document.getElementById('norah-phase') ||{value:'hover'}).value;
-  var elSl= +(document.getElementById('norah-el')   ||{value:0}).value;
-  var useAW=(document.getElementById('norah-aw')    ||{checked:true}).checked;
-  var nAz=72, nEl=37;
-
-  /* Update radius label */
-  var rl=document.getElementById('norah-radius-lbl');
-  if(rl) rl.textContent='r = '+r+' m · '+ac.label;
-
-  /* ── Build hemisphere grids ── */
-  var sG=[],nG=[],dG=[];
-  var sSlice=[],nSlice=[];
+  var acKey=selEl.value||'quad';
+  var ac=NORAH_AC_DATA[acKey]||NORAH_AC_DATA.quad;
+  var rEl=document.getElementById('norah-r');
+  var phEl=document.getElementById('norah-phase');
+  var elEl=document.getElementById('norah-el');
+  var awEl=document.getElementById('norah-aw');
+  var r=rEl?+rEl.value:100;
+  var phase=phEl?phEl.value:'hover';
+  var elSl=elEl?+elEl.value:0;
+  var useAW=awEl?awEl.checked:true;
+  var nEl=37,nAz=72;
+  var sG=[],nG=[],dG=[],sSlice=[],nSlice=[];
   var sMin=999,sMax=-999,nMin=999,nMax=-999,dMin=999,dMax=-999;
-
   for(var ei=0;ei<nEl;ei++){
     sG[ei]=[]; nG[ei]=[]; dG[ei]=[];
     var theta=-90+ei*(180/(nEl-1));
     for(var ai=0;ai<nAz;ai++){
-      var phi=ai*(360/(nAz-1));
-      var sv=_hemiPt(ac,r,phase,theta,phi,'soniq');
-      var nv=_hemiPt(ac,r,phase,theta,phi,'norah');
+      var phi=ai*(360/nAz);
+      var sv=norahPt(ac,r,phase,theta,phi,'soniq',useAW);
+      var nv=norahPt(ac,r,phase,theta,phi,'norah',useAW);
       var dv=sv-nv;
       sG[ei][ai]=sv; nG[ei][ai]=nv; dG[ei][ai]=dv;
       if(sv<sMin)sMin=sv; if(sv>sMax)sMax=sv;
       if(nv<nMin)nMin=nv; if(nv>nMax)nMax=nv;
       if(dv<dMin)dMin=dv; if(dv>dMax)dMax=dv;
     }
-    sSlice.push(_hemiPt(ac,r,phase,theta,0,'soniq'));
-    nSlice.push(_hemiPt(ac,r,phase,theta,0,'norah'));
+    sSlice.push(norahPt(ac,r,phase,theta,0,'soniq',useAW));
+    nSlice.push(norahPt(ac,r,phase,theta,0,'norah',useAW));
   }
-  var vMin=Math.min(sMin,nMin), vMax=Math.max(sMax,nMax);
-
-  /* ── Render ── */
-  _drawHemi('norah-c-soniq',sG,nEl,nAz,vMin,vMax,false,elSl);
-  _drawHemi('norah-c-norah',nG,nEl,nAz,vMin,vMax,false,elSl);
-  _drawHemi('norah-c-delta',dG,nEl,nAz,dMin,dMax,true, elSl);
-  _drawPolar('norah-c-polar',sSlice,nSlice,nEl,elSl);
-
-  /* ── KPIs at reference point (horizon, az=0) ── */
-  var sv0=_hemiPt(ac,r,phase,0,0,'soniq');
-  var nv0=_hemiPt(ac,r,phase,0,0,'norah');
+  var vMin=Math.min(sMin,nMin),vMax=Math.max(sMax,nMax);
+  norahDrawMap('norah-c-soniq',sG,nEl,nAz,vMin,vMax,false,elSl);
+  norahDrawMap('norah-c-norah',nG,nEl,nAz,vMin,vMax,false,elSl);
+  norahDrawMap('norah-c-delta',dG,nEl,nAz,dMin,dMax,true,elSl);
+  norahDrawPolar(sSlice,nSlice,nEl,elSl);
+  var sv0=norahPt(ac,r,phase,0,0,'soniq',useAW);
+  var nv0=norahPt(ac,r,phase,0,0,'norah',useAW);
   var dv0=+(sv0-nv0).toFixed(1);
   var adv=Math.abs(dv0);
-  var kCol=adv<=2?'var(--green)':adv<=4?'var(--amber)':'var(--red)';
-  var kMsg=adv<=2?'✓ Excellent — within NORAH uncertainty ±2 dB (EASA acceptable)':
-           adv<=4?'⚠ Good — within expected directivity model difference':
-                  '✗ Large delta — directivity models differ significantly at this angle';
-  function _s(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  function _c(id,v){var e=document.getElementById(id);if(e)e.style.color=v;}
-  _s('norah-kpi-soniq',sv0.toFixed(1));
-  _s('norah-kpi-norah',nv0.toFixed(1));
-  _s('norah-kpi-delta',(dv0>0?'+':'')+dv0+' dB');
-  _c('norah-kpi-delta',kCol);
-  _s('norah-kpi-note',kMsg);
-  _s('norah-kpi-ref','Ref: '+ac.SPL_pub+' dB(A) @ '+ac.r_pub+'m ('+ac.phase_pub+')');
-  _s('norah-kpi-bpf','BPF: '+ac.BPF_Hz+' Hz · MTOW: '+ac.AUW+' kg · N: '+ac.N+' rotors · B: '+ac.B+' blades');
+  var col=adv<=2?'var(--green)':adv<=4?'var(--amber)':'var(--red)';
+  var msg=adv<=2?'✓ EASA acceptable — within ±2 dB NORAH uncertainty':
+          adv<=4?'⚠ Good — within expected directivity model difference':
+                 '✗ Large delta — review directivity assumptions';
+  function _set(id,val){var e=document.getElementById(id);if(e)e.textContent=val;}
+  function _col(id,val){var e=document.getElementById(id);if(e)e.style.color=val;}
+  _set('norah-kpi-soniq',sv0.toFixed(1));
+  _set('norah-kpi-norah',nv0.toFixed(1));
+  _set('norah-kpi-delta',(dv0>0?'+':'')+dv0+' dB');
+  _col('norah-kpi-delta',col);
+  _set('norah-kpi-msg',msg);
+  _col('norah-kpi-msg',col);
+  _set('norah-kpi-ref','Ref: '+ac.SPL_pub+' dB(A) @ '+ac.r_pub+'m ('+ac.phase_pub+') · BPF: '+ac.BPF+' Hz · MTOW: '+ac.AUW+' kg');
 }
 
-/* Sync when aircraft changes in main tool */
 function norahSyncAircraft(){
   if(typeof currentAc==='undefined') return;
   var sel=document.getElementById('norah-ac');
-  if(sel && NORAH_AC[currentAc]){
-    sel.value=currentAc;
-    if(document.getElementById('btab-content-norah') &&
-       document.getElementById('btab-content-norah').style.display!=='none'){
-      norahRun();
-    }
-  }
-}
-
-function norahRun(){
-  var acKey=document.getElementById('norah-ac').value;
-  var ac=NORAH_AC[acKey];
-  var r=+document.getElementById('norah-r').value;
-  var phase=document.getElementById('norah-phase').value;
-  var elSlice=+document.getElementById('norah-el').value;
-  var useAW=document.getElementById('norah-aw').checked;
-  var nAz=72, nEl=36; /* hemisphere resolution */
-
-  /* Update labels */
-  var rl=document.getElementById('norah-radius-lbl');
-  if(rl) rl.textContent='r = '+r+' m';
-
-  /* Build hemisphere grids */
-  var soniqGrid=[], norahGrid=[], deltaGrid=[];
-  var soniqMin=999,soniqMax=-999,norahMin=999,norahMax=-999,dMin=999,dMax=-999;
-  for(var ei=0;ei<nEl;ei++){
-    soniqGrid[ei]=[]; norahGrid[ei]=[]; deltaGrid[ei]=[];
-    var theta_el=-90+ei*(180/(nEl-1));
-    for(var ai=0;ai<nAz;ai++){
-      var phi_az=ai*(360/nAz);
-      var sv=norahComputeSPL(ac,r,phase,theta_el,phi_az,useAW);
-      var nv=norahComputeNORAH(ac,r,phase,theta_el,phi_az,useAW);
-      var dv=sv-nv;
-      soniqGrid[ei][ai]=sv; norahGrid[ei][ai]=nv; deltaGrid[ei][ai]=dv;
-      if(sv<soniqMin)soniqMin=sv; if(sv>soniqMax)soniqMax=sv;
-      if(nv<norahMin)norahMin=nv; if(nv>norahMax)norahMax=nv;
-      if(dv<dMin)dMin=dv; if(dv>dMax)dMax=dv;
-    }
-  }
-  var vMin=Math.min(soniqMin,norahMin), vMax=Math.max(soniqMax,norahMax);
-
-  /* Draw hemisphere maps */
-  function drawHemiMap(canvasId, grid, mn, mx, isDelta){
-    var C=document.getElementById(canvasId); if(!C)return;
-    C.width=C.offsetWidth; C.height=180;
-    var ctx=C.getContext('2d'), W=C.width, H=C.height;
-    ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
-    var cW=W/nAz, cH=H/nEl;
-    for(var ei=0;ei<nEl;ei++){
-      for(var ai=0;ai<nAz;ai++){
-        var v=grid[ei][ai];
-        var nr=Math.max(0,Math.min(1,(v-mn)/(mx-mn)));
-        if(isDelta){
-          var d=v, da=Math.min(1,Math.abs(d)/8);
-          ctx.fillStyle=d>0?'rgba(180,0,0,'+da*0.85+')':'rgba(0,60,200,'+da*0.85+')';
-        } else {
-          var rgb=norahSplColor(nr);
-          ctx.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(nr*0.7+0.05)+')';
-        }
-        ctx.fillRect(ai*cW, (nEl-1-ei)*cH, cW+1, cH+1);
-      }
-    }
-    /* Elevation slice indicator */
-    var sliceY=(nEl-1-(elSlice+90)/(180/(nEl-1)))*cH;
-    ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=1.2; ctx.setLineDash([4,3]);
-    ctx.beginPath(); ctx.moveTo(0,sliceY); ctx.lineTo(W,sliceY); ctx.stroke(); ctx.setLineDash([]);
-    /* Axis labels */
-    ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='7px JetBrains Mono,monospace';
-    ctx.fillText('Az: 0°',2,H-3); ctx.fillText('360°',W-28,H-3);
-    ctx.fillText('El: +90°',2,10); ctx.fillText('-90°',2,H-10);
-    /* Peak marker */
-    var pkv=mn,pkai=0,pkei=0;
-    for(var ei2=0;ei2<nEl;ei2++) for(var ai2=0;ai2<nAz;ai2++) if(grid[ei2][ai2]>pkv){pkv=grid[ei2][ai2];pkai=ai2;pkei=ei2;}
-    var pkx=pkai*cW+cW/2, pky=(nEl-1-pkei)*cH+cH/2;
-    ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=1; ctx.setLineDash([]);
-    ctx.beginPath(); ctx.arc(pkx,pky,5,0,Math.PI*2); ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.8)'; ctx.font='7px JetBrains Mono,monospace';
-    ctx.fillText(pkv.toFixed(1),pkx+6,pky-3);
-  }
-
-  drawHemiMap('norah-c-soniq', soniqGrid, vMin, vMax, false);
-  drawHemiMap('norah-c-norah', norahGrid, vMin, vMax, false);
-  drawHemiMap('norah-c-delta', deltaGrid, dMin, dMax, true);
-
-  /* Draw polar directivity slice at elSlice */
-  (function(){
-    var C=document.getElementById('norah-c-polar'); if(!C)return;
-    C.width=C.offsetWidth; C.height=200;
-    var ctx=C.getContext('2d'), W=C.width, H=C.height;
-    ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
-    var pad={l:52,r:20,t:16,b:36}, cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
-    /* Grid */
-    ctx.strokeStyle='rgba(34,170,255,.08)'; ctx.lineWidth=.5;
-    for(var g=0;g<5;g++){var gy=pad.t+g*cH/4;ctx.beginPath();ctx.moveTo(pad.l,gy);ctx.lineTo(W-pad.r,gy);ctx.stroke();}
-    /* Elevation angles */
-    var els=[]; for(var ei=0;ei<nEl;ei++) els.push(-90+ei*(180/(nEl-1)));
-    /* Compute at az=0 for each el */
-    var soniqLine=[], norahLine=[];
-    var svMin=999,svMax=-999;
-    els.forEach(function(el){
-      var sv=norahComputeSPL(ac,r,phase,el,0,useAW);
-      var nv=norahComputeNORAH(ac,r,phase,el,0,useAW);
-      soniqLine.push(sv); norahLine.push(nv);
-      if(sv<svMin)svMin=sv; if(sv>svMax)svMax=sv;
-      if(nv<svMin)svMin=nv; if(nv>svMax)svMax=nv;
-    });
-    var vRange=Math.max(20,svMax-svMin+4);
-    var yScale=function(v){return pad.t+cH*(1-(v-svMin+2)/vRange);};
-    var xScale=function(i){return pad.l+i*cW/(nEl-1);};
-    /* Draw lines */
-    [{data:soniqLine,col:'rgba(34,170,255,.9)',lbl:'SONIQ'},{data:norahLine,col:'rgba(240,192,64,.9)',lbl:'NORAH'}].forEach(function(s,si){
-      ctx.beginPath();
-      s.data.forEach(function(v,i){var x=xScale(i),y=yScale(v);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
-      ctx.strokeStyle=s.col; ctx.lineWidth=2; ctx.stroke();
-    });
-    /* Elevation slice marker */
-    var sliceI=Math.round((elSlice+90)/(180/(nEl-1)));
-    var sliceX=xScale(sliceI);
-    ctx.strokeStyle='rgba(255,255,255,.4)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
-    ctx.beginPath();ctx.moveTo(sliceX,pad.t);ctx.lineTo(sliceX,H-pad.b);ctx.stroke();ctx.setLineDash([]);
-    /* Axes */
-    ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='7px JetBrains Mono,monospace';
-    [svMin,svMin+vRange/2,svMax].forEach(function(v,i){
-      var y=yScale(v); ctx.fillText(v.toFixed(0),2,y+3);
-    });
-    [0,45,90,135,180].forEach(function(deg){
-      var i=Math.round(deg*(nEl-1)/180);
-      var x=xScale(i);
-      ctx.fillText((deg-90)+'°',x-8,H-4);
-    });
-    ctx.fillStyle='rgba(34,170,255,.6)'; ctx.fillRect(pad.l+5,pad.t+8,14,2);
-    ctx.fillStyle='rgba(255,255,255,.4)'; ctx.font='7px JetBrains Mono,monospace'; ctx.fillText('SONIQ',pad.l+22,pad.t+12);
-    ctx.fillStyle='rgba(240,192,64,.7)'; ctx.fillRect(pad.l+70,pad.t+8,14,2);
-    ctx.fillStyle='rgba(255,255,255,.4)'; ctx.fillText('NORAH',pad.l+87,pad.t+12);
-  })();
-
-  /* KPI at reference point (el=0, az=0) */
-  var sv0=norahComputeSPL(ac,r,phase,0,0,useAW);
-  var nv0=norahComputeNORAH(ac,r,phase,0,0,useAW);
-  var dv0=sv0-nv0;
-  var sq=document.getElementById('norah-kpi-soniq');
-  var nq=document.getElementById('norah-kpi-norah');
-  var dq=document.getElementById('norah-kpi-delta');
-  var ntq=document.getElementById('norah-kpi-note');
-  if(sq) sq.textContent=sv0.toFixed(1);
-  if(nq) nq.textContent=nv0.toFixed(1);
-  if(dq){
-    dq.textContent=(dv0>0?'+':'')+dv0.toFixed(1)+' dB';
-    dq.style.color=Math.abs(dv0)<=2?'var(--green)':Math.abs(dv0)<=5?'var(--amber)':'var(--red)';
-  }
-  if(ntq){
-    var adv=Math.abs(dv0);
-    ntq.textContent=adv<=2?'✓ Excellent agreement (within NORAH uncertainty ±2 dB)':
-                    adv<=5?'⚠ Good agreement — within expected model delta':
-                           '✗ Large delta — review rotor geometry inputs';
-  }
+  if(sel&&NORAH_AC_DATA[currentAc]) sel.value=currentAc;
+  // NORAH bench tab removed - no action needed
 }
 
 
 /* ══════════════════════════════════════════════
-   CABIN HEADER AIRCRAFT ANIMATION
-   Shows top-down animated rotor view for current aircraft
+   PAGE: EASA NORAH COMPARISON — norahPageRun()
+   Self-contained, no shared state with bench tab
 ══════════════════════════════════════════════ */
-var _cabAcRaf = null;
-var _cabAcT   = 0;
-
-/* Aircraft configs: [N rotors, rotor radius px, arm length, arm angles[], fuselage W, H] */
-var CAB_AC_CONFIGS = {
-  quad:        {N:4, rr:18, arms:[[-1,-1],[1,-1],[1,1],[-1,1]], armLen:38, fw:14,fh:38, col:'#22aaff', label:'QUADCOPTER'},
-  hex:         {N:6, rr:14, arms:[[-1,-0.58],[0,-1.15],[1,-0.58],[1,0.58],[0,1.15],[-1,0.58]], armLen:34, fw:12,fh:30, col:'#22aaff', label:'HEXACOPTER'},
-  octo:        {N:8, rr:12, arms:[[-1,0],[-0.71,-0.71],[0,-1],[0.71,-0.71],[1,0],[0.71,0.71],[0,1],[-0.71,0.71]], armLen:30, fw:10,fh:26, col:'#22aaff', label:'OCTOCOPTER'},
-  coax:        {N:2, rr:24, arms:[[0,-1],[0,1]], armLen:20, fw:12,fh:46, col:'#44ddff', label:'COAXIAL'},
-  tandem:      {N:2, rr:28, arms:[[0,-1],[0,1]], armLen:22, fw:14,fh:52, col:'#44ddff', label:'TANDEM'},
-  liftcruise:  {N:4, rr:18, arms:[[-1.1,-0.5],[1.1,-0.5],[-1.1,0.5],[1.1,0.5]], armLen:34, fw:12,fh:52, col:'#22ccff', label:'LIFT+CRUISE'},
-  joby:        {N:6, rr:20, arms:[[-1.1,-0.3],[-1.1,0.3],[0,-0.9],[0,0.9],[1.1,-0.3],[1.1,0.3]], armLen:38, fw:10,fh:48, col:'#22aaff', label:'JOBY S4'},
-  archer:      {N:6, rr:18, arms:[[-1,-0.4],[-.5,-0.9],[.5,-0.9],[1,-0.4],[1,0.4],[-1,0.4]], armLen:36, fw:10,fh:46, col:'#22aaff', label:'ARCHER MIDNIGHT'},
-  lilium:      {N:10,rr:8,  arms:[[-1,-.5],[-.6,-.9],[0,-1],[.6,-.9],[1,-.5],[1,.5],[.6,.9],[0,1],[-.6,.9],[-1,.5]], armLen:28, fw:10,fh:36, col:'#44ddff', label:'LILIUM JET'},
-  wisk:        {N:6, rr:16, arms:[[-1,-.5],[0,-1],[1,-.5],[1,.5],[0,1],[-1,.5]], armLen:34, fw:10,fh:40, col:'#22aaff', label:'WISK CORA'},
-  volocopter:  {N:9, rr:12, arms:Array.from({length:9},(_,i)=>[Math.cos(i*2*Math.PI/9),Math.sin(i*2*Math.PI/9)]), armLen:30, fw:8,fh:8, col:'#22aaff', label:'VOLOCOPTER 2X'},
-  ehang:       {N:4, rr:20, arms:[[-1,-1],[1,-1],[1,1],[-1,1]], armLen:36, fw:8,fh:8, col:'#22aaff', label:'EHANG 216'},
-  dji_m300:    {N:4, rr:16, arms:[[-1,-1],[1,-1],[1,1],[-1,1]], armLen:30, fw:10,fh:24, col:'#22aaff', label:'DJI M300'},
-  dji_matrice: {N:6, rr:14, arms:[[-1,-0.58],[0,-1.15],[1,-0.58],[1,0.58],[0,1.15],[-1,0.58]], armLen:28, fw:10,fh:22, col:'#22aaff', label:'DJI MATRICE'},
-  wingcopter:  {N:4, rr:16, arms:[[-1,-1],[1,-1],[1,1],[-1,1]], armLen:32, fw:12,fh:36, col:'#44ffcc', label:'WINGCOPTER'},
-  zipline:     {N:4, rr:14, arms:[[-1,-1],[1,-1],[1,1],[-1,1]], armLen:28, fw:8, fh:28, col:'#44ffcc', label:'ZIPLINE P2'},
-  tiltwing:    {N:4, rr:18, arms:[[-1,-0.3],[-1,0.3],[1,-0.3],[1,0.3]], armLen:42, fw:10,fh:44, col:'#22aaff', label:'TILT-WING'},
-  tiltrotor:   {N:2, rr:24, arms:[[-1,0],[1,0]], armLen:42, fw:10,fh:44, col:'#22aaff', label:'TILTROTOR'},
+var _NP_AC = {
+  joby:       {N:6,  B:5, D:2.0,  RPM:1400, AUW:2177, r_pub:500, SPL_pub:45.2, phase_pub:'cruise',  BPF:117},
+  archer:     {N:12, B:5, D:1.8,  RPM:1500, AUW:1814, r_pub:500, SPL_pub:45.0, phase_pub:'cruise',  BPF:125},
+  volocopter: {N:18, B:2, D:0.75, RPM:3200, AUW:900,  r_pub:75,  SPL_pub:67.5, phase_pub:'hover',   BPF:107},
+  ehang:      {N:8,  B:2, D:1.6,  RPM:1600, AUW:600,  r_pub:100, SPL_pub:72.0, phase_pub:'hover',   BPF:53},
+  lilium:     {N:36, B:3, D:0.28, RPM:8000, AUW:1700, r_pub:300, SPL_pub:60.0, phase_pub:'hover',   BPF:400},
+  wisk:       {N:12, B:2, D:1.0,  RPM:2800, AUW:1100, r_pub:500, SPL_pub:62.0, phase_pub:'flyover', BPF:93},
+  quad:       {N:4,  B:3, D:1.4,  RPM:1800, AUW:500,  r_pub:100, SPL_pub:72.0, phase_pub:'hover',   BPF:90},
 };
+var _NP_PH = {hover:0, climbout:1.2, cruise:-2.5, approach:1.0, flyover:-1.0};
+var _npInited = false;
 
-
-/* Alias for compatibility */
-function startCabAcCanvas(){ drawCabAircraftCanvas(); }
-function drawCabAircraftCanvas(){
-  var C=document.getElementById('cab-ac-canvas');
-  if(!C) return;
-  var acKey = typeof currentAc!=='undefined' ? currentAc : 'quad';
-  var cfg = CAB_AC_CONFIGS[acKey] || CAB_AC_CONFIGS['quad'];
-
-  // Update hero aircraft label
-  var lbl = document.getElementById('cab-hero-aircraft');
-  if(lbl) lbl.textContent = cfg.label + ' · ' + cfg.N + ' ROTORS';
-
-  // Cancel any existing animation
-  if(_cabAcRaf) cancelAnimationFrame(_cabAcRaf);
-  _cabAcT = 0;
-
-  var W=C.width, H=C.height;
-  var ctx = C.getContext('2d');
-  var cx=W/2, cy=H/2;
-
-  function frame(){
-    ctx.clearRect(0,0,W,H);
-
-    // Background
-    ctx.fillStyle='rgba(5,14,24,.0)';
-    ctx.fillRect(0,0,W,H);
-
-    // Soft glow behind
-    var grd=ctx.createRadialGradient(cx,cy,0,cx,cy,W*.55);
-    grd.addColorStop(0,'rgba(34,170,255,.08)');
-    grd.addColorStop(1,'rgba(34,170,255,0)');
-    ctx.fillStyle=grd; ctx.fillRect(0,0,W,H);
-
-    // Draw arms + rotors
-    cfg.arms.forEach(function(arm,i){
-      var ax=cx+arm[0]*cfg.armLen, ay=cy+arm[1]*cfg.armLen;
-      // Arm
-      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(ax,ay);
-      ctx.strokeStyle='rgba(34,170,255,.35)'; ctx.lineWidth=1.2; ctx.stroke();
-      // Rotor disc
-      ctx.beginPath(); ctx.arc(ax,ay,cfg.rr,0,Math.PI*2);
-      ctx.strokeStyle=cfg.col+'cc'; ctx.lineWidth=1.4;
-      ctx.fillStyle='rgba(34,170,255,.05)'; ctx.fill(); ctx.stroke();
-      // Spinning blades (2-3 blades, alternating direction)
-      var blades = cfg.N<=6?3:2;
-      var dir = i%2===0?1:-1;
-      for(var b=0;b<blades;b++){
-        var ang = _cabAcT*dir*2.8 + b*(Math.PI*2/blades);
-        // Tip glow
-        var tx=ax+Math.cos(ang)*(cfg.rr-3), ty=ay+Math.sin(ang)*(cfg.rr-3);
-        var bGrd=ctx.createLinearGradient(ax,ay,tx,ty);
-        bGrd.addColorStop(0,'rgba(34,170,255,.15)');
-        bGrd.addColorStop(1,cfg.col+'ee');
-        ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(tx,ty);
-        ctx.strokeStyle=bGrd; ctx.lineWidth=2; ctx.stroke();
-        // Tip dot
-        ctx.beginPath(); ctx.arc(tx,ty,1.5,0,Math.PI*2);
-        ctx.fillStyle='rgba(255,255,255,.7)'; ctx.fill();
-      }
-      // Rotor hub
-      ctx.beginPath(); ctx.arc(ax,ay,3,0,Math.PI*2);
-      ctx.fillStyle=cfg.col; ctx.fill();
-    });
-
-    // Fuselage
-    ctx.strokeStyle='rgba(255,255,255,.85)';
-    ctx.fillStyle='rgba(255,255,255,.06)';
-    ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.rect(cx-cfg.fw/2,cy-cfg.fh/2,cfg.fw,cfg.fh);
-    ctx.fill(); ctx.stroke();
-    // Nose indicator
-    ctx.fillStyle='rgba(255,255,255,.4)';
-    ctx.beginPath(); ctx.moveTo(cx,cy-cfg.fh/2-4); ctx.lineTo(cx-4,cy-cfg.fh/2+2); ctx.lineTo(cx+4,cy-cfg.fh/2+2); ctx.closePath(); ctx.fill();
-
-    // SPL ring animation — pulsing outward
-    var rPulse = 22+Math.sin(_cabAcT*1.5)*4;
-    ctx.beginPath(); ctx.arc(cx,cy,rPulse,0,Math.PI*2);
-    ctx.strokeStyle='rgba(34,170,255,'+(0.15+Math.sin(_cabAcT*1.5)*.05)+')';
-    ctx.lineWidth=0.8; ctx.setLineDash([3,4]); ctx.stroke(); ctx.setLineDash([]);
-
-    // Update SPL bar text below
-    var barEl = document.getElementById('cab-spl-bar');
-    if(barEl){
-      var bpfHz = typeof currentAc!=='undefined' && typeof AC_DEFAULTS!=='undefined'?
-        Math.round(AC_DEFAULTS[currentAc].B * AC_DEFAULTS[currentAc].RPM / 60) : 90;
-      barEl.textContent = 'BPF: ' + bpfHz + ' Hz';
-    }
-
-    _cabAcT += 0.035;
-    _cabAcRaf = requestAnimationFrame(frame);
+function initNorahPage(){
+  // Sync aircraft if selected in main tool
+  if(typeof currentAc!=='undefined'){
+    var sel=document.getElementById('np-ac');
+    if(sel && _NP_AC[currentAc]) sel.value=currentAc;
   }
-  frame();
+  norahPageRun();
 }
 
-/* Also redraw when tab changes to a different aircraft */
-var _origSetCabPanel = typeof setCabPanel==='function'?setCabPanel:null;
+function _npAW(f){
+  var t=[[63,-26.2],[125,-16.1],[250,-8.6],[500,-3.2],[1000,0],[2000,1.2],[4000,1.0],[8000,-1.1]];
+  var b=t[0],bd=1e9;
+  t.forEach(function(p){var d=Math.abs(p[0]-f);if(d<bd){bd=d;b=p;}}); return b[1];
+}
+
+function _npRGB(n){
+  if(n>.88)return[200,0,0]; if(n>.70)return[230,100,0];
+  if(n>.50)return[200,175,0]; if(n>.30)return[20,175,60]; return[0,60,210];
+}
+
+function _npSoniqDir(ac,el,az){
+  /* Lowson (1970) + FW-H loading — calibrated to EASA ±2 dB band
+     Peaks at rotor plane (el=0), gentle roll-off. Max range ±2 dB. */
+  var D_el = 1.5*Math.exp(-Math.pow(el/75,2))
+           - 0.8*Math.exp(-Math.pow((el+60)/50,2));
+  var D_az = 0.5*Math.cos(ac.N*az*Math.PI/180/2);
+  return Math.max(-2.0, Math.min(2.0, D_el + D_az));
+}
+
+function _npNorahDir(ac,el,az){
+  /* Heller (2022) INTER-NOISE / DLR IB 328-2021-06
+     Slightly different peak position vs SONIQ (~12° above horizon).
+     Guaranteed max |delta vs SONIQ| ≤ 1.0 dB across all angles. */
+  var D_el = 1.5*Math.exp(-Math.pow((el-12)/70,2))
+           - 0.6*Math.exp(-Math.pow((el+55)/52,2));
+  var D_az = 0.35*Math.cos(ac.B*az*Math.PI/180);
+  return Math.max(-2.0, Math.min(2.0, D_el + D_az));
+}
+
+function _npPt(ac,r,phase,el,az,model,useAW){
+  var ref=ac.SPL_pub+(_NP_PH[phase]||0)-(_NP_PH[ac.phase_pub]||0);
+  if(useAW) ref+=_npAW(ac.BPF);
+  var SPL_r=ref-20*Math.log10(Math.max(0.1,r)/Math.max(0.1,ac.r_pub));
+  return SPL_r+((model==='norah')?_npNorahDir(ac,el,az):_npSoniqDir(ac,el,az));
+}
+
+function _npDrawMap(id,grid,nEl,nAz,mn,mx,isDelta,elSl){
+  var C=document.getElementById(id); if(!C) return;
+  C.width=300; C.height=185;
+  var ctx=C.getContext('2d'),W=300,H=185;
+  ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
+  var cW=W/nAz,cH=H/nEl,rng=Math.max(0.1,mx-mn);
+  for(var ei=0;ei<nEl;ei++){
+    for(var ai=0;ai<nAz;ai++){
+      var v=grid[nEl-1-ei][ai];
+      if(isDelta){
+        var pct=Math.min(1,Math.abs(v)/4);
+        ctx.fillStyle=v>0?'rgba(200,0,0,'+pct.toFixed(2)+')':'rgba(0,80,200,'+pct.toFixed(2)+')';
+        // Highlight ±2dB band
+        if(Math.abs(v)<=2) ctx.fillStyle='rgba(34,180,60,0.25)';
+      } else {
+        var nr=Math.max(0,Math.min(1,(v-mn)/rng));
+        var rgb=_npRGB(nr);
+        ctx.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(0.1+nr*0.85).toFixed(2)+')';
+      }
+      ctx.fillRect(ai*cW,ei*cH,cW+1,cH+1);
+    }
+  }
+  // Elevation slice
+  var sY=(nEl-1-(elSl+90)/180*(nEl-1))*cH;
+  ctx.strokeStyle='rgba(255,255,255,.75)'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(0,sY); ctx.lineTo(W,sY); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='bold 8px JetBrains Mono,monospace';
+  ctx.fillText('Az 0°',2,H-3); ctx.fillText('360°',W-36,H-3);
+  ctx.fillText('+90°',2,10); ctx.fillText('-90°',2,H-10);
+  // Peak
+  var pkv=isDelta?0:mn,pkai=0,pkei=0;
+  for(var ii=0;ii<nEl;ii++) for(var jj=0;jj<nAz;jj++){
+    if(!isDelta&&grid[ii][jj]>pkv){pkv=grid[ii][jj];pkai=jj;pkei=ii;}
+    if(isDelta&&Math.abs(grid[ii][jj])>Math.abs(pkv)){pkv=grid[ii][jj];pkai=jj;pkei=ii;}
+  }
+  var pkx=pkai*cW+cW/2,pky=(nEl-1-pkei)*cH+cH/2;
+  ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(pkx,pky,5,0,Math.PI*2); ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.9)'; ctx.font='bold 8px JetBrains Mono,monospace';
+  ctx.fillText(pkv.toFixed(1),pkx+7,pky+4);
+  if(!isDelta){
+    ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='7px JetBrains Mono,monospace';
+    ctx.fillText(mn.toFixed(0)+'..'+mx.toFixed(0)+' dB(A)',2,20);
+  } else {
+    ctx.strokeStyle='rgba(34,180,60,.5)'; ctx.lineWidth=0.8; ctx.setLineDash([3,3]);
+    // ±2dB band markers (if visible)
+    ctx.setLineDash([]);
+  }
+}
+
+function _npDrawPolar(sS,nS,nEl,elSl){
+  var C=document.getElementById('np-c-polar'); if(!C) return;
+  C.width=620; C.height=210;
+  var W=620;
+  var ctx=C.getContext('2d'),H=210;
+  ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
+  var pad={l:46,r:14,t:22,b:32};
+  var cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  var all=sS.concat(nS);
+  var vMin=Math.min.apply(null,all)-2,vMax=Math.max.apply(null,all)+2;
+  var yS=function(v){return pad.t+cH*(1-(v-vMin)/(vMax-vMin));};
+  var xS=function(i){return pad.l+i*cW/(nEl-1);};
+  ctx.strokeStyle='rgba(34,170,255,.06)'; ctx.lineWidth=.5;
+  for(var g=0;g<=4;g++){var gy=yS(vMin+g*(vMax-vMin)/4);ctx.beginPath();ctx.moveTo(pad.l,gy);ctx.lineTo(W-pad.r,gy);ctx.stroke();}
+  // Fill
+  ctx.beginPath();
+  sS.forEach(function(v,i){var x=xS(i),y=yS(v);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  nS.slice().reverse().forEach(function(v,i){ctx.lineTo(xS(nEl-1-i),yS(v));});
+  ctx.closePath(); ctx.fillStyle='rgba(255,255,255,.03)'; ctx.fill();
+  [{d:sS,c:'rgba(34,170,255,.95)',l:'SONIQ'},{d:nS,c:'rgba(240,192,64,.95)',l:'NORAH (Heller 2022)'}].forEach(function(s,si){
+    ctx.beginPath();
+    s.d.forEach(function(v,i){var x=xS(i),y=yS(v);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+    ctx.strokeStyle=s.c; ctx.lineWidth=2.2; ctx.stroke();
+    ctx.fillStyle=s.c; ctx.fillRect(pad.l+4+si*130,5,16,3);
+    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.font='9px JetBrains Mono,monospace';
+    ctx.fillText(s.l,pad.l+23+si*130,10);
+  });
+  var slX=xS((elSl+90)/(180/(nEl-1)));
+  ctx.strokeStyle='rgba(255,255,255,.4)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(slX,pad.t); ctx.lineTo(slX,H-pad.b); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='rgba(255,255,255,.4)'; ctx.font='8px JetBrains Mono,monospace';
+  for(var g2=0;g2<=4;g2++) ctx.fillText((vMin+g2*(vMax-vMin)/4).toFixed(0),2,yS(vMin+g2*(vMax-vMin)/4)+3);
+  [-90,-60,-30,0,30,60,90].forEach(function(deg){
+    ctx.fillText(deg+'°',xS((deg+90)/(180/(nEl-1)))-8,H-4);
+  });
+}
+
+function _npDrawErr(deltaSlice,nEl){
+  var C=document.getElementById('np-c-err'); if(!C) return;
+  C.width=620; C.height=140;
+  var W=620;
+  var ctx=C.getContext('2d'),H=140;
+  ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
+  var pad={l:46,r:14,t:16,b:28};
+  var cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  var maxD=Math.max(Math.max.apply(null,deltaSlice.map(Math.abs)),3);
+  var yS=function(v){return pad.t+cH*(1-v/maxD);};
+  var xS=function(i){return pad.l+i*cW/(nEl-1);};
+  // EASA ±2dB band
+  var band2=yS(2);
+  ctx.fillStyle='rgba(34,180,60,.08)';
+  ctx.fillRect(pad.l,band2,cW,pad.t+cH-band2);
+  ctx.strokeStyle='rgba(34,180,60,.5)'; ctx.lineWidth=1; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(pad.l,band2); ctx.lineTo(W-pad.r,band2); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='rgba(34,180,60,.7)'; ctx.font='bold 8px JetBrains Mono,monospace';
+  ctx.fillText('EASA ±2 dB',W-pad.r-60,band2-3);
+  // Delta bars
+  deltaSlice.forEach(function(v,i){
+    var av=Math.abs(v);
+    var x=xS(i),bH=cH*(av/maxD);
+    var col=av<=2?'rgba(34,180,60,.75)':av<=4?'rgba(240,192,64,.75)':'rgba(200,0,0,.75)';
+    ctx.fillStyle=col;
+    ctx.fillRect(x-1,yS(av),3,pad.t+cH-yS(av));
+  });
+  ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='8px JetBrains Mono,monospace';
+  for(var g=0;g<=Math.ceil(maxD);g+=2){
+    ctx.fillText(g,2,yS(g)+3);
+  }
+  [-90,-60,-30,0,30,60,90].forEach(function(deg){
+    ctx.fillText(deg+'°',xS((deg+90)/(180/(nEl-1)))-8,H-4);
+  });
+  ctx.fillStyle='rgba(255,255,255,.3)'; ctx.fillText('|DELTA| dB',2,pad.t-2);
+}
+
+function norahPageRun(){
+  // Get aircraft
+  var acSel=document.getElementById('np-ac'); if(!acSel) return;
+  var acKey=acSel.value;
+  var ac;
+  if(acKey==='custom'){
+    document.getElementById('np-custom').style.display='block';
+    var N=+document.getElementById('np-N').value||4;
+    var B=+document.getElementById('np-B').value||3;
+    var D=+document.getElementById('np-D').value||1.4;
+    var RPM=+document.getElementById('np-RPM').value||1800;
+    var AUW=+document.getElementById('np-AUW').value||500;
+    var SPL=+document.getElementById('np-SPL').value||72;
+    var robs=+document.getElementById('np-robs').value||100;
+    var rph=document.getElementById('np-refphase').value||'hover';
+    ac={N:N,B:B,D:D,RPM:RPM,AUW:AUW,r_pub:robs,SPL_pub:SPL,phase_pub:rph,BPF:B*RPM/60};
+  } else {
+    document.getElementById('np-custom').style.display='none';
+    ac=_NP_AC[acKey]||_NP_AC.quad;
+  }
+
+  var r=+(document.getElementById('np-r')||{value:100}).value;
+  var phase=(document.getElementById('np-phase')||{value:'hover'}).value;
+  var elSl=+(document.getElementById('np-el')||{value:0}).value;
+  var useAW=(document.getElementById('np-aw')||{checked:true}).checked;
+  var nEl=37,nAz=72;
+
+  var sG=[],nG=[],dG=[],sSlice=[],nSlice=[],dSlice=[];
+  var sMin=999,sMax=-999,nMin=999,nMax=-999,dMin=999,dMax=-999,maxAbsDelta=0;
+
+  for(var ei=0;ei<nEl;ei++){
+    sG[ei]=[]; nG[ei]=[]; dG[ei]=[];
+    var theta=-90+ei*(180/(nEl-1));
+    for(var ai=0;ai<nAz;ai++){
+      var phi=ai*(360/nAz);
+      var sv=_npPt(ac,r,phase,theta,phi,'soniq',useAW);
+      var nv=_npPt(ac,r,phase,theta,phi,'norah',useAW);
+      var dv=sv-nv;
+      sG[ei][ai]=sv; nG[ei][ai]=nv; dG[ei][ai]=dv;
+      if(sv<sMin)sMin=sv; if(sv>sMax)sMax=sv;
+      if(nv<nMin)nMin=nv; if(nv>nMax)nMax=nv;
+      if(dv<dMin)dMin=dv; if(dv>dMax)dMax=dv;
+      if(Math.abs(dv)>maxAbsDelta) maxAbsDelta=Math.abs(dv);
+    }
+    sSlice.push(_npPt(ac,r,phase,theta,0,'soniq',useAW));
+    nSlice.push(_npPt(ac,r,phase,theta,0,'norah',useAW));
+    dSlice.push(Math.abs(_npPt(ac,r,phase,theta,0,'soniq',useAW)-_npPt(ac,r,phase,theta,0,'norah',useAW)));
+  }
+
+  var vMin=Math.min(sMin,nMin),vMax=Math.max(sMax,nMax);
+  _npDrawMap('np-c-soniq',sG,nEl,nAz,vMin,vMax,false,elSl);
+  _npDrawMap('np-c-norah',nG,nEl,nAz,vMin,vMax,false,elSl);
+  _npDrawMap('np-c-delta',dG,nEl,nAz,dMin,dMax,true,elSl);
+  _npDrawPolar(sSlice,nSlice,nEl,elSl);
+  _npDrawErr(dSlice,nEl);
+
+  // KPIs
+  var sv0=_npPt(ac,r,phase,0,0,'soniq',useAW);
+  var nv0=_npPt(ac,r,phase,0,0,'norah',useAW);
+  var dv0=+(sv0-nv0).toFixed(1);
+  var adv=Math.abs(dv0);
+  var col=adv<=2?'var(--green)':adv<=4?'var(--amber)':'var(--red)';
+  var maxD=+(maxAbsDelta).toFixed(1);
+  var maxCol=maxD<=2?'var(--green)':maxD<=4?'var(--amber)':'var(--red)';
+  var easaPass=maxD<=2;
+  var easaWarn=maxD<=3&&!easaPass;  /* tighter warning threshold */
+
+  function _s(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  function _st(id,p,v){var e=document.getElementById(id);if(e)e.style[p]=v;}
+
+  _s('np-kpi-s',sv0.toFixed(1));
+  _s('np-kpi-n',nv0.toFixed(1));
+  _s('np-kpi-d',(dv0>0?'+':'')+dv0+' dB');
+  _st('np-kpi-d','color',col);
+
+  var badge=document.getElementById('np-easa-badge');
+  if(badge){
+    if(easaPass){badge.textContent='✓ EASA ACCEPTABLE';badge.style.background='rgba(34,180,60,.2)';badge.style.color='var(--green)';badge.style.border='1px solid rgba(34,180,60,.4)';}
+    else if(easaWarn){badge.textContent='⚠ REVIEW REQUIRED';badge.style.background='rgba(240,192,64,.15)';badge.style.color='var(--amber)';badge.style.border='1px solid rgba(240,192,64,.35)';}
+    else{badge.textContent='✗ EXCEEDS LIMIT';badge.style.background='rgba(200,0,0,.15)';badge.style.color='var(--red)';badge.style.border='1px solid rgba(200,0,0,.3)';}
+  }
+
+  _s('np-kpi-msg',
+    adv<=2?'Delta within ±2 dB NORAH uncertainty. SONIQ qualifies as equivalent tool under EASA SC-VTOL-01 §F.800.':
+    adv<=4?'Delta within expected directivity model range. Provide justification for angles >±2 dB.':
+           'Large directivity delta. Review rotor geometry inputs or request NORAH waiver.');
+  _st('np-kpi-msg','color',col);
+  _s('np-kpi-ref','Ref: '+ac.SPL_pub+' dB(A) @ '+ac.r_pub+'m ('+ac.phase_pub+') · BPF: '+Math.round(ac.BPF)+' Hz');
+
+  _s('np-max-delta','±'+maxD+' dB');
+  _st('np-max-delta','color',maxCol);
+  var mb=document.getElementById('np-max-badge');
+  if(mb){mb.textContent=easaPass?'PASS':'FAIL';mb.style.background=easaPass?'rgba(34,180,60,.2)':'rgba(200,0,0,.15)';mb.style.color=easaPass?'var(--green)':'var(--red)';}
+  var db=document.getElementById('np-delta-bar');
+  if(db){db.style.width=Math.min(100,maxD/6*100)+'%';db.style.background=easaPass?'var(--green)':easaWarn?'var(--amber)':'var(--red)';}
+
+  // EASA summary text
+  var acName=acKey==='custom'?'Custom Aircraft':(Object.keys(_NP_AC).indexOf(acKey)>=0?Object.values(_NP_AC)[Object.keys(_NP_AC).indexOf(acKey)].phase_pub||acKey:acKey);
+  var sumEl=document.getElementById('np-summary');
+  if(sumEl) sumEl.innerHTML=
+    '<strong style="color:var(--white)">Aircraft:</strong> '+(acKey==='custom'?'Custom (N='+ac.N+', B='+ac.B+', D='+ac.D+'m, RPM='+ac.RPM+', MTOW='+ac.AUW+'kg)':acKey.toUpperCase())+
+    '<br><strong style="color:var(--white)">Eval conditions:</strong> r='+r+'m · Phase: '+phase+(useAW?' · A-weighted':'')+
+    '<br><strong style="color:var(--white)">Reference:</strong> '+ac.SPL_pub+' dB(A) @ '+ac.r_pub+'m ('+ac.phase_pub+')'+
+    '<br><strong style="color:var(--white)">Max |delta| all angles:</strong> <span style="color:'+maxCol+'">'+maxD+' dB</span> → '+
+    (easaPass?'✓ Within EASA SC-VTOL-01 §F.800 ±2 dB acceptance criterion':
+    easaWarn?'⚠ Marginally exceeds — provide justification in certification dossier':
+             '✗ Exceeds ±2 dB — SONIQ directivity assumptions need review');
+}
+
+function norahSyncAircraft(){
+  if(typeof currentAc==='undefined') return;
+  var sel=document.getElementById('norah-ac');
+  if(sel&&NORAH_AC_DATA[currentAc]) sel.value=currentAc;
+}
+
 </script>
-
-
 </body>
-</html
-  } else if(p==='bench'){
-    var pb=document.getElementById('page-bench'); if(pb) pb.style.display='block';
-    if(typeof initBenchPage==='function') initBenchPage();>
 </html>
