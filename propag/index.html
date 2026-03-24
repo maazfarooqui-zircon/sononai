@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERTONOISE — ISO 9613-2 Vertiport Acoustic Siting</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:wght@300;400;600&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f2f6fa;--s1:#ffffff;--s2:#eaf0f7;--s3:#dde6ef;
+  --b1:#c0d0e0;--b2:#90aac0;--b3:#6088a8;
+  --cyan:#0066bb;--cyanG:rgba(0,102,187,.10);
+  --green:#006633;--greenG:rgba(0,102,51,.10);
+  --amber:#995500;--amberG:rgba(153,85,0,.10);
+  --red:#bb1133;--redG:rgba(187,17,51,.10);
+  --white:#0d1f2e;--muted:#3a5a78;--dim:#6888a8;
+  --mono:'JetBrains Mono',monospace;--disp:'Orbitron',sans-serif;--body:'Barlow',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:var(--body);font-size:14px;line-height:1.6;overflow-x:hidden;min-height:100vh}
+.bg-wrap{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-radial{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 10% 50%,rgba(0,102,187,.05) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 90% 20%,rgba(0,150,100,.04) 0%,transparent 60%)}
+
+/* HEADER */
+#hdr{position:relative;z-index:200;background:#fff;border-bottom:2px solid var(--b1);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:62px;box-shadow:0 2px 8px rgba(0,40,80,.08)}
+.hdr-brand{display:flex;align-items:center;gap:16px}
+.brand-wordmark{font-family:var(--disp);font-size:22px;font-weight:900;letter-spacing:5px;color:var(--cyan)}
+.brand-tagline{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--muted);border-left:1px solid var(--b2);padding-left:16px;line-height:1.5}
+.brand-tagline strong{display:block;color:var(--cyan);font-size:10px;letter-spacing:2px}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.hdr-badge{font-family:var(--mono);font-size:9px;letter-spacing:2px;padding:4px 10px;border:1px solid var(--b2);color:var(--muted);text-transform:uppercase}
+.hdr-badge.live{border-color:var(--green);color:var(--green);background:var(--greenG);animation:livePulse 2s infinite}
+@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(0,153,85,.4)}50%{box-shadow:0 0 0 6px rgba(0,153,85,0)}}
+
+/* GLOBAL NAV */
+.global-nav{position:relative;z-index:190;background:#1a2d42;border-bottom:1px solid #0d1f2e;display:flex;align-items:stretch;height:42px;padding:0 24px;overflow-x:auto}
+.global-nav::-webkit-scrollbar{height:0}
+.gnav-tab{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:rgba(220,235,248,.65);padding:0 16px;cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;transition:all .2s;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0}
+.gnav-tab:hover{color:#fff;background:rgba(255,255,255,.06)}
+.gnav-tab.active{color:#fff;border-bottom-color:var(--cyan);background:rgba(0,102,187,.10)}
+
+/* LAYOUT */
+.tool-body{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 104px - 34px)}
+
+/* SIDEBAR */
+.sidebar{background:var(--s1);border-right:1px solid var(--b1);overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--b2)}
+.sec-hdr{background:var(--s1);border-bottom:1px solid var(--b1);padding:10px 18px;display:flex;align-items:center;gap:10px}
+.sec-hdr-icon{font-size:13px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:1px solid var(--b2);color:var(--cyan);flex-shrink:0}
+.sec-hdr-label{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase}
+.ctrl{padding:10px 18px;border-bottom:1px solid var(--b1)}
+.ctrl-lbl{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between}
+.ctrl-lbl .val{font-size:11px;color:var(--cyan);background:var(--cyanG);padding:1px 8px;border:1px solid rgba(0,102,187,.25);letter-spacing:1px}
+input[type=range]{-webkit-appearance:none;width:100%;height:2px;background:var(--b1);outline:none;cursor:pointer;display:block;margin:4px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;background:var(--cyan);border:2px solid var(--bg);box-shadow:0 0 8px rgba(0,102,187,.6);cursor:pointer}
+.tick-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:7px;color:var(--dim);margin-top:1px}
+select{width:100%;background:var(--s2);border:1px solid var(--b2);color:var(--white);font-family:var(--mono);font-size:11px;padding:6px 10px;outline:none;cursor:pointer;transition:border-color .2s;-webkit-appearance:none}
+select:focus{border-color:var(--cyan)}
+.choice-row{display:flex;gap:5px;flex-wrap:wrap}
+.choice-btn{font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 10px;border:1px solid var(--b2);color:var(--muted);cursor:pointer;transition:all .2s;background:transparent}
+.choice-btn:hover{border-color:var(--b3);color:var(--white)}
+.choice-btn.on{border-color:var(--cyan);color:var(--cyan);background:var(--cyanG)}
+.calc-btn{margin:12px 18px 16px;width:calc(100% - 36px);padding:11px;font-family:var(--disp);font-size:11px;font-weight:600;letter-spacing:4px;background:transparent;border:1px solid var(--cyan);color:var(--cyan);cursor:pointer;transition:all .3s;text-transform:uppercase;position:relative;overflow:hidden}
+.calc-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,102,187,.15),transparent);transition:left .5s}
+.calc-btn:hover{background:var(--cyanG);box-shadow:0 0 24px rgba(0,102,187,.3)}
+.calc-btn:hover::before{left:100%}
+
+/* CONTENT */
+.content{display:flex;flex-direction:column;background:var(--bg)}
+.metrics-strip{background:var(--s1);border-bottom:1px solid var(--b1);padding:12px 20px;display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.met{background:var(--s2);border:1px solid var(--b1);padding:8px 11px;position:relative}
+.met::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.met.c::after{background:var(--cyan)}.met.g::after{background:var(--green)}.met.a::after{background:var(--amber)}.met.r::after{background:var(--red)}
+.met-lbl{font-family:var(--mono);font-size:7px;letter-spacing:2px;color:var(--muted);margin-bottom:3px}
+.met-val{font-family:var(--disp);font-size:18px;letter-spacing:1px;line-height:1}
+.met.c .met-val{color:var(--cyan)}.met.g .met-val{color:var(--green)}.met.a .met-val{color:var(--amber)}.met.r .met-val{color:var(--red)}
+.met-unit{font-family:var(--mono);font-size:7px;color:var(--dim);margin-top:2px}
+@keyframes valueFlash{0%{opacity:.3}100%{opacity:1}}
+.flash{animation:valueFlash .4s ease}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* MAP */
+.map-wrap{position:relative;height:calc(100vh - 62px - 42px - 60px - 56px - 34px)}
+canvas#mapCanvas{width:100%;height:100%;display:block;cursor:crosshair}
+.map-overlay-bar{position:absolute;top:10px;left:10px;display:flex;gap:6px;z-index:20;flex-wrap:wrap}
+.map-btn{font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:5px 11px;border:1px solid var(--b2);color:var(--muted);background:rgba(255,255,255,.92);cursor:pointer;transition:all .2s}
+.map-btn.on{border-color:var(--cyan);color:var(--cyan);background:rgba(0,102,187,.08)}
+.map-coords{position:absolute;bottom:10px;right:10px;font-family:var(--mono);font-size:10px;color:var(--white);background:rgba(255,255,255,.9);padding:5px 12px;border:1px solid var(--b1)}
+.map-legend-bar{display:flex;align-items:center;gap:14px;padding:8px 20px;background:var(--s1);border-top:1px solid var(--b1);flex-wrap:wrap;flex-shrink:0}
+.leg-item{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--muted)}
+.leg-sw{width:14px;height:10px}
+
+/* ISO PAGE */
+.iso-grid{display:grid;grid-template-columns:1fr 1fr;height:calc(100vh - 62px - 42px - 60px - 56px - 34px);overflow-y:auto}
+.iso-panel{padding:20px 22px;border-right:1px solid var(--b1);border-bottom:1px solid var(--b1)}
+.iso-panel:nth-child(2n){border-right:none}
+.iso-title{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.iso-title::before{content:'';width:3px;height:13px;background:var(--cyan);flex-shrink:0}
+.att-box{border:1px solid var(--b1)}
+.att-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--b1);font-size:13px}
+.att-row:last-child{border-bottom:none}
+.att-key{color:var(--muted)}
+.att-val{font-family:var(--mono);font-size:12px;font-weight:600}
+.att-val.c{color:var(--cyan)}.att-val.a{color:var(--amber)}.att-val.r{color:var(--red)}.att-val.g{color:var(--green)}
+.att-row.total{background:var(--s2);border-top:2px solid var(--b1)}
+.att-row.total .att-key{font-weight:600;color:var(--white)}
+.att-row.total .att-val{font-size:17px}
+.formula-box{font-family:var(--mono);font-size:11px;background:var(--s1);border:1px solid var(--b1);border-left:3px solid var(--amber);padding:10px 14px;color:var(--amber);line-height:1.9;margin-top:12px}
+.formula-box .comment{color:var(--dim);font-size:9px}
+
+/* COMPLIANCE */
+.comp-grid{display:grid;grid-template-columns:repeat(3,1fr);height:calc(100vh - 62px - 42px - 60px - 56px - 34px);overflow-y:auto}
+.comp-panel{padding:20px 18px;border-right:1px solid var(--b1);border-bottom:1px solid var(--b1);display:flex;flex-direction:column}
+.comp-panel:nth-child(3n){border-right:none}
+.comp-authority{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:5px}
+.comp-metric{font-family:var(--disp);font-size:26px;letter-spacing:1px;margin:5px 0 3px}
+.comp-limit{font-family:var(--mono);font-size:9px;color:var(--dim);margin-bottom:8px}
+.chip{font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:4px 10px;border:1px solid;display:inline-block}
+.chip.pass{border-color:var(--green);color:var(--green);background:var(--greenG)}
+.chip.warn{border-color:var(--amber);color:var(--amber);background:var(--amberG)}
+.chip.fail{border-color:var(--red);color:var(--red);background:var(--redG)}
+.comp-note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px;flex:1}
+.comp-bar-wrap{padding-top:10px}
+.comp-bar-track{height:4px;background:var(--s3);margin-top:5px}
+.comp-bar-fill{height:100%;transition:width .6s ease,background .4s}
+
+/* MATERIALS */
+.mat-page{padding:22px 26px;height:calc(100vh - 62px - 42px - 60px - 56px - 34px);overflow-y:auto}
+.mat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.mat-card{background:var(--s2);border:1px solid var(--b1);padding:14px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.mat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--b2);transition:background .25s}
+.mat-card:hover{border-color:var(--b2);transform:translateY(-2px)}
+.mat-card:hover::before,.mat-card.sel::before{background:var(--cyan)}
+.mat-card.sel{border-color:var(--cyan);background:rgba(0,102,187,.06)}
+.mat-card.sel::after{content:'SEL ✓';position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--cyan);background:var(--cyanG);border:1px solid rgba(0,102,187,.4);padding:2px 5px}
+.mat-name{font-family:var(--disp);font-size:10px;letter-spacing:1px;color:var(--white);margin-bottom:5px}
+.mat-stat{font-family:var(--mono);font-size:9px;color:var(--cyan);margin-bottom:3px}
+.mat-use{font-size:11px;color:var(--muted);line-height:1.5}
+.mat-detail{background:var(--s1);border:1px solid var(--b1);border-left:3px solid var(--cyan);padding:16px 20px;font-size:13px;color:var(--muted);line-height:1.7}
+.mat-detail strong{color:var(--white)}
+
+/* OCTAVE */
+.oct-page{padding:20px 26px;height:calc(100vh - 62px - 42px - 60px - 56px - 34px);overflow-y:auto}
+.oct-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.oct-kpi{background:var(--s2);border:1px solid var(--b1);padding:11px 14px}
+.oct-kpi-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--muted);margin-bottom:3px}
+.oct-kpi-val{font-family:var(--disp);font-size:16px;color:var(--cyan)}
+.oct-canvas-wrap{background:var(--s1);border:1px solid var(--b1);padding:14px;margin-bottom:14px}
+.oct-tip{background:var(--s2);border:1px solid var(--b1);border-left:3px solid var(--amber);padding:13px 16px;font-size:13px;color:var(--muted);line-height:1.7}
+
+/* STATUS BAR */
+.status-bar{background:var(--s1);border-top:1px solid var(--b1);padding:6px 22px;display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:9px;color:var(--dim);flex-wrap:wrap;flex-shrink:0}
+.st-item{display:flex;align-items:center;gap:5px}
+.st-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:livePulse 2.5s infinite}
+.st-sep{width:1px;height:12px;background:var(--b1)}
+.st-val{color:var(--cyan)}
+.st-right{margin-left:auto;color:var(--dim)}
+
+/* FOOTER */
+#footer{background:var(--s1);border-top:2px solid var(--b1);padding:12px 36px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;flex-shrink:0}
+.footer-brand{font-family:var(--disp);font-size:13px;letter-spacing:4px;color:var(--cyan)}
+.footer-info{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--muted);line-height:1.8}
+.footer-models{font-family:var(--mono);font-size:8px;color:var(--dim);line-height:1.8;text-align:right}
+
+@media(max-width:1100px){.metrics-strip{grid-template-columns:repeat(3,1fr)}.mat-grid{grid-template-columns:repeat(2,1fr)}.comp-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:820px){.tool-body{grid-template-columns:1fr}.sidebar{display:none}}
+</style>
+</head>
+<body>
+<div class="bg-wrap"><div class="bg-radial"></div></div>
+
+<header id="hdr">
+  <div class="hdr-brand">
+    <div class="brand-wordmark">VERTONOISE</div>
+    <div class="brand-tagline">
+      <strong>ISO 9613-2 · EASA SC-VTOL-01 · FAA AC 150/5020</strong>
+      Vertiport Community Noise Siting Engine
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-badge live">● LIVE CALC</div>
+    <div class="hdr-badge">GIS v2.4</div>
+    <div class="hdr-badge">ISO 9613-2:1996</div>
+  </div>
+</header>
+
+<nav class="global-nav">
+  <button class="gnav-tab active" onclick="showPage('map',this)">⬡ NOISE MAP</button>
+  <button class="gnav-tab" onclick="showPage('iso',this)">∑ ISO 9613-2</button>
+  <button class="gnav-tab" onclick="showPage('compliance',this)">✓ EASA / FAA</button>
+  <button class="gnav-tab" onclick="showPage('materials',this)">◧ MATERIALS</button>
+  <button class="gnav-tab" onclick="showPage('octave',this)">≋ OCTAVE BANDS</button>
+</nav>
+
+<div class="tool-body">
+<aside class="sidebar">
+  <div class="sec-hdr"><div class="sec-hdr-icon">✈</div><div class="sec-hdr-label">Rotor Configuration</div></div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Aircraft Category</div>
+    <select id="aircraftType" onchange="recalc()">
+      <option value="evtol_multirotor">eVTOL — Multirotor (Joby / Wisk)</option>
+      <option value="evtol_lift_cruise">eVTOL — Lift + Cruise (Archer)</option>
+      <option value="evtol_tiltrotor">eVTOL — Tiltrotor (Lilium / Bell)</option>
+      <option value="helicopter_light">Helicopter — Light (&lt;3 175 kg)</option>
+      <option value="helicopter_medium">Helicopter — Medium (3 175–5 700 kg)</option>
+      <option value="helicopter_heavy">Helicopter — Heavy (&gt;5 700 kg)</option>
+      <option value="autogyro">Autogyro / Gyroplane</option>
+      <option value="open_rotor">Open-Rotor Turboprop</option>
+    </select>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Operations per Hour <span class="val" id="lbl-ops">20</span></div>
+    <input type="range" id="opsPerHour" min="1" max="60" value="20" oninput="recalc()">
+    <div class="tick-row"><span>1</span><span>20</span><span>40</span><span>60</span></div>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Approach / Dep. Angle <span class="val" id="lbl-angle">7°</span></div>
+    <input type="range" id="approachAngle" min="3" max="20" value="7" oninput="recalc()">
+    <div class="tick-row"><span>3°</span><span>7°</span><span>13°</span><span>20°</span></div>
+  </div>
+  <div class="sec-hdr"><div class="sec-hdr-icon">◎</div><div class="sec-hdr-label">Site &amp; Environment</div></div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Ground Type (ISO G-factor)</div>
+    <div class="choice-row">
+      <button class="choice-btn" onclick="setGround('hard',this)">Hard G=0</button>
+      <button class="choice-btn on" onclick="setGround('mixed',this)">Mixed G=0.5</button>
+      <button class="choice-btn" onclick="setGround('soft',this)">Soft G=1</button>
+    </div>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Terrain Profile</div>
+    <select id="terrain" onchange="recalc()">
+      <option value="flat">Flat / urban rooftop</option>
+      <option value="gentle">Gentle slope 3–8°</option>
+      <option value="valley">Valley (receiver below)</option>
+      <option value="hill">Hill (receiver above)</option>
+    </select>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Temperature <span class="val" id="lbl-temp">20 °C</span></div>
+    <input type="range" id="temp" min="-10" max="40" value="20" oninput="recalc()">
+    <div class="tick-row"><span>-10</span><span>0</span><span>20</span><span>40°C</span></div>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Relative Humidity <span class="val" id="lbl-hum">60%</span></div>
+    <input type="range" id="humidity" min="20" max="100" value="60" oninput="recalc()">
+    <div class="tick-row"><span>20%</span><span>50%</span><span>75%</span><span>100%</span></div>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Wind Speed m/s (downwind) <span class="val" id="lbl-wind">3</span></div>
+    <input type="range" id="windSpeed" min="0" max="10" value="3" oninput="recalc()">
+    <div class="tick-row"><span>0</span><span>3</span><span>6</span><span>10</span></div>
+  </div>
+  <div class="sec-hdr"><div class="sec-hdr-icon">⊟</div><div class="sec-hdr-label">Barriers &amp; Receiver</div></div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Barrier Height <span class="val" id="lbl-barH">3 m</span></div>
+    <input type="range" id="barrierH" min="0" max="12" value="3" oninput="recalc()">
+    <div class="tick-row"><span>0</span><span>3</span><span>6</span><span>12 m</span></div>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Barrier Material</div>
+    <select id="barrierMat" onchange="recalc()">
+      <option value="absorptive">Absorptive concrete — SRI 38 dB</option>
+      <option value="perf_metal">Perforated metal + wool — SRI 44 dB</option>
+      <option value="concrete">Dense concrete — SRI 32 dB</option>
+      <option value="steel">Steel sheet — SRI 28 dB</option>
+      <option value="green_wall">Green / vegetal wall — SRI 18 dB</option>
+      <option value="none">No barrier</option>
+    </select>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Distance from TLOF <span class="val" id="lbl-dist">400 m</span></div>
+    <input type="range" id="distance" min="50" max="2000" value="400" step="10" oninput="recalc()">
+    <div class="tick-row"><span>50</span><span>400</span><span>1000</span><span>2000 m</span></div>
+  </div>
+  <div class="ctrl">
+    <div class="ctrl-lbl">Receiver Height (m AGL) <span class="val" id="lbl-recvH">4 m</span></div>
+    <input type="range" id="recvH" min="0" max="30" value="4" oninput="recalc()">
+    <div class="tick-row"><span>0</span><span>4</span><span>15</span><span>30 m</span></div>
+  </div>
+  <button class="calc-btn" onclick="recalc()">▶ RECALCULATE</button>
+</aside>
+
+<div class="content">
+  <div class="metrics-strip">
+    <div class="met c"><div class="met-lbl">LAeq RECEIVER</div><div class="met-val" id="m-laeq">—</div><div class="met-unit">dB(A)</div></div>
+    <div class="met a"><div class="met-lbl">Lden COMBINED</div><div class="met-val" id="m-lden">—</div><div class="met-unit">dB(A)</div></div>
+    <div class="met g"><div class="met-lbl">Abar BARRIER</div><div class="met-val" id="m-abar">—</div><div class="met-unit">dB</div></div>
+    <div class="met c"><div class="met-lbl">Adiv GEOMETRIC</div><div class="met-val" id="m-adiv">—</div><div class="met-unit">dB</div></div>
+    <div class="met a"><div class="met-lbl">Aatm ABSORPT.</div><div class="met-val" id="m-aatm">—</div><div class="met-unit">dB</div></div>
+    <div class="met g"><div class="met-lbl">Agr GROUND</div><div class="met-val" id="m-agr">—</div><div class="met-unit">dB</div></div>
+  </div>
+
+  <!-- MAP PAGE -->
+  <div id="page-map" class="page active" style="display:flex;flex-direction:column;flex:1">
+    <div class="map-wrap" style="flex:1">
+      <canvas id="mapCanvas"></canvas>
+      <div class="map-overlay-bar">
+        <button class="map-btn on" onclick="setMapView('laeq',this)">LAeq</button>
+        <button class="map-btn" onclick="setMapView('lden',this)">Lden</button>
+        <button class="map-btn" onclick="setMapView('lmax',this)">LASmax</button>
+        <button class="map-btn" style="margin-left:8px" onclick="toggleOv('barriers',this)">Barriers</button>
+        <button class="map-btn" onclick="toggleOv('buildings',this)">Buildings</button>
+        <button class="map-btn" onclick="toggleOv('terrain',this)">Terrain</button>
+      </div>
+      <div class="map-coords" id="mapCoords">Hover map for level · Click to move receiver</div>
+    </div>
+    <div class="map-legend-bar">
+      <div class="leg-item"><div class="leg-sw" style="background:#b91c1c"></div>&gt;70 dB</div>
+      <div class="leg-item"><div class="leg-sw" style="background:#ea580c"></div>65–70</div>
+      <div class="leg-item"><div class="leg-sw" style="background:#d97706"></div>60–65</div>
+      <div class="leg-item"><div class="leg-sw" style="background:#84cc16"></div>55–60</div>
+      <div class="leg-item"><div class="leg-sw" style="background:#22c55e"></div>50–55</div>
+      <div class="leg-item"><div class="leg-sw" style="background:#0ea5e9"></div>45–50</div>
+      <div class="leg-item"><div class="leg-sw" style="background:#6366f1"></div>&lt;45 dB</div>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--dim);margin-left:8px">── 55 dB WHO/EASA boundary  |  R = receiver  |  Click map to reposition</span>
+    </div>
+  </div>
+
+  <!-- ISO PAGE -->
+  <div id="page-iso" class="page">
+    <div class="iso-grid">
+      <div class="iso-panel">
+        <div class="iso-title">Attenuation Breakdown</div>
+        <div class="att-box">
+          <div class="att-row"><span class="att-key">Source Lw (dB ref 1 pW)</span><span class="att-val c" id="iso-lw">—</span></div>
+          <div class="att-row"><span class="att-key">Geometric divergence Adiv</span><span class="att-val r" id="iso-adiv">—</span></div>
+          <div class="att-row"><span class="att-key">Atmospheric absorption Aatm</span><span class="att-val r" id="iso-aatm">—</span></div>
+          <div class="att-row"><span class="att-key">Ground effect Agr (G=<span id="iso-G">0.5</span>)</span><span class="att-val r" id="iso-agr">—</span></div>
+          <div class="att-row"><span class="att-key">Barrier diffraction Abar</span><span class="att-val r" id="iso-abar">—</span></div>
+          <div class="att-row"><span class="att-key">Terrain / Misc Amisc</span><span class="att-val a" id="iso-amisc">—</span></div>
+          <div class="att-row total"><span class="att-key">Receiver LAeq</span><span class="att-val c" id="iso-laeq">—</span></div>
+        </div>
+        <div class="formula-box">
+          LAeq = Lw − Adiv − Aatm − Agr − Abar + Amisc<br>
+          <span class="comment">// ISO 9613-2:1996 Eq. 2 · 63–8000 Hz octave bands</span><br>
+          Adiv = 20·log(r) + 11<br>
+          Agr = 4.8 − (2G/r)·(17 + 300/r) ≥ 0<br>
+          <span class="comment">// Maekawa: Abar ≤ SRI of barrier material</span>
+        </div>
+      </div>
+      <div class="iso-panel">
+        <div class="iso-title">Lden / DNL Derivation</div>
+        <div class="att-box">
+          <div class="att-row"><span class="att-key">Operations / hour</span><span class="att-val c" id="iso-ops">—</span></div>
+          <div class="att-row"><span class="att-key">Single Event Level SEL</span><span class="att-val c" id="iso-sel">—</span></div>
+          <div class="att-row"><span class="att-key">Day level Ld (07–22 h)</span><span class="att-val c" id="iso-ld">—</span></div>
+          <div class="att-row"><span class="att-key">Evening +5 dB penalty</span><span class="att-val a" id="iso-le">—</span></div>
+          <div class="att-row"><span class="att-key">Night +10 dB penalty</span><span class="att-val r" id="iso-ln">—</span></div>
+          <div class="att-row total"><span class="att-key">Lden (EU Directive 2002/49/EC)</span><span class="att-val a" id="iso-lden">—</span></div>
+        </div>
+        <div class="formula-box">
+          Lden = 10·log[(15/24)·10^(Ld/10)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;+ (3/24)·10^((Le+5)/10) + (6/24)·10^((Ln+10)/10)]<br>
+          <span class="comment">// EU Environmental Noise Directive 2002/49/EC</span>
+        </div>
+      </div>
+      <div class="iso-panel">
+        <div class="iso-title">Building Reflections (§11)</div>
+        <div class="att-box">
+          <div class="att-row"><span class="att-key">Single façade reflection</span><span class="att-val c">+1.5 dB</span></div>
+          <div class="att-row"><span class="att-key">Corner / street canyon</span><span class="att-val a">+2.5 dB</span></div>
+          <div class="att-row"><span class="att-key">Multiple reflections (urban)</span><span class="att-val a">+3.0 dB</span></div>
+          <div class="att-row"><span class="att-key">Reflective glass façade</span><span class="att-val r">+4.0 dB</span></div>
+          <div class="att-row"><span class="att-key">Absorptive façade NRC 0.8</span><span class="att-val g">−1.0 dB</span></div>
+          <div class="att-row"><span class="att-key">Green façade / living wall</span><span class="att-val g">−0.5 dB</span></div>
+        </div>
+        <div class="formula-box">
+          Krefl = 10·log(1 + Σρᵢ·Aᵢ/4πr²)<br>
+          <span class="comment">// ρᵢ = surface reflectivity, Aᵢ = panel area (m²)</span><br>
+          Per ISO 9613-2 §11 image-source method
+        </div>
+      </div>
+      <div class="iso-panel">
+        <div class="iso-title">Aircraft Type Data</div>
+        <div class="att-box" id="iso-aircraft-detail"></div>
+        <div class="formula-box" id="iso-aircraft-tip" style="color:var(--muted);margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLIANCE PAGE -->
+  <div id="page-compliance" class="page">
+    <div class="comp-grid">
+      <div class="comp-panel">
+        <div class="comp-authority">EASA SC-VTOL-01 · AMC Vertiport</div>
+        <div class="comp-metric" id="c-easa-lden" style="color:var(--cyan)">—</div>
+        <div class="comp-limit">Lden ≤ 55 dB (residential zone)</div>
+        <div id="b-easa-lden"></div>
+        <div class="comp-note">EASA SC-VTOL-01 §F.800 requires Lden ≤ 55 dB at nearest residential façade. Certification basis: CS-36 equivalent for UAM operations. Community noise monitoring plan mandatory above 20 ops/hr.</div>
+        <div class="comp-bar-wrap"><div style="font-family:var(--mono);font-size:8px;color:var(--dim)">Utilisation vs 55 dB limit</div><div class="comp-bar-track"><div class="comp-bar-fill" id="bar-easa-lden" style="width:0%"></div></div></div>
+      </div>
+      <div class="comp-panel">
+        <div class="comp-authority">FAA Order 1050.1F · AC 150/5020-1</div>
+        <div class="comp-metric" id="c-faa-dnl" style="color:var(--amber)">—</div>
+        <div class="comp-limit">DNL ≤ 65 dB (compatible land use)</div>
+        <div id="b-faa-dnl"></div>
+        <div class="comp-note">FAA AC 150/5020-1 land use compatibility. DNL &gt;65 dB triggers residential incompatibility. 14 CFR Part 150 noise exposure map required for federally funded vertiports. VTOL ARC interim noise guidance.</div>
+        <div class="comp-bar-wrap"><div style="font-family:var(--mono);font-size:8px;color:var(--dim)">Utilisation vs 65 dB limit</div><div class="comp-bar-track"><div class="comp-bar-fill" id="bar-faa-dnl" style="width:0%"></div></div></div>
+      </div>
+      <div class="comp-panel">
+        <div class="comp-authority">WHO Environmental Noise 2018</div>
+        <div class="comp-metric" id="c-who-night" style="color:var(--red)">—</div>
+        <div class="comp-limit">Lnight ≤ 40 dB strong / 55 dB interim</div>
+        <div id="b-who-night"></div>
+        <div class="comp-note">WHO 2018 aircraft Lden 45 dB strong recommendation (interim: 55 dB). Lnight 40 dB recommended. Night curfew 22:00–06:00 strongly advised for all rotor types near residential areas.</div>
+        <div class="comp-bar-wrap"><div style="font-family:var(--mono);font-size:8px;color:var(--dim)">Lnight vs 55 dB interim</div><div class="comp-bar-track"><div class="comp-bar-fill" id="bar-who-night" style="width:0%"></div></div></div>
+      </div>
+      <div class="comp-panel">
+        <div class="comp-authority">ICAO Annex 16 Vol. I</div>
+        <div class="comp-metric" id="c-icao" style="color:var(--green)">—</div>
+        <div class="comp-limit">Cumulative EPNdB margin &gt; 0</div>
+        <div id="b-icao"></div>
+        <div class="comp-note">Helicopters: ICAO Ch.8. eVTOL: draft Ch.29 / SC-VTOL-01 interim basis. Cumulative margin = limit−measured at all 3 certification points (takeoff, approach, hover). Positive margin required.</div>
+        <div class="comp-bar-wrap"><div style="font-family:var(--mono);font-size:8px;color:var(--dim)">Estimated margin (higher = better)</div><div class="comp-bar-track"><div class="comp-bar-fill" id="bar-icao" style="width:0%;background:var(--green)"></div></div></div>
+      </div>
+      <div class="comp-panel">
+        <div class="comp-authority">UK CAA CAP 1529 · AIC Y 053/2021</div>
+        <div class="comp-metric" id="c-cap" style="color:var(--cyan)">—</div>
+        <div class="comp-limit">LAmax ≤ 60 dB at building façade</div>
+        <div id="b-cap"></div>
+        <div class="comp-note">CAA CAP 1529: 60 dB LAmax at sensitive receptor façade for hover operations. Noise preferential routes required. Route planning approval for residential corridors. Monitoring obligations above 10 ops/hr.</div>
+        <div class="comp-bar-wrap"><div style="font-family:var(--mono);font-size:8px;color:var(--dim)">LAmax vs 60 dB limit</div><div class="comp-bar-track"><div class="comp-bar-fill" id="bar-cap" style="width:0%"></div></div></div>
+      </div>
+      <div class="comp-panel">
+        <div class="comp-authority">TA Lärm (Germany) · BImSchG §48</div>
+        <div class="comp-metric" id="c-ta" style="color:var(--amber)">—</div>
+        <div class="comp-limit">Lr ≤ 55 dB day / 40 dB night (WA)</div>
+        <div id="b-ta"></div>
+        <div class="comp-note">German TA Lärm: Wohngebiet 55/40 dB, Mischgebiet 60/45 dB. BImSchG §48 requires noise abatement concept for new vertiport sites. Immissionsrichtwert must be demonstrated at all boundaries.</div>
+        <div class="comp-bar-wrap"><div style="font-family:var(--mono);font-size:8px;color:var(--dim)">Lr day vs 55 dB (Wohngebiet)</div><div class="comp-bar-track"><div class="comp-bar-fill" id="bar-ta" style="width:0%"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATERIALS PAGE -->
+  <div id="page-materials" class="page">
+    <div class="mat-page">
+      <div class="mat-grid">
+        <div class="mat-card sel" onclick="selMat(this,'concrete')" id="mc-concrete">
+          <div class="mat-name">MASS CONCRETE</div>
+          <div class="mat-stat">SRI 52 dB · α 0.02 · 600 kg/m²</div>
+          <div class="mat-use">Perimeter walls, slabs. Excellent mass-law TL. EN 1992.</div>
+        </div>
+        <div class="mat-card" onclick="selMat(this,'absorptive')" id="mc-absorptive">
+          <div class="mat-name">ABSORPTIVE PANEL</div>
+          <div class="mat-stat">SRI 38 dB · NRC 0.85 · 60 kg/m²</div>
+          <div class="mat-use">Mineral wool + perforated steel. TLOF surrounds, screens.</div>
+        </div>
+        <div class="mat-card" onclick="selMat(this,'rubber')" id="mc-rubber">
+          <div class="mat-name">VIBRATION ISO. MAT</div>
+          <div class="mat-stat">IL 20–35 dB (struct.) · Neoprene/EPDM</div>
+          <div class="mat-use">Rooftop vertiport slabs. HVAC decoupling. 5–15 kN/m².</div>
+        </div>
+        <div class="mat-card" onclick="selMat(this,'green_roof')" id="mc-green_roof">
+          <div class="mat-name">GREEN ROOF SUBSTRATE</div>
+          <div class="mat-stat">SRI 8 dB · NRC 0.70 · 120–200 kg/m²</div>
+          <div class="mat-use">Sedum / planted. Scatter reduction, podium roofs.</div>
+        </div>
+        <div class="mat-card" onclick="selMat(this,'perf_metal')" id="mc-perf_metal">
+          <div class="mat-name">PERFORATED METAL + WOOL</div>
+          <div class="mat-stat">SRI 44 dB · NRC 0.90 · 30 kg/m²</div>
+          <div class="mat-use">Lightweight screens, FATO panels. Fire A2-s1,d0.</div>
+        </div>
+        <div class="mat-card" onclick="selMat(this,'glazing')" id="mc-glazing">
+          <div class="mat-name">LAMINATED ACOUSTIC GLASS</div>
+          <div class="mat-stat">SRI 36 dB · α 0.05 · 20 kg/m²</div>
+          <div class="mat-use">ATC glazing, terminal façades. EN 14159. PVB interlayer.</div>
+        </div>
+        <div class="mat-card" onclick="selMat(this,'epdm')" id="mc-epdm">
+          <div class="mat-name">POROUS EPDM SURFACE</div>
+          <div class="mat-stat">σ 30–50 kPa·s/m² · G ≈ 0.8–1.0</div>
+          <div class="mat-use">TLOF/FATO surface. Raises G factor, Agr +2–5 dB.</div>
+        </div>
+        <div class="mat-card" onclick="selMat(this,'slotted')" id="mc-slotted">
+          <div class="mat-name">SLOTTED CONCRETE BLOCK</div>
+          <div class="mat-stat">SRI 32 dB · NRC 0.60 · 350 kg/m²</div>
+          <div class="mat-use">Self-draining perimeter barriers up to 6 m. Low cost.</div>
+        </div>
+      </div>
+      <div class="mat-detail" id="mat-detail-box">Select a material above to view full acoustic specification, applicable standards, installation guidance, and vertiport siting recommendations.</div>
+    </div>
+  </div>
+
+  <!-- OCTAVE PAGE -->
+  <div id="page-octave" class="page">
+    <div class="oct-page">
+      <div class="oct-kpi-row">
+        <div class="oct-kpi"><div class="oct-kpi-lbl">A-WEIGHTED SUM</div><div class="oct-kpi-val" id="oct-asum">—</div></div>
+        <div class="oct-kpi"><div class="oct-kpi-lbl">C-WEIGHTED SUM</div><div class="oct-kpi-val" id="oct-csum">—</div></div>
+        <div class="oct-kpi"><div class="oct-kpi-lbl">LF DOMINANCE &lt;250 Hz</div><div class="oct-kpi-val" id="oct-lf">—</div></div>
+        <div class="oct-kpi"><div class="oct-kpi-lbl">DOMINANT BAND</div><div class="oct-kpi-val" id="oct-dom" style="font-size:14px">—</div></div>
+      </div>
+      <div class="oct-canvas-wrap">
+        <canvas id="octChart" height="240"></canvas>
+      </div>
+      <div class="oct-tip" id="oct-tip">Run a calculation to view the octave-band spectrum for the selected aircraft type.</div>
+    </div>
+  </div>
+
+</div><!-- content -->
+</div><!-- tool-body -->
+
+<div class="status-bar">
+  <div class="st-item"><div class="st-dot"></div><span>ENGINE ACTIVE</span></div>
+  <div class="st-sep"></div>
+  <div class="st-item">ISO 9613-2:1996 <span class="st-val">✓</span></div>
+  <div class="st-sep"></div>
+  <div class="st-item">Aircraft: <span class="st-val" id="st-ac">eVTOL Multirotor</span></div>
+  <div class="st-sep"></div>
+  <div class="st-item">LAeq: <span class="st-val" id="st-laeq">—</span></div>
+  <div class="st-sep"></div>
+  <div class="st-item">Lden: <span class="st-val" id="st-lden">—</span></div>
+  <div class="st-sep"></div>
+  <div class="st-item">Receiver: <span class="st-val" id="st-dist">400 m</span></div>
+  <div class="st-right">VERTONOISE v1.0 · ISO 9613-2 · EASA SC-VTOL-01 · FAA AC 150/5020-1 · ICAO Annex 16</div>
+</div>
+
+<footer id="footer">
+  <div class="footer-brand">VERTONOISE</div>
+  <div class="footer-info">
+    ISO 9613-2:1996 Outdoor Sound Propagation · EASA SC-VTOL-01 Noise · FAA Order 1050.1F<br>
+    ICAO Annex 16 Vol. I · WHO Env. Noise 2018 · EU Directive 2002/49/EC · UK CAA CAP 1529 · TA Lärm
+  </div>
+  <div class="footer-models">
+    Adiv = 20·log(r)+11 · Agr = ISO 9613-2 §7.3 · Abar = Maekawa (1968)<br>
+    Lden = EU END 2002/49/EC · DNL = FAA AC 150/5020 · SEL = single-event 30 s
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const AIRCRAFT = {
+  evtol_multirotor:{name:'eVTOL Multirotor',lw:90,spectrum:[0,2,4,8,10,12,10,6],specs:[['ICAO Basis','SC-VTOL-01 (interim)'],['Source Lw','90 dB ref 1 pW'],['Hover LAeq@150m','~65 dB(A)'],['Peak freq.','500–2 000 Hz'],['BVI risk','Low'],['Urban siting','≥300 m residential']],tip:'High-frequency tonal noise from many small distributed rotors. Dominant spectrum 500–2 000 Hz. 10–15 dB quieter than equivalent helicopter. No BVI impulsive component. EASA SC-VTOL-01 §F.800. FAA interim VTOL ARC guidance.'},
+  evtol_lift_cruise:{name:'eVTOL Lift+Cruise',lw:92,spectrum:[1,3,5,9,11,13,9,5],specs:[['ICAO Basis','SC-VTOL-01 (interim)'],['Source Lw','92 dB ref 1 pW'],['Hover LAeq@150m','~67 dB(A)'],['Peak freq.','500–2 000 Hz'],['BVI risk','Low-Medium'],['Urban siting','≥350 m residential']],tip:'Mixed fixed-wing + dedicated lift rotor. Noise highest during VTOL transition corridor. Larger lift rotors: BPF 100–300 Hz. Cruise phase quieter. EASA SC-VTOL-01. FAA VTOL ARC interim.'},
+  evtol_tiltrotor:{name:'eVTOL Tiltrotor',lw:95,spectrum:[3,5,7,10,12,14,10,6],specs:[['ICAO Basis','Annex 16 Ch.29 (draft)'],['Source Lw','95 dB ref 1 pW'],['Hover LAeq@150m','~70 dB(A)'],['Peak freq.','250–1 000 Hz'],['BVI risk','Medium'],['Urban siting','≥500 m recommended']],tip:'Higher LF content due to larger blade chords in conversion mode. Conversion corridor generates additional impulsive noise. ICAO Annex 16 Chapter 29 (draft) expected. Minimum 500 m setback from residential recommended.'},
+  helicopter_light:{name:'Light Helicopter',lw:100,spectrum:[5,8,10,12,14,12,8,4],specs:[['ICAO Basis','Annex 16 Vol.I Ch.8'],['Source Lw','100 dB ref 1 pW'],['Hover LAeq@150m','~75 dB(A)'],['Peak freq.','125–500 Hz'],['BVI risk','High (descent)'],['Urban siting','≥500 m residential']],tip:'ICAO Annex 16 Ch.8 certification. BVI at descent creates impulsive noise — dominant perception metric. 6 dB directional variation typical. Approach angle ≥ 7° reduces BVI. HOGE/HIGE power correction applies.'},
+  helicopter_medium:{name:'Medium Helicopter',lw:106,spectrum:[8,10,12,14,15,13,9,5],specs:[['ICAO Basis','Annex 16 Vol.I Ch.8'],['Source Lw','106 dB ref 1 pW'],['Hover LAeq@150m','~81 dB(A)'],['Peak freq.','63–500 Hz'],['BVI risk','High'],['Urban siting','≥650 m residential']],tip:'ICAO Ch.8 limits apply. Tail-rotor tonal dominant at higher frequencies. Approach angle ≥ 7° strongly recommended. 65 dB DNL setback required by FAA. Night curfew and community monitoring mandatory above 30 ops/hr.'},
+  helicopter_heavy:{name:'Heavy Helicopter',lw:112,spectrum:[10,12,14,16,17,14,10,6],specs:[['ICAO Basis','Annex 16 Vol.I Ch.8'],['Source Lw','112 dB ref 1 pW'],['Hover LAeq@150m','~87 dB(A)'],['Peak freq.','63–250 Hz'],['BVI risk','Very High'],['Urban siting','≥800 m — evaluate carefully']],tip:'At limits of urban vertiport viability. Minimum 800 m setback. Night curfew mandatory. ICAO Ch.8 cumulative EPNdB margin required. LF content (63–250 Hz) penetrates buildings — structural noise is an additional concern.'},
+  autogyro:{name:'Autogyro / Gyroplane',lw:94,spectrum:[2,4,6,9,11,13,9,5],specs:[['ICAO Basis','CS-22 / CS-VLA'],['Source Lw','94 dB ref 1 pW'],['Hover LAeq@150m','~69 dB(A)'],['Peak freq.','500–2 000 Hz'],['BVI risk','Very Low'],['Urban siting','≥300 m residential']],tip:'Unpowered rotating rotor gives significantly lower BVI. Engine noise is dominant source. EASA CS-22 or CS-VLA basis. Relatively benign noise profile. Engine-out noise path requires separate assessment.'},
+  open_rotor:{name:'Open-Rotor Turboprop',lw:108,spectrum:[9,11,13,15,16,14,11,7],specs:[['ICAO Basis','Annex 16 Vol.I Ch.3/10'],['Source Lw','108 dB ref 1 pW'],['Hover LAeq@150m','~83 dB(A)'],['Peak freq.','63–500 Hz'],['BVI risk','High (prop wake)'],['Urban siting','Not suitable dense urban']],tip:'High-solidity propellers: strong tonal + broadband. ICAO Annex 16 Ch.3 or Ch.10. Strong LF ground reflection. Generally not suitable for dense urban vertiports — use for suburban or regional VTOL infrastructure.'},
+};
+const FREQ_LABELS=['63','125','250','500','1k','2k','4k','8k'];
+const A_WEIGHTS=[-26.2,-16.1,-8.6,-3.2,0,1.2,1.0,-1.1];
+const C_WEIGHTS=[-0.8,-0.2,0,0,0,-0.2,-0.8,-3.0];
+const BARRIER_SRI={absorptive:38,perf_metal:44,concrete:32,steel:28,green_wall:18,none:0};
+const MAT_DETAIL={
+  concrete:'<strong>Mass Concrete (250 mm)</strong> — Sound Reduction Index 52 dB. ISO 717-1 / EN 1992. Excellent for structural perimeter walls, terminal floor slabs, machine room enclosures. Vibration decoupling at all structural interfaces essential (neoprene pads, IL 20–30 dB). Lifespan: 50+ years. Cost: low. Surface: form-faced or rendered. Suitable as base for applied acoustic finishes.',
+  absorptive:'<strong>Absorptive Concrete Panel (mineral wool core, perforated steel face)</strong> — SRI 38 dB, NRC 0.85, ~60 kg/m². Ideal along approach paths and TLOF surrounds to reduce ground-level reflections. Inspect annually for moisture ingress. Perforated face: 20–25% open area, Ø 5–8 mm. Fire class A2-s1,d0. Cost: medium. Replace mineral wool every 15–20 yr.',
+  rubber:'<strong>Vibration Isolation Rubber Mat (neoprene/EPDM, 50–100 mm)</strong> — Insertion loss 20–35 dB (structure-borne, 100–1000 Hz). Critical for rooftop vertiports — prevents rotor vibration transmission to occupied floors below. Rated load: 5–15 kN/m². Target deflection: 3–8 mm static. Temperature range: −40 to +90 °C. Replace every 20 years.',
+  green_roof:'<strong>Green Roof / Sedum Substrate (100–200 mm growing medium)</strong> — SRI 8 dB, NRC 0.70. Effective for diffuse scatter reduction adjacent to vertiport podiums. Also provides stormwater attenuation and urban heat-island mitigation. Weight: 120–200 kg/m² saturated — verify structural load capacity. Root barrier membrane and irrigation system required.',
+  perf_metal:'<strong>Perforated Metal + Mineral Wool (2 mm aluminium, 100 mm RWA45)</strong> — SRI 44 dB, NRC 0.90, 25–40 kg/m². Lightweight. Available in curved profiles for FATO barriers and approach corridor screens. Perforation: 20–30% open area. Powder-coat or marine-grade finish. Fire rating A2-s1,d0. UV stable 25+ years. Modular — ideal for noise screens.',
+  glazing:'<strong>Laminated Acoustic Glazing (6.38 + PVB + 6.38 mm toughened)</strong> — SRI 36 dB per EN ISO 10140. Essential for ATC glazing, terminal façades facing approach corridors. Specify asymmetric panes (e.g. 6.38 + 8.38) for +3–5 dB improvement. EN 14159 impact resistance. Frame Rw ≥ 36 dB required to match glass performance.',
+  epdm:'<strong>Porous EPDM Runway Surface</strong> — Flow resistivity 30–50 kPa·s/m². Raises ISO 9613-2 ground factor G to 0.8–1.0, increasing Agr by 2–5 dB at 400 m receiver. Also reduces tyre/ground vehicle noise by 5–8 dB. Skid resistance PTV ≥ 55 wet (EN 13036-4). Surface void content: 18–22%. Service life 15–20 years.',
+  slotted:'<strong>Slotted Concrete Barrier Block (hollow core, textured face)</strong> — SRI 32 dB, NRC 0.60, ~350 kg/m². Structurally robust, self-draining. Suitable to 6 m with standard strip footings (engineer design required above 3 m). Capstone essential to prevent resonance. Vegetated face option available. Cost: low-medium. Inspect joints annually.',
+};
+
+let groundG=0.5, mapView='laeq', overlays={barriers:false,buildings:false,terrain:false}, octChartInst=null;
+
+function getState(){
+  return{
+    aircraft:document.getElementById('aircraftType').value,
+    ops:+document.getElementById('opsPerHour').value,
+    angle:+document.getElementById('approachAngle').value,
+    groundG:groundG,
+    terrain:document.getElementById('terrain').value,
+    temp:+document.getElementById('temp').value,
+    humidity:+document.getElementById('humidity').value,
+    wind:+document.getElementById('windSpeed').value,
+    barrierH:+document.getElementById('barrierH').value,
+    barrierMat:document.getElementById('barrierMat').value,
+    distance:+document.getElementById('distance').value,
+    recvH:+document.getElementById('recvH').value,
+  };
+}
+
+function calcNoise(s,dist){
+  const ac=AIRCRAFT[s.aircraft];
+  const r=Math.max(dist,5);
+  const Adiv=20*Math.log10(r)+11;
+  const Aatm=(0.005+0.002*(1-s.humidity/100)+0.001*Math.abs(s.temp-20))*r;
+  const G=s.groundG;
+  const Agr_raw=4.8-(2*G/r)*(17+300/r);
+  const Agr=Math.max(0,Math.min(Agr_raw,3*G));
+  let Abar=0;
+  if(s.barrierMat!=='none'&&s.barrierH>0){
+    const sri=BARRIER_SRI[s.barrierMat]||0;
+    const dPath=Math.sqrt((r/2)*(r/2)+s.barrierH*s.barrierH)*2;
+    const pathDiff=dPath-r;
+    const N=2*pathDiff/0.34;
+    Abar=Math.min(10*Math.log10(3+20*Math.max(N,0)),sri);
+  }
+  const terrMods={flat:0,gentle:-1.5,valley:2.5,hill:-2};
+  const Amisc=(terrMods[s.terrain]||0)+(s.wind>5?1:0);
+  const Lp=ac.lw-Adiv-Aatm-Agr-Abar+Amisc;
+  return{lw:ac.lw,Adiv,Aatm:Math.round(Aatm*10)/10,Agr:Math.round(Agr*10)/10,Abar:Math.round(Abar*10)/10,Amisc,Lp};
+}
+
+function calcLden(s,Lp){
+  const Ld=Lp+10*Math.log10(s.ops*15/3600)+3;
+  const Le=Ld+5; const Ln=Ld+10;
+  const Lden=10*Math.log10((15*Math.pow(10,Ld/10)+3*Math.pow(10,Le/10)+6*Math.pow(10,Ln/10))/24);
+  return{Ld,Le,Ln,Lden};
+}
+
+function flash(id,val){
+  const el=document.getElementById(id); if(!el)return;
+  el.textContent=val; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
+
+function recalc(){
+  const s=getState(); const ac=AIRCRAFT[s.aircraft];
+  document.getElementById('lbl-ops').textContent=s.ops;
+  document.getElementById('lbl-angle').textContent=s.angle+'°';
+  document.getElementById('lbl-temp').textContent=s.temp+' °C';
+  document.getElementById('lbl-hum').textContent=s.humidity+'%';
+  document.getElementById('lbl-wind').textContent=s.wind;
+  document.getElementById('lbl-barH').textContent=s.barrierH+' m';
+  document.getElementById('lbl-dist').textContent=s.distance+' m';
+  document.getElementById('lbl-recvH').textContent=s.recvH+' m';
+
+  const n=calcNoise(s,s.distance);
+  const Lp=Math.round(n.Lp*10)/10;
+  const{Ld,Le,Ln,Lden}=calcLden(s,n.Lp);
+  const SEL=n.Lp+10*Math.log10(30);
+
+  flash('m-laeq',Lp+' dB(A)'); flash('m-lden',Math.round(Lden*10)/10+' dB');
+  flash('m-abar',n.Abar+' dB'); flash('m-adiv',n.Adiv.toFixed(1)+' dB');
+  flash('m-aatm',n.Aatm+' dB'); flash('m-agr',n.Agr+' dB');
+
+  document.getElementById('iso-lw').textContent=n.lw+' dB';
+  document.getElementById('iso-adiv').textContent='−'+n.Adiv.toFixed(1)+' dB';
+  document.getElementById('iso-aatm').textContent='−'+n.Aatm+' dB';
+  document.getElementById('iso-agr').textContent='−'+n.Agr+' dB';
+  document.getElementById('iso-G').textContent=s.groundG;
+  document.getElementById('iso-abar').textContent='−'+n.Abar+' dB';
+  document.getElementById('iso-amisc').textContent=(n.Amisc>=0?'+':'')+n.Amisc.toFixed(1)+' dB';
+  document.getElementById('iso-laeq').textContent=Lp+' dB(A)';
+  document.getElementById('iso-ops').textContent=s.ops+' /hr';
+  document.getElementById('iso-sel').textContent=Math.round(SEL*10)/10+' dB';
+  document.getElementById('iso-ld').textContent=Math.round(Ld*10)/10+' dB';
+  document.getElementById('iso-le').textContent=Math.round(Le*10)/10+' dB';
+  document.getElementById('iso-ln').textContent=Math.round(Ln*10)/10+' dB';
+  document.getElementById('iso-lden').textContent=Math.round(Lden*10)/10+' dB(A)';
+
+  document.getElementById('iso-aircraft-detail').innerHTML=ac.specs.map(([k,v])=>`<div class="att-row"><span class="att-key">${k}</span><span class="att-val c">${v}</span></div>`).join('');
+  document.getElementById('iso-aircraft-tip').textContent=ac.tip;
+
+  const limits=[
+    {id:'easa-lden',val:Math.round(Lden*10)/10,limit:55,bl:55},
+    {id:'faa-dnl',val:Math.round((Lden-1)*10)/10,limit:65,bl:65},
+    {id:'who-night',val:Math.round(Ln*10)/10,limit:55,bl:55},
+    {id:'icao',val:Math.round((8-(Lden-45))*10)/10,limit:0,bl:10,inv:true},
+    {id:'cap',val:Math.round((n.Lp+2)*10)/10,limit:60,bl:60},
+    {id:'ta',val:Math.round(Ld*10)/10,limit:55,bl:55},
+  ];
+  limits.forEach(l=>{
+    const el=document.getElementById('c-'+l.id); if(el) el.textContent=l.val+(l.inv?' dB margin':' dB');
+    const ok=l.inv?l.val>=0:l.val<=l.limit;
+    const near=l.inv?(l.val>=-5&&!ok):(l.val<=l.limit+5&&!ok);
+    const bel=document.getElementById('b-'+l.id);
+    if(bel) bel.innerHTML=ok?'<span class="chip pass">✓ COMPLIANT</span>':(near?'<span class="chip warn">⚠ MARGINAL</span>':'<span class="chip fail">✗ EXCEEDANCE</span>');
+    const bar=document.getElementById('bar-'+l.id);
+    if(bar){
+      const pct=l.inv?Math.min(100,Math.max(0,(l.val/10)*100)):Math.min(100,(l.val/l.bl)*100);
+      bar.style.width=pct+'%';
+      bar.style.background=ok?'var(--green)':(near?'var(--amber)':'var(--red)');
+    }
+  });
+
+  updateOctave(s,n);
+  drawMap();
+  document.getElementById('st-ac').textContent=ac.name;
+  document.getElementById('st-laeq').textContent=Lp+' dB(A)';
+  document.getElementById('st-lden').textContent=Math.round(Lden*10)/10+' dB(A)';
+  document.getElementById('st-dist').textContent=s.distance+' m';
+}
+
+function updateOctave(s,n){
+  const ac=AIRCRAFT[s.aircraft];
+  const bands=ac.spectrum.map((rel,i)=>n.lw+rel-n.Adiv-n.Aatm-n.Agr-n.Abar+n.Amisc);
+  const aw=bands.map((b,i)=>b+A_WEIGHTS[i]);
+  const cw=bands.map((b,i)=>b+C_WEIGHTS[i]);
+  const aSum=10*Math.log10(aw.reduce((a,v)=>a+Math.pow(10,v/10),0));
+  const cSum=10*Math.log10(cw.reduce((a,v)=>a+Math.pow(10,v/10),0));
+  const lfP=bands.slice(0,3).reduce((a,v)=>a+Math.pow(10,v/10),0);
+  const totP=bands.reduce((a,v)=>a+Math.pow(10,v/10),0);
+  const maxIdx=bands.indexOf(Math.max(...bands));
+  document.getElementById('oct-asum').textContent=Math.round(aSum*10)/10+' dB(A)';
+  document.getElementById('oct-csum').textContent=Math.round(cSum*10)/10+' dB(C)';
+  document.getElementById('oct-lf').textContent=Math.round(lfP/totP*100)+'%';
+  document.getElementById('oct-dom').textContent=FREQ_LABELS[maxIdx]+' Hz';
+  document.getElementById('oct-tip').textContent=ac.tip;
+  const colors=bands.map(b=>b>68?'rgba(187,17,51,.85)':b>62?'rgba(153,85,0,.85)':b>56?'rgba(0,102,187,.85)':'rgba(0,102,51,.85)');
+  const ctx=document.getElementById('octChart').getContext('2d');
+  if(octChartInst){octChartInst.destroy();}
+  octChartInst=new Chart(ctx,{
+    type:'bar',
+    data:{labels:FREQ_LABELS,datasets:[
+      {label:'Octave Lp (dB)',data:bands.map(b=>Math.round(b*10)/10),backgroundColor:colors,borderWidth:0,borderRadius:2},
+      {label:'A-weighted',data:aw.map(b=>Math.round(b*10)/10),type:'line',borderColor:'rgba(0,102,187,.9)',backgroundColor:'transparent',borderWidth:2,pointRadius:4,pointBackgroundColor:'rgba(0,102,187,.9)'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#3a5a78',font:{family:'JetBrains Mono',size:10},boxWidth:12}}},
+      scales:{
+        x:{ticks:{color:'#6888a8',font:{family:'JetBrains Mono',size:10}},grid:{color:'rgba(0,0,0,.05)'},title:{display:true,text:'Octave Band Centre Frequency (Hz)',color:'#3a5a78',font:{family:'JetBrains Mono',size:9}}},
+        y:{ticks:{color:'#6888a8',font:{family:'JetBrains Mono',size:10}},grid:{color:'rgba(0,0,0,.06)'},title:{display:true,text:'Lp (dB)',color:'#3a5a78',font:{family:'JetBrains Mono',size:9}}}
+      }
+    }
+  });
+}
+
+function getColor(db){
+  if(db>70)return'rgba(185,28,28,.70)';if(db>65)return'rgba(234,88,12,.68)';
+  if(db>60)return'rgba(217,119,6,.66)';if(db>55)return'rgba(132,204,22,.62)';
+  if(db>50)return'rgba(34,197,94,.60)';if(db>45)return'rgba(14,165,233,.58)';
+  return'rgba(99,102,241,.50)';
+}
+
+function drawMap(){
+  const cv=document.getElementById('mapCanvas'); if(!cv)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=cv.clientWidth||cv.offsetWidth, H=cv.clientHeight||cv.offsetHeight;
+  if(W<10||H<10)return;
+  cv.width=W*dpr; cv.height=H*dpr;
+  const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  const s=getState(); const cx=W/2, cy=H/2;
+  const maxR=Math.min(W,H)*0.46, scale=maxR/1000;
+
+  ctx.fillStyle='#eaf0f7'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(0,102,187,.06)'; ctx.lineWidth=0.5;
+  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  const step=5;
+  for(let py=0;py<H;py+=step){
+    for(let px=0;px<W;px+=step){
+      const dx=px-cx,dy=py-cy;
+      const dist=Math.sqrt(dx*dx+dy*dy)/scale; if(dist<8)continue;
+      const ang=Math.atan2(-dy,dx);
+      const n=calcNoise(s,dist);
+      let db=n.Lp+(Math.abs(ang)<Math.PI/5?1.5:0);
+      if(mapView==='lden') db+=3;
+      if(mapView==='lmax') db+=5;
+      ctx.fillStyle=getColor(db); ctx.fillRect(px,py,step,step);
+    }
+  }
+
+  // 55 dB contour
+  let r55=50;
+  for(let r=50;r<1900;r+=5){if(calcNoise(s,r).Lp<=55){r55=r;break;}}
+  ctx.strokeStyle='rgba(0,102,187,.6)'; ctx.lineWidth=1.5; ctx.setLineDash([8,5]);
+  ctx.beginPath(); ctx.arc(cx,cy,r55*scale,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='rgba(13,31,46,.75)'; ctx.font='bold 9px JetBrains Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('55 dB boundary',cx+r55*scale+4,cy-4);
+
+  if(overlays.barriers&&s.barrierH>0){
+    ctx.strokeStyle='#0066bb'; ctx.lineWidth=2; ctx.setLineDash([8,4]);
+    ctx.beginPath(); ctx.arc(cx,cy,80*scale,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='rgba(0,102,187,.07)'; ctx.beginPath(); ctx.arc(cx,cy,80*scale,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#0066bb'; ctx.font='bold 9px JetBrains Mono,monospace';
+    ctx.fillText('⊟ '+s.barrierH+'m barrier',cx+82*scale+4,cy+4);
+  }
+  if(overlays.buildings){
+    ctx.fillStyle='rgba(26,45,66,.4)'; ctx.strokeStyle='rgba(26,45,66,.55)'; ctx.lineWidth=1;
+    [[.32,-.35,.10,.09],[.52,.18,.08,.13],[-.28,.32,.09,.07],[-.44,-.20,.07,.11]].forEach(([bx,by,bw,bh])=>{
+      ctx.fillRect(cx+bx*maxR,cy+by*maxR,bw*maxR,bh*maxR);
+      ctx.strokeRect(cx+bx*maxR,cy+by*maxR,bw*maxR,bh*maxR);
+    });
+    ctx.fillStyle='rgba(26,45,66,.7)'; ctx.font='8px JetBrains Mono,monospace';
+    ctx.fillText('Buildings: +1.5–4 dB reflections',cx-75,cy+maxR*.38+14);
+  }
+  if(overlays.terrain&&s.terrain!=='flat'){
+    ctx.strokeStyle='rgba(120,90,40,.35)'; ctx.lineWidth=.8; ctx.setLineDash([4,4]);
+    for(let r=.15;r<=.95;r+=.2){ctx.beginPath();ctx.arc(cx,cy,r*maxR,0,Math.PI*2);ctx.stroke();}
+    ctx.setLineDash([]); ctx.fillStyle='rgba(120,90,40,.7)'; ctx.font='9px JetBrains Mono,monospace';
+    ctx.textAlign='center'; ctx.fillText('Terrain: '+s.terrain,cx,cy+5);
+  }
+
+  // Approach corridor
+  ctx.strokeStyle='rgba(0,102,187,.25)'; ctx.lineWidth=1.5; ctx.setLineDash([10,5]);
+  ctx.beginPath(); ctx.moveTo(cx,cy-22); ctx.lineTo(cx,cy-maxR*.94); ctx.stroke(); ctx.setLineDash([]);
+
+  // Distance rings
+  ctx.textAlign='left';
+  [200,500,1000].forEach(d=>{
+    const r=d*scale; if(r>maxR*.97)return;
+    ctx.strokeStyle='rgba(0,40,80,.08)'; ctx.lineWidth=.5;
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+    ctx.fillStyle='rgba(58,90,120,.65)'; ctx.font='8px JetBrains Mono,monospace';
+    ctx.fillText(d+'m',cx+r+2,cy+3);
+  });
+
+  // TLOF
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(cx,cy,20,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#0066bb'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(cx,cy,20,0,Math.PI*2); ctx.stroke();
+  ctx.fillStyle='#0066bb'; ctx.font='bold 8px JetBrains Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('TLOF',cx,cy+3);
+
+  // Receiver
+  const rdist=Math.min(s.distance,1850)*scale;
+  ctx.fillStyle='#fff'; ctx.strokeStyle='#bb1133'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.arc(cx+rdist,cy,7,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#bb1133'; ctx.font='bold 9px JetBrains Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('R',cx+rdist,cy+3.5);
+  const nR=calcNoise(s,s.distance);
+  ctx.fillStyle='rgba(13,31,46,.83)'; ctx.fillRect(cx+rdist+10,cy-14,76,20);
+  ctx.fillStyle='#fff'; ctx.font='bold 10px JetBrains Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText(Math.round(nR.Lp*10)/10+' dB(A)',cx+rdist+13,cy+2);
+
+  // Compass
+  ctx.fillStyle='rgba(58,90,120,.7)'; ctx.font='10px Barlow,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('N',cx,36); ctx.fillText('S',cx,H-10);
+  ctx.fillText('W',28,cy+4); ctx.fillText('E',W-28,cy+4);
+}
+
+document.getElementById('mapCanvas').addEventListener('mousemove',function(e){
+  const cv=this, rect=cv.getBoundingClientRect();
+  const s=getState(), cx=cv.clientWidth/2, cy=cv.clientHeight/2;
+  const maxR=Math.min(cv.clientWidth,cv.clientHeight)*.46, scale=maxR/1000;
+  const dist=Math.max(Math.sqrt(Math.pow(e.clientX-rect.left-cx,2)+Math.pow(e.clientY-rect.top-cy,2))/scale,5);
+  const n=calcNoise(s,dist);
+  document.getElementById('mapCoords').textContent=Math.round(dist)+' m from TLOF → '+Math.round(n.Lp*10)/10+' dB(A)';
+});
+
+document.getElementById('mapCanvas').addEventListener('click',function(e){
+  const cv=this, rect=cv.getBoundingClientRect();
+  const s=getState(), cx=cv.clientWidth/2, cy=cv.clientHeight/2;
+  const maxR=Math.min(cv.clientWidth,cv.clientHeight)*.46, scale=maxR/1000;
+  const dist=Math.round(Math.min(Math.max(Math.sqrt(Math.pow(e.clientX-rect.left-cx,2)+Math.pow(e.clientY-rect.top-cy,2))/scale,10),2000));
+  document.getElementById('distance').value=dist;
+  document.getElementById('lbl-dist').textContent=dist+' m';
+  recalc();
+});
+
+function setGround(key,btn){
+  document.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  groundG=key==='hard'?0:key==='mixed'?.5:1;
+  document.getElementById('iso-G').textContent=groundG;
+  recalc();
+}
+
+function setMapView(key,btn){
+  document.querySelectorAll('.map-btn').forEach((b,i)=>{if(i<3)b.classList.remove('on')});
+  btn.classList.add('on'); mapView=key; drawMap();
+}
+
+function toggleOv(key,btn){
+  overlays[key]=!overlays[key]; btn.classList.toggle('on',overlays[key]); drawMap();
+}
+
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.gnav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='map')setTimeout(drawMap,50);
+}
+
+function selMat(card,key){
+  document.querySelectorAll('.mat-card').forEach(c=>c.classList.remove('sel'));
+  card.classList.add('sel');
+  document.getElementById('mat-detail-box').innerHTML=MAT_DETAIL[key]||'No data.';
+}
+
+new ResizeObserver(()=>{
+  if(document.getElementById('page-map').classList.contains('active')) drawMap();
+}).observe(document.getElementById('mapCanvas'));
+
+recalc();
+</script>
+</body>
+</html>
