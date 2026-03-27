@@ -59,79 +59,170 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
              radial-gradient(ellipse 60% 80% at 90% 20%,rgba(0,102,51,.04) 0%,transparent 60%)}
 
 /* ══════════════════════════════════════════
-   LOGIN SCREEN — exact SONONAI style
+   LOGIN SCREEN — cinematic, generous space
 ══════════════════════════════════════════ */
-#login-screen{
-  position:fixed;inset:0;z-index:9999;
-  background:var(--auth-bg);
-  display:flex;align-items:center;justify-content:center;
-  padding:20px;overflow-y:auto;
-}
+#login-screen{position:fixed;inset:0;z-index:9999;display:flex;align-items:stretch;overflow:hidden}
 #login-screen.hidden{display:none}
-.auth-card{
-  width:100%;max-width:420px;
-  background:var(--auth-card);
-  border:1px solid rgba(34,212,240,.2);
-  padding:40px 36px;
-  box-shadow:0 0 60px rgba(34,212,240,.06);
+
+/* LEFT PANEL */
+.ls-left{
+  flex:1;position:relative;overflow:hidden;
+  background:#060e18;
+  display:flex;flex-direction:column;
+  min-width:0;
 }
-.auth-brand{text-align:center;margin-bottom:28px}
-.auth-brand-name{
-  font-family:var(--disp);font-size:26px;font-weight:900;
-  letter-spacing:5px;color:var(--neon);margin-bottom:4px;
+.ls-left::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 90% 70% at 20% 60%,rgba(34,212,240,.07) 0%,transparent 65%),
+    radial-gradient(ellipse 60% 50% at 85% 20%,rgba(0,220,140,.05) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 40% at 65% 90%,rgba(34,100,240,.04) 0%,transparent 60%);
 }
-.auth-brand-sub{
-  font-family:var(--mono);font-size:8px;letter-spacing:3px;
-  color:#608ab0;text-transform:uppercase;
+.ls-left::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(circle,rgba(34,212,240,.11) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,black,transparent);
+  -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,black,transparent);
 }
-.auth-brand-line{width:40px;height:2px;background:var(--neon);margin:14px auto 0}
-.auth-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:24px}
+.ls-nav{
+  position:relative;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:26px 40px;
+}
+.ls-brand{font-family:var(--disp);font-size:17px;font-weight:900;letter-spacing:7px;color:var(--neon)}
+.ls-nav-links{display:flex;align-items:center;gap:6px}
+.ls-nav-link{
+  font-family:var(--mono);font-size:9px;letter-spacing:1.5px;
+  color:rgba(180,215,240,.35);text-decoration:none;
+  padding:7px 14px;border:1px solid transparent;
+  transition:all .28s;text-transform:uppercase;cursor:pointer;
+}
+.ls-nav-link:hover{color:var(--neon);border-color:rgba(34,212,240,.2);background:rgba(34,212,240,.04)}
+.ls-nav-link.pill{border-color:rgba(34,212,240,.25);color:var(--neon);background:rgba(34,212,240,.04)}
+.ls-nav-link.pill:hover{background:rgba(34,212,240,.12);border-color:var(--neon)}
+
+.ls-hero{
+  position:relative;z-index:2;
+  padding:6px 0 0 60px;
+}
+.ls-eyebrow{
+  font-family:var(--mono);font-size:9px;letter-spacing:5px;
+  color:var(--neon);text-transform:uppercase;
+  margin-bottom:22px;opacity:.6;
+}
+.ls-title{
+  font-family:var(--disp);font-size:clamp(28px,3.8vw,50px);
+  font-weight:900;letter-spacing:1px;color:#fff;line-height:1.08;margin-bottom:18px;
+}
+.ls-title em{
+  font-style:normal;display:block;
+  background:linear-gradient(100deg,var(--neon) 0%,#00ff9d 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.ls-sub{
+  font-family:var(--body);font-size:14px;
+  color:rgba(160,200,230,.45);line-height:1.95;
+  font-weight:300;max-width:320px;
+}
+.ls-scene{
+  position:relative;z-index:2;
+  flex:1;display:flex;align-items:center;justify-content:flex-start;
+  padding:0 20px 0 36px;
+  min-height:0;
+}
+.ls-scene svg{width:100%;height:100%;max-height:300px}
+.ls-strip{
+  position:relative;z-index:2;
+  display:flex;
+  border-top:1px solid rgba(34,212,240,.06);
+}
+.ls-strip-item{
+  flex:1;padding:14px 16px;text-align:center;
+  border-right:1px solid rgba(34,212,240,.06);
+}
+.ls-strip-item:last-child{border-right:none}
+.ls-strip-val{font-family:var(--disp);font-size:18px;font-weight:700;color:var(--neon);line-height:1;margin-bottom:4px}
+.ls-strip-lbl{font-family:var(--mono);font-size:7px;letter-spacing:2px;color:rgba(180,215,240,.22);text-transform:uppercase}
+
+@keyframes acFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-12px) rotate(.7deg)}}
+@keyframes rSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes rSpinR{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+@keyframes ring{0%{r:3;opacity:.85}100%{r:56;opacity:0}}
+@keyframes ringB{0%{r:3;opacity:.55}100%{r:40;opacity:0}}
+@keyframes dashDrift{to{stroke-dashoffset:-28}}
+@keyframes shimmer{0%,100%{opacity:.2}50%{opacity:.9}}
+@keyframes beamPulse{0%,100%{opacity:.1}50%{opacity:.3}}
+
+/* RIGHT PANEL */
+.ls-right{
+  width:375px;flex-shrink:0;
+  background:#111e2c;
+  border-left:1px solid rgba(34,212,240,.09);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:46px 40px;overflow-y:auto;
+}
+.auth-brand{text-align:center;margin-bottom:34px}
+.auth-brand-name{font-family:var(--disp);font-size:20px;font-weight:900;letter-spacing:6px;color:var(--neon);margin-bottom:6px}
+.auth-brand-sub{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:#406080;text-transform:uppercase;line-height:1.9}
+.auth-brand-line{width:28px;height:1px;background:linear-gradient(90deg,transparent,var(--neon),transparent);margin:16px auto 0}
+.auth-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:28px;width:100%}
 .auth-tab{
-  flex:1;padding:9px;font-family:var(--mono);font-size:11px;font-weight:700;
-  letter-spacing:2px;text-transform:uppercase;text-align:center;cursor:pointer;
-  border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;
-  color:rgba(255,255,255,.35);
+  flex:1;padding:10px;font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:2.5px;text-transform:uppercase;text-align:center;cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .22s;
+  color:rgba(255,255,255,.2);
 }
 .auth-tab.active{color:var(--neon);border-bottom-color:var(--neon)}
-.auth-form{display:none}
+.auth-form{display:none;width:100%}
 .auth-form.active{display:block}
-.auth-lbl{
-  font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;
-  color:#608ab0;display:block;margin-bottom:6px;
-}
+.auth-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#3a5870;display:block;margin-bottom:8px}
 .auth-inp{
-  width:100%;padding:11px 13px;background:var(--auth-input);
-  border:1px solid rgba(255,255,255,.12);
-  color:#f0f8ff;font-family:var(--mono);font-size:13px;outline:none;
-  margin-bottom:14px;transition:border-color .2s;
+  width:100%;padding:12px 14px;
+  background:rgba(6,14,24,.9);border:1px solid rgba(255,255,255,.07);
+  color:#e8f4ff;font-family:var(--mono);font-size:13px;outline:none;
+  margin-bottom:14px;transition:all .22s;
 }
-.auth-inp:focus{border-color:var(--neon)}
-.auth-inp::placeholder{color:rgba(96,138,176,.6)}
-.auth-inp.last{margin-bottom:20px}
+.auth-inp:focus{border-color:var(--neon);box-shadow:0 0 0 3px rgba(34,212,240,.06)}
+.auth-inp::placeholder{color:rgba(70,110,150,.5)}
+.auth-inp.last{margin-bottom:24px}
 .auth-btn{
-  width:100%;padding:13px;background:var(--neon);border:none;
-  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:2px;
-  color:var(--auth-bg);cursor:pointer;transition:all .2s;
+  width:100%;padding:14px;background:var(--neon);border:none;
+  font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:2.5px;
+  color:#060e18;cursor:pointer;transition:all .28s;position:relative;overflow:hidden;
 }
-.auth-btn:hover{opacity:.88}
-.auth-btn:disabled{opacity:.45;cursor:not-allowed}
-.auth-btn-ghost{
-  width:100%;padding:11px;background:transparent;
-  border:1px solid rgba(34,212,240,.3);
-  font-family:var(--mono);font-size:11px;letter-spacing:1px;
-  color:var(--neon);cursor:pointer;margin-top:8px;transition:all .2s;
-}
-.auth-btn-ghost:hover{border-color:var(--neon);background:rgba(34,212,240,.06)}
-.auth-msg{
-  margin-top:12px;padding:9px 12px;
-  font-family:var(--mono);font-size:10px;display:none;line-height:1.6;
-}
-.auth-msg.err{background:rgba(255,68,80,.12);border:1px solid rgba(255,68,80,.3);color:#ff8899}
-.auth-msg.ok{background:rgba(26,245,160,.10);border:1px solid rgba(26,245,160,.3);color:#1af5a0}
-.auth-msg.info{background:rgba(34,212,240,.08);border:1px solid rgba(34,212,240,.25);color:var(--neon)}
-.auth-foot-link{text-align:center;margin-top:10px;font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3)}
+.auth-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transform:translateX(-100%);transition:transform .55s}
+.auth-btn:hover::after{transform:translateX(100%)}
+.auth-btn:hover{box-shadow:0 6px 28px rgba(34,212,240,.28)}
+.auth-btn:disabled{opacity:.35;cursor:not-allowed}
+.auth-btn-ghost{width:100%;padding:11px;background:transparent;border:1px solid rgba(34,212,240,.18);font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--neon);cursor:pointer;margin-top:8px;transition:all .22s}
+.auth-btn-ghost:hover{border-color:var(--neon);background:rgba(34,212,240,.05)}
+.auth-msg{margin-top:12px;padding:10px 13px;font-family:var(--mono);font-size:10px;display:none;line-height:1.6}
+.auth-msg.err{background:rgba(255,68,80,.08);border:1px solid rgba(255,68,80,.2);color:#ff8899}
+.auth-msg.ok{background:rgba(26,245,160,.07);border:1px solid rgba(26,245,160,.2);color:#1af5a0}
+.auth-msg.info{background:rgba(34,212,240,.05);border:1px solid rgba(34,212,240,.16);color:var(--neon)}
+.auth-foot-link{text-align:center;margin-top:12px;font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.18)}
 .auth-foot-link a{color:var(--neon);cursor:pointer;text-decoration:none}
-.auth-restrict{margin-top:24px;text-align:center;font-family:var(--mono);font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.2)}
+.auth-bottom{margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.05);width:100%;text-align:center}
+.auth-links-row{display:flex;justify-content:center;gap:22px;margin-bottom:12px}
+.auth-ext-link{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;color:rgba(180,215,240,.26);text-decoration:none;transition:color .22s;text-transform:uppercase}
+.auth-ext-link:hover{color:var(--neon)}
+.auth-byline{font-family:var(--mono);font-size:7px;letter-spacing:2px;color:rgba(255,255,255,.1);text-transform:uppercase}
+
+@media(max-width:960px){
+  #login-screen{flex-direction:column}
+  .ls-left{flex:none;min-height:52vh}
+  .ls-hero{padding-left:28px}
+  .ls-scene{padding:0 16px 0 16px;justify-content:center}
+  .ls-right{width:100%;border-left:none;border-top:1px solid rgba(34,212,240,.09)}
+}
+@media(max-width:540px){
+  .ls-right{padding:28px 22px}
+  .ls-nav-link:not(.pill){display:none}
+  .ls-hero{padding-left:20px}
+  .ls-title{font-size:24px}
+}
 
 /* ══════════════════════════════════════════
    APP SHELL (hidden until auth)
@@ -444,31 +535,199 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
 <div class="bg-wrap"><div class="bg-radial"></div></div>
 
 <!-- ══════════════════════════════════════
-     LOGIN SCREEN — SONONAI style
+     LOGIN SCREEN
 ══════════════════════════════════════ -->
 <div id="login-screen">
-  <div class="auth-card">
+
+  <!-- LEFT — showcase -->
+  <div class="ls-left">
+
+    <div class="ls-nav">
+      <div class="ls-brand">CERTIQ</div>
+      <div class="ls-nav-links">
+        <a class="ls-nav-link" href="https://www.sononai.com" target="_blank" rel="noopener">🏠 Home</a>
+        <a class="ls-nav-link pill" href="mailto:info@sononai.com">✉ Contact Us</a>
+      </div>
+    </div>
+
+    <!-- hero — left-aligned, generous whitespace -->
+    <div class="ls-hero">
+      <div class="ls-eyebrow">⊛ eVTOL · UAM · Rotorcraft</div>
+      <div class="ls-title">
+        Noise Certification
+        <em>done right.</em>
+      </div>
+      <div class="ls-sub">From BPF source characterisation to ICAO Annex 16 sign-off — the complete acoustic certification platform.</div>
+    </div>
+
+    <!-- large breathing aircraft scene -->
+    <div class="ls-scene">
+      <svg viewBox="0 0 560 280" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <radialGradient id="gC" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#22d4f0" stop-opacity=".22"/>
+            <stop offset="100%" stop-color="#22d4f0" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="gG" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00e898" stop-opacity=".18"/>
+            <stop offset="100%" stop-color="#00e898" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3"/></filter>
+          <filter id="softglow"><feGaussianBlur stdDeviation="6"/></filter>
+        </defs>
+
+        <!-- ground -->
+        <line x1="40" y1="244" x2="520" y2="244" stroke="rgba(34,212,240,.1)" stroke-width="1"/>
+        <!-- ground shadow -->
+        <ellipse cx="280" cy="248" rx="130" ry="8" fill="url(#gC)" filter="url(#softglow)"/>
+
+        <!-- microphone -->
+        <rect x="268" y="244" width="24" height="4" rx="1" fill="#0a1c2e" stroke="rgba(34,212,240,.25)" stroke-width="1"/>
+        <line x1="280" y1="244" x2="280" y2="228" stroke="#1a4a6a" stroke-width="1.5"/>
+        <circle cx="280" cy="224" r="6" fill="rgba(34,212,240,.08)" stroke="#22d4f0" stroke-width="1.5"/>
+        <circle cx="280" cy="224" r="2.5" fill="#22d4f0" opacity=".7"/>
+
+        <!-- measurement beam -->
+        <line x1="280" y1="218" x2="280" y2="118"
+          stroke="rgba(34,212,240,.15)" stroke-width="1" stroke-dasharray="5,5"
+          style="animation:dashDrift 1.5s linear infinite"/>
+
+        <!-- sound rings radiating from craft -->
+        <circle cx="280" cy="110" r="3" fill="none" stroke="#22d4f0" stroke-width="1.2" opacity="0"
+          style="animation:ring 2.8s ease-out infinite 0s"/>
+        <circle cx="280" cy="110" r="3" fill="none" stroke="#22d4f0" stroke-width="1" opacity="0"
+          style="animation:ring 2.8s ease-out infinite .93s"/>
+        <circle cx="280" cy="110" r="3" fill="none" stroke="#22d4f0" stroke-width=".8" opacity="0"
+          style="animation:ring 2.8s ease-out infinite 1.86s"/>
+
+        <!-- AIRCRAFT — floating, centred, generous scale -->
+        <g style="animation:acFloat 4.5s ease-in-out infinite;transform-origin:280px 112px">
+
+          <!-- halo glow -->
+          <ellipse cx="280" cy="112" rx="88" ry="32" fill="url(#gC)" filter="url(#glow)"/>
+
+          <!-- fuselage body -->
+          <ellipse cx="280" cy="112" rx="62" ry="12" fill="#081520" stroke="#22d4f0" stroke-width="1.3"/>
+
+          <!-- canopy glass -->
+          <ellipse cx="290" cy="103" rx="22" ry="9" fill="rgba(34,212,240,.08)" stroke="rgba(34,212,240,.3)" stroke-width="1.2"/>
+          <ellipse cx="292" cy="101" rx="12" ry="5" fill="rgba(34,212,240,.12)"/>
+
+          <!-- tail fin -->
+          <polygon points="218,112 206,98 216,112" fill="#0d1e30" stroke="rgba(34,212,240,.35)" stroke-width=".9"/>
+
+          <!-- main wing span -->
+          <ellipse cx="280" cy="115" rx="86" ry="5" fill="none" stroke="#1a8aaa" stroke-width="1.5" opacity=".6"/>
+
+          <!-- undercarriage -->
+          <line x1="258" y1="124" x2="258" y2="132" stroke="rgba(34,212,240,.25)" stroke-width="1.2"/>
+          <line x1="302" y1="124" x2="302" y2="132" stroke="rgba(34,212,240,.25)" stroke-width="1.2"/>
+
+          <!-- ROTOR FL — cyan CW -->
+          <g transform="translate(192,96)">
+            <circle cx="0" cy="0" r="22" fill="none" stroke="rgba(34,212,240,.08)" stroke-width="1"/>
+            <ellipse cx="0" cy="0" rx="22" ry="22" fill="url(#gC)" filter="url(#glow)" opacity=".6"/>
+            <g style="animation:rSpin .6s linear infinite;transform-origin:0 0">
+              <line x1="-20" y1="0" x2="20" y2="0" stroke="#22d4f0" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>
+              <line x1="0" y1="-20" x2="0" y2="20" stroke="#22d4f0" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>
+            </g>
+          </g>
+
+          <!-- ROTOR FR — green CCW -->
+          <g transform="translate(368,96)">
+            <circle cx="0" cy="0" r="22" fill="none" stroke="rgba(0,232,152,.08)" stroke-width="1"/>
+            <ellipse cx="0" cy="0" rx="22" ry="22" fill="url(#gG)" filter="url(#glow)" opacity=".6"/>
+            <g style="animation:rSpinR .6s linear infinite;transform-origin:0 0">
+              <line x1="-20" y1="0" x2="20" y2="0" stroke="#00e898" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>
+              <line x1="0" y1="-20" x2="0" y2="20" stroke="#00e898" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>
+            </g>
+          </g>
+
+          <!-- ROTOR RL — green CCW -->
+          <g transform="translate(210,128)">
+            <circle cx="0" cy="0" r="17" fill="none" stroke="rgba(0,232,152,.07)" stroke-width="1"/>
+            <g style="animation:rSpinR .75s linear infinite;transform-origin:0 0">
+              <line x1="-15" y1="0" x2="15" y2="0" stroke="#00e898" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+              <line x1="0" y1="-15" x2="0" y2="15" stroke="#00e898" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+            </g>
+          </g>
+
+          <!-- ROTOR RR — cyan CW -->
+          <g transform="translate(350,128)">
+            <circle cx="0" cy="0" r="17" fill="none" stroke="rgba(34,212,240,.07)" stroke-width="1"/>
+            <g style="animation:rSpin .75s linear infinite;transform-origin:0 0">
+              <line x1="-15" y1="0" x2="15" y2="0" stroke="#22d4f0" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+              <line x1="0" y1="-15" x2="0" y2="15" stroke="#22d4f0" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+            </g>
+          </g>
+
+          <!-- arm lines -->
+          <line x1="218" y1="112" x2="192" y2="96"  stroke="#163050" stroke-width="1.5"/>
+          <line x1="342" y1="112" x2="368" y2="96"  stroke="#163050" stroke-width="1.5"/>
+          <line x1="228" y1="118" x2="210" y2="128" stroke="#163050" stroke-width="1.5"/>
+          <line x1="332" y1="118" x2="350" y2="128" stroke="#163050" stroke-width="1.5"/>
+
+        </g><!-- /aircraft -->
+
+        <!-- EPNL readout panel — left -->
+        <rect x="28" y="186" width="118" height="40" rx="2"
+          fill="rgba(6,14,24,.88)" stroke="rgba(34,212,240,.18)" stroke-width="1"/>
+        <text x="38" y="202" font-family="JetBrains Mono" font-size="7.5" fill="#406880" letter-spacing="2">EPNL COMPUTED</text>
+        <text x="38" y="220" font-family="JetBrains Mono" font-size="16" font-weight="700" fill="#22d4f0"
+          style="animation:shimmer 2.4s ease-in-out infinite">84.2 EPNdB</text>
+
+        <!-- Margin readout panel — right -->
+        <rect x="414" y="186" width="118" height="40" rx="2"
+          fill="rgba(6,14,24,.88)" stroke="rgba(0,232,152,.15)" stroke-width="1"/>
+        <text x="424" y="202" font-family="JetBrains Mono" font-size="7.5" fill="#406880" letter-spacing="2">MARGIN TO LIM</text>
+        <text x="424" y="220" font-family="JetBrains Mono" font-size="16" font-weight="700" fill="#00e898"
+          style="animation:shimmer 2.4s ease-in-out infinite 1s">+ 2.8 dB ✓</text>
+
+        <!-- Chapter badge -->
+        <rect x="204" y="26" width="152" height="22" rx="2"
+          fill="rgba(6,14,24,.7)" stroke="rgba(34,212,240,.12)" stroke-width="1"/>
+        <text x="280" y="41" text-anchor="middle" font-family="JetBrains Mono" font-size="8.5" fill="rgba(34,212,240,.55)" letter-spacing="2">ICAO CH.13 · VTOL</text>
+
+        <!-- altitude marker -->
+        <line x1="96" y1="110" x2="96" y2="244" stroke="rgba(34,212,240,.08)" stroke-width="1" stroke-dasharray="4,5"/>
+        <text x="88" y="177" font-family="JetBrains Mono" font-size="7" fill="rgba(34,212,240,.25)" text-anchor="middle" transform="rotate(-90,88,177)">150 m AGL</text>
+
+      </svg>
+    </div><!-- /ls-scene -->
+
+    <!-- minimal stat strip -->
+    <div class="ls-strip">
+      <div class="ls-strip-item"><div class="ls-strip-val">8</div><div class="ls-strip-lbl">Noise Standards</div></div>
+      <div class="ls-strip-item"><div class="ls-strip-val">62</div><div class="ls-strip-lbl">L4 Test Methods</div></div>
+      <div class="ls-strip-item"><div class="ls-strip-val">5</div><div class="ls-strip-lbl">Cert Phases</div></div>
+      <div class="ls-strip-item"><div class="ls-strip-val">6</div><div class="ls-strip-lbl">L1 Objectives</div></div>
+    </div>
+
+  </div><!-- /ls-left -->
+
+  <!-- RIGHT — auth -->
+  <div class="ls-right">
+
     <div class="auth-brand">
       <div class="auth-brand-name">CERTIQ</div>
-      <div class="auth-brand-sub">Acoustic Certification · ARP 4754A · ICAO Annex 16</div>
+      <div class="auth-brand-sub">Acoustic Certification Platform<br>ARP 4754A · ICAO Annex 16 · EASA SC VTOL</div>
       <div class="auth-brand-line"></div>
     </div>
 
-    <!-- Tabs -->
     <div class="auth-tabs">
-      <div class="auth-tab active" id="atab-signin" onclick="switchAuthTab('signin')">Sign In</div>
-      <div class="auth-tab" id="atab-register" onclick="switchAuthTab('register')">Register</div>
+      <div class="auth-tab active" id="atab-signin"   onclick="switchAuthTab('signin')">Sign In</div>
+      <div class="auth-tab"        id="atab-register" onclick="switchAuthTab('register')">Register</div>
     </div>
 
     <!-- Sign In -->
     <div class="auth-form active" id="aform-signin">
       <label class="auth-lbl">Email</label>
       <input class="auth-inp" type="email" id="si-email" placeholder="your@email.com" autocomplete="email"
-        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.07)'"
         onkeydown="if(event.key==='Enter')document.getElementById('si-pass').focus()">
       <label class="auth-lbl">Password</label>
       <input class="auth-inp auth-inp last" type="password" id="si-pass" placeholder="Enter password" autocomplete="current-password"
-        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.07)'"
         onkeydown="if(event.key==='Enter')doSignIn()">
       <button class="auth-btn" id="si-btn" onclick="doSignIn()">SIGN IN →</button>
       <div class="auth-foot-link"><a onclick="switchAuthTab('forgot')">Forgot password?</a></div>
@@ -479,31 +738,38 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
     <div class="auth-form" id="aform-register">
       <label class="auth-lbl">Full Name</label>
       <input class="auth-inp" type="text" id="reg-name" placeholder="Your name" autocomplete="name"
-        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
+        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.07)'">
       <label class="auth-lbl">Email</label>
       <input class="auth-inp" type="email" id="reg-email" placeholder="your@email.com" autocomplete="email"
-        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
-      <label class="auth-lbl">Password <span style="font-family:var(--body);font-size:10px;color:#608ab0;text-transform:none;letter-spacing:0">(min 8 characters)</span></label>
+        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.07)'">
+      <label class="auth-lbl">Password <span style="font-family:var(--body);font-size:10px;color:#3a5870;text-transform:none;letter-spacing:0">(min 8 chars)</span></label>
       <input class="auth-inp auth-inp last" type="password" id="reg-pass" placeholder="Min 8 characters" autocomplete="new-password"
-        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.07)'"
         onkeydown="if(event.key==='Enter')doRegister()">
       <button class="auth-btn" id="reg-btn" onclick="doRegister()">REQUEST ACCESS →</button>
       <div class="auth-msg" id="reg-msg"></div>
     </div>
 
-    <!-- Forgot -->
+    <!-- Forgot password -->
     <div class="auth-form" id="aform-forgot">
-      <div style="font-family:var(--mono);font-size:10px;color:#608ab0;margin-bottom:14px;line-height:1.7">Enter your email and we'll send a password reset link.</div>
+      <div style="font-family:var(--mono);font-size:10px;color:#3a5870;margin-bottom:18px;line-height:1.9">Enter your email and we'll send a reset link.</div>
       <input class="auth-inp auth-inp last" type="email" id="fp-email" placeholder="your@email.com"
-        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.12)'">
+        onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.07)'">
       <button class="auth-btn" id="fp-btn" onclick="doForgotPassword()">SEND RESET LINK →</button>
-      <button class="auth-btn-ghost" onclick="switchAuthTab('signin')">← BACK TO SIGN IN</button>
+      <button class="auth-btn-ghost" onclick="switchAuthTab('signin')">← Back to Sign In</button>
       <div class="auth-msg" id="fp-msg"></div>
     </div>
 
-    <div class="auth-restrict">CERTIQ · RESTRICTED ACCESS</div>
-  </div>
-</div>
+    <div class="auth-bottom">
+      <div class="auth-links-row">
+        <a class="auth-ext-link" href="https://www.sononai.com" target="_blank" rel="noopener">🌐 sononai.com</a>
+        <a class="auth-ext-link" href="mailto:info@sononai.com">✉ info@sononai.com</a>
+      </div>
+      <div class="auth-byline">Certiq · Restricted Access · Powered by Supabase</div>
+    </div>
+
+  </div><!-- /ls-right -->
+</div><!-- /login-screen -->
 
 <!-- ══════════════════════════════════════
      APP — hidden until auth
