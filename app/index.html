@@ -1,10 +1,10 @@
-<!DOCTYP 
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SONONAI — eVTOL Acoustic Intelligence | sononai.com</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:wght@300;400;600&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
@@ -33,8 +33,8 @@
   --muted:#3a5a78;
   --dim:#6888a8;
   --mono:'JetBrains Mono',monospace;
-  --disp:'Orbitron',sans-serif;
-  --body:'Barlow',sans-serif;
+  --disp:'Syne',sans-serif;
+  --body:'Space Grotesk',sans-serif;
   --r:0px;
 }
 html{scroll-behavior:smooth}
@@ -282,7 +282,7 @@ body{
 .tool-body{
   display:grid;
   grid-template-columns:360px 1fr;
-  min-height:calc(100vh - 62px - 48px);
+  height:calc(100vh - 110px);overflow:hidden;
 }
 
 /* ══════════════════════════════════════════════════
@@ -421,17 +421,18 @@ input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 8
 /* ══════════════════════════════════════════════════
    MAIN CONTENT
 ══════════════════════════════════════════════════ */
-.content{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.content{display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;background:var(--bg);height:100%}
 
 /* AIRCRAFT VIEWER STRIP */
 .viewer-strip{
   background:var(--s1);
   border-bottom:1px solid var(--b1);
-  padding:8px 20px;
-  display:flex;gap:14px;align-items:center;
+  padding:3px 10px;
+  display:flex;gap:8px;align-items:center;
+  flex-shrink:0;
 }
 .viewer-box{
-  width:220px;height:110px;flex-shrink:0;
+  width:120px;height:60px;flex-shrink:0;
   background:var(--s2);border:1px solid var(--b1);
   position:relative;overflow:hidden;
 }
@@ -442,11 +443,11 @@ input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 8
   flex:1;
   display:grid;grid-template-columns:repeat(3,1fr);
   grid-template-rows:1fr 1fr;
-  gap:8px;
+  gap:4px;
 }
 .met{
   background:var(--s2);border:1px solid var(--b1);
-  padding:6px 10px;position:relative;
+  padding:2px 6px;position:relative;
   transition:border-color .3s;
 }
 .met::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
@@ -454,12 +455,12 @@ input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 8
 .met.g::after{background:var(--green)}
 .met.a::after{background:var(--amber)}
 .met:hover{border-color:var(--b2)}
-.met-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--muted);margin-bottom:4px}
-.met-val{font-family:var(--disp);font-size:24px;letter-spacing:1px;line-height:1;transition:color .3s}
+.met-lbl{font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--muted);margin-bottom:1px}
+.met-val{font-family:var(--disp);font-size:14px;letter-spacing:1px;line-height:1;transition:color .3s}
 .met.c .met-val{color:var(--cyan);text-shadow:0 0 16px rgba(0,234,255,.4)}
 .met.g .met-val{color:var(--green);text-shadow:0 0 16px rgba(0,255,170,.4)}
 .met.a .met-val{color:var(--amber);text-shadow:0 0 16px rgba(255,190,0,.4)}
-.met-unit{font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:2px}
+.met-unit{font-family:var(--mono);font-size:6px;color:var(--dim);margin-top:1px}
 
 /* COMPLIANCE */
 .chip{
@@ -474,18 +475,19 @@ input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 8
 /* SOURCE BAR */
 .src-strip{
   border-bottom:1px solid var(--b1);
-  padding:5px 20px;
+  padding:2px 10px;
   background:var(--s1);
-  display:flex;align-items:center;gap:14px;
+  display:flex;align-items:center;gap:8px;
+  flex-shrink:0;
 }
 .src-bar-wrap{flex:1}
-.src-bar{display:flex;height:7px;gap:1px;margin-bottom:4px}
+.src-bar{display:flex;height:6px;gap:1px;margin-bottom:3px}
 .src-seg{height:100%;transition:flex .6s ease}
-.src-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.src-dot{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:8px}
-.src-dot-sq{width:7px;height:7px}
+.src-legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.src-dot{display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:7px}
+.src-dot-sq{width:6px;height:6px}
 .src-total{
-  font-family:var(--disp);font-size:13px;letter-spacing:2px;
+  font-family:var(--disp);font-size:11px;letter-spacing:2px;
   color:var(--amber);white-space:nowrap;
 }
 
@@ -494,7 +496,7 @@ input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 8
 .plot-panel{
   border-right:1px solid var(--b1);
   border-bottom:1px solid var(--b1);
-  padding:5px 10px;
+  padding:4px 8px;
   display:flex;flex-direction:column;
   min-height:0;position:relative;
 }
@@ -502,10 +504,10 @@ input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 8
 .plot-panel:nth-child(3),.plot-panel:nth-child(4){border-bottom:none}
 .plot-hdr{
   display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:4px;flex-shrink:0;
+  margin-bottom:2px;flex-shrink:0;
 }
-.plot-title{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase}
-.plot-sub{font-family:var(--mono);font-size:8px;color:var(--muted)}
+.plot-title{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;color:var(--cyan);text-transform:uppercase}
+.plot-sub{font-family:var(--mono);font-size:7px;color:var(--muted)}
 .plot-wrap{flex:1;position:relative;min-height:0;min-width:0;overflow:hidden}
 
 /* STATUS BAR */
@@ -530,7 +532,7 @@ input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 8
   position:relative;z-index:10;
   background:var(--s1);border-top:1px solid var(--b1);
   padding:16px 40px;
-  display:flex;align-items:center;justify-content:space-between;
+  display:none;
   flex-wrap:wrap;gap:10px;
 }
 .footer-brand{font-family:var(--disp);font-size:15px;letter-spacing:4px;color:var(--cyan)}
@@ -886,8 +888,7 @@ input[type=text],input[type=number],input[type=password],select{font-size:16px!i
   grid-template-rows:1fr 1fr;
   flex:1;
   gap:0;
-  height:calc(100vh - 480px);
-  min-height:0;
+  min-height:280px;
 }
 @media(max-width:1024px){
   .plots{grid-template-columns:1fr}
@@ -996,8 +997,8 @@ input[type=text],input[type=number],input[type=password],select{font-size:16px!i
 .content{touch-action:pan-y}
 
 /* ── Compact mode toggle ── */
-.plots.compact .plot-panel{min-height:160px}
-.plots.compact .plot-panel .plot-wrap canvas{height:120px!important}
+.plots.compact .plot-panel{min-height:100px}
+.plots.compact .plot-panel .plot-wrap canvas{height:80px!important}
 
 
 @keyframes gradShift{0%{background-position:0% 0}100%{background-position:200% 0}}
@@ -1313,7 +1314,7 @@ function showApp(email){
                   color:rgba(34,212,240,.45);margin-bottom:8px;text-transform:uppercase">
         SONONAI · Acoustic Intelligence
       </div>
-      <div style="font-family:'Orbitron',sans-serif;font-size:clamp(22px,2.8vw,40px);
+      <div style="font-family:'Syne',sans-serif;font-size:clamp(22px,2.8vw,40px);
                   font-weight:900;line-height:1.05;letter-spacing:2px;color:#fff">
         Urban Air<br><span style="
           background:linear-gradient(135deg,#22d4f0,#00ffaa);
@@ -1342,28 +1343,28 @@ function showApp(email){
                   padding:8px 12px;backdrop-filter:blur(6px);min-width:72px">
         <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:2px;
                     color:rgba(34,212,240,.5);margin-bottom:3px">AIRCRAFT</div>
-        <div id="login-ac-name" style="font-family:'Orbitron',sans-serif;font-size:12px;
+        <div id="login-ac-name" style="font-family:'Syne',sans-serif;font-size:12px;
                                         font-weight:700;color:#22d4f0">eVTOL</div>
       </div>
       <div style="background:rgba(2,8,18,.78);border:1px solid rgba(34,212,240,.2);
                   padding:8px 12px;backdrop-filter:blur(6px)">
         <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:2px;
                     color:rgba(34,212,240,.5);margin-bottom:3px">BPF</div>
-        <div id="login-bpf-val" style="font-family:'Orbitron',sans-serif;font-size:12px;
+        <div id="login-bpf-val" style="font-family:'Syne',sans-serif;font-size:12px;
                                         font-weight:700;color:#22d4f0">— Hz</div>
       </div>
       <div style="background:rgba(2,8,18,.78);border:1px solid rgba(0,255,170,.2);
                   padding:8px 12px;backdrop-filter:blur(6px)">
         <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:2px;
                     color:rgba(0,255,170,.5);margin-bottom:3px">SPL @ 300m</div>
-        <div id="login-spl-val" style="font-family:'Orbitron',sans-serif;font-size:12px;
+        <div id="login-spl-val" style="font-family:'Syne',sans-serif;font-size:12px;
                                         font-weight:700;color:#00ffaa">— dB(A)</div>
       </div>
       <div style="background:rgba(2,8,18,.78);border:1px solid rgba(255,190,0,.2);
                   padding:8px 12px;backdrop-filter:blur(6px)">
         <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:2px;
                     color:rgba(255,190,0,.5);margin-bottom:3px">PHASE</div>
-        <div id="login-status-val" style="font-family:'Orbitron',sans-serif;font-size:12px;
+        <div id="login-status-val" style="font-family:'Syne',sans-serif;font-size:12px;
                                            font-weight:700;color:#ffbe00">—</div>
       </div>
     </div>
@@ -1423,7 +1424,7 @@ function showApp(email){
           </svg>
         </div>
 
-        <div style="font-family:'Orbitron',sans-serif;font-size:30px;font-weight:900;
+        <div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:900;
                     letter-spacing:8px;
                     background:linear-gradient(135deg,#22d4f0,#80f0ff);
                     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
@@ -2065,6 +2066,93 @@ function showApp(email){
         </div>
       </div>
 
+      <!-- ROTOR INTERACTION PHYSICS — new section from paper gaps -->
+      <div class="sec-hdr">
+        <div class="sec-hdr-icon">⇆</div>
+        <div class="sec-hdr-label">Rotor Interactions</div>
+      </div>
+
+      <!-- Rotor configuration type -->
+      <div class="ctrl">
+        <div class="ctrl-lbl">ROTOR ARRANGEMENT</div>
+        <div class="choice-row" id="rotorConfigRow">
+          <button class="choice-btn on" onclick="setRotorConfig(this,'isolated')">ISOLATED</button>
+          <button class="choice-btn" onclick="setRotorConfig(this,'coaxial')">COAXIAL</button>
+          <button class="choice-btn" onclick="setRotorConfig(this,'sidebyside')">SIDE-BY-SIDE</button>
+        </div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:4px;line-height:1.5" id="rotorConfigNote">
+          Single / independent rotors — no interaction penalty
+        </div>
+      </div>
+
+      <!-- Axial spacing for coaxial (contra-rotating) — key finding from Casagrande Hirono et al. 2024 -->
+      <div class="ctrl" id="ctrl-axial" style="display:none">
+        <div class="ctrl-lbl">AXIAL SPACING z/D <span class="val" id="vAxial">0.30</span>
+          <span style="font-size:8px;color:var(--muted)">(opt. 0.2–0.4)</span>
+        </div>
+        <input type="range" id="sAxial" min="0.05" max="1.0" step="0.05" value="0.30"
+               class="a" oninput="slv('vAxial',parseFloat(this.value).toFixed(2),'');schedCalc()">
+        <div class="tick-row"><span>0.05</span><span>0.25</span><span>0.50</span><span>1.0</span></div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:3px" id="axialNote">–</div>
+      </div>
+
+      <!-- Rotor overlap for side-by-side (key finding from Sagaga & Lee 2024) -->
+      <div class="ctrl" id="ctrl-overlap" style="display:none">
+        <div class="ctrl-lbl">ROTOR OVERLAP % <span class="val" id="vOverlap">0</span>%
+          <span style="font-size:8px;color:var(--muted)">(0–25% range)</span>
+        </div>
+        <input type="range" id="sOverlap" min="0" max="25" step="5" value="0"
+               class="a" oninput="slv('vOverlap',this.value,'');schedCalc()">
+        <div class="tick-row"><span>0%</span><span>5%</span><span>15%</span><span>25%</span></div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:3px" id="overlapNote">–</div>
+      </div>
+
+      <!-- Airframe / fuselage noise contribution — key finding from Zhang & Barakos 2024 -->
+      <div class="ctrl">
+        <div class="ctrl-lbl">AIRFRAME BLOCKAGE <span class="val" id="vAirframe">0</span>% AUW
+          <span style="font-size:8px;color:var(--muted)">(Skybus: 13%)</span>
+        </div>
+        <input type="range" id="sAirframe" min="0" max="20" step="1" value="0"
+               class="r" oninput="slv('vAirframe',this.value,'');schedCalc()">
+        <div class="tick-row"><span>0</span><span>5%</span><span>13%</span><span>20%</span></div>
+      </div>
+
+      <!-- Blade sweep angle — key finding from Sarikaya et al. 2024 -->
+      <div class="ctrl">
+        <div class="ctrl-lbl">BLADE TIP SWEEP <span class="val" id="vSweep">0</span>°
+          <span style="font-size:8px;color:var(--muted)">(fwd + → quieter)</span>
+        </div>
+        <input type="range" id="sSweep" min="-20" max="40" step="5" value="0"
+               class="g" oninput="slv('vSweep',this.value,'');schedCalc()">
+        <div class="tick-row"><span>−20°</span><span>0°</span><span>+20°</span><span>+40°</span></div>
+      </div>
+
+      <!-- Ground-board measurement mode — key finding from Go & Kingan 2024 -->
+      <div class="ctrl">
+        <div class="ctrl-lbl">MEASUREMENT METHOD</div>
+        <div class="choice-row" id="measMethodRow">
+          <button class="choice-btn on" onclick="setMeasMethod(this,'freefield')">FREE-FIELD</button>
+          <button class="choice-btn" onclick="setMeasMethod(this,'groundboard')">GND-BOARD</button>
+        </div>
+        <div style="font-family:var(--mono);font-size:8px;margin-top:4px;line-height:1.5" id="measMethodNote"
+             style="color:var(--muted)">
+          Free-field microphone — no ground-board correction needed
+        </div>
+      </div>
+
+      <!-- Ground-board surface type (only shown when ground-board selected) -->
+      <div class="ctrl" id="ctrl-gbsurface" style="display:none">
+        <div class="ctrl-lbl">GROUND SURFACE (σ<sub>e</sub>)</div>
+        <div class="choice-row" id="gbSurfRow">
+          <button class="choice-btn" onclick="setGbSurf(this,'asphalt')">ASPHALT<br><span style="font-size:7px">30 MN·s/m⁴</span></button>
+          <button class="choice-btn on" onclick="setGbSurf(this,'grass')">GRASS<br><span style="font-size:7px">400 kN·s/m⁴</span></button>
+          <button class="choice-btn" onclick="setGbSurf(this,'sand')">SAND<br><span style="font-size:7px">1.7 MN·s/m⁴</span></button>
+        </div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--amber);margin-top:4px;line-height:1.5" id="gbCorrNote">
+          EA−6 dB deviation: up to ±3 dB above 1 kHz on grass (Go & Kingan 2024)
+        </div>
+      </div>
+
       <button class="calc-btn" onclick="runCalc()">◈ CALCULATE NOW</button>
 
     </div><!-- /sidebar -->
@@ -2098,7 +2186,14 @@ function showApp(email){
             <div class="met-val" id="mSPLcab">—</div>
             <div class="met-unit">dB(A) interior</div>
           </div>
-
+        </div>
+        <!-- ICAO compliance — always visible in strip -->
+        <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;min-width:148px;border-left:1px solid var(--b1);padding-left:10px">
+          <div style="font-family:var(--mono);font-size:7px;letter-spacing:1.5px;color:var(--muted)">EPNL ESTIMATE</div>
+          <div class="met-val" id="mEPNL" style="font-size:15px;color:var(--cyan)">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">EPNdB flyover</div>
+          <div style="margin-top:2px" id="mComp"><span class="chip pass" style="font-size:8px;padding:2px 6px">CALCULATING…</span></div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--muted)">ICAO SC-VTOL-01 · 65 dB@300m</div>
         </div>
       </div>
 
@@ -2111,14 +2206,18 @@ function showApp(email){
             <div class="src-seg" id="srcLoad"  style="background:#00ffaa;flex:28"></div>
             <div class="src-seg" id="srcBVI"   style="background:#ffbe00;flex:22"></div>
             <div class="src-seg" id="srcBB"    style="background:#ff3355;flex:15"></div>
+            <div class="src-seg" id="srcAF"    style="background:#cc44ff;flex:0"></div>
           </div>
           <div class="src-legend">
             <div class="src-dot"><div class="src-dot-sq" style="background:#00eaff"></div><span style="color:#00eaff" id="pThick">THICKNESS 35%</span></div>
             <div class="src-dot"><div class="src-dot-sq" style="background:#00ffaa"></div><span style="color:#00ffaa" id="pLoad">LOADING 28%</span></div>
             <div class="src-dot"><div class="src-dot-sq" style="background:#ffbe00"></div><span style="color:#ffbe00" id="pBVI">BVI 22%</span></div>
             <div class="src-dot"><div class="src-dot-sq" style="background:#ff3355"></div><span style="color:#ff3355" id="pBB">BROADBAND 15%</span></div>
+            <div class="src-dot"><div class="src-dot-sq" style="background:#cc44ff"></div><span style="color:#cc44ff" id="pAF">AIRFRAME 0%</span></div>
             <div class="src-total" id="srcTotal">– dB(A)</div>
           </div>
+          <!-- Interaction physics status line -->
+          <div style="font-family:var(--mono);font-size:8px;letter-spacing:1px;margin-top:5px;padding:4px 6px;background:rgba(0,0,0,.15);border-left:2px solid var(--cyan)" id="interactChip">NO INTERACTION PHYSICS</div>
         </div>
       </div>
 
@@ -2197,88 +2296,6 @@ function showApp(email){
 
       </div><!-- /plots -->
 
-<!-- STATUS -->
-      <div class="status">
-        <div class="st-item"><div class="st-dot"></div>SONIQ LIVE</div>
-        <div class="st-sep"></div>
-        <div class="st-item">MODEL: <span class="st-val">Lowson + Farassat 1A + BPM</span></div>
-        <div class="st-sep"></div>
-        
-    <!-- Psychoacoustic & Environmental Metrics Panel -->
-    <div style="background:var(--s1);border:1px solid var(--b1);margin:8px 0;padding:10px 14px">
-      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--amber);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--b1)">PSYCHOACOUSTICS &amp; ENVIRONMENT</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
-        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">LOUDNESS</div>
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)" id="psyLoud">—</div>
-          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">Zwicker N'</div>
-        </div>
-        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">SHARPNESS</div>
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)" id="psySharp">—</div>
-          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">Aures acum</div>
-        </div>
-        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">ROUGHNESS</div>
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)" id="psyRough">—</div>
-          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">Daniel &amp; Weber</div>
-        </div>
-        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">TONALITY PR</div>
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan)" id="psyPR">—</div>
-          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">ECMA-418-2</div>
-        </div>
-        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">EPNL</div>
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan)" id="psyEPNL">—</div>
-          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">FAR-36 est.</div>
-        </div>
-        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">PNLT PEAK</div>
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan)" id="psyPNLT">—</div>
-          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">Tonal penalty</div>
-        </div>
-        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">WIND EFFECT</div>
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,200,80,.9)" id="psyWind">—</div>
-          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">ISO 9613-2</div>
-        </div>
-        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">TURB. AM</div>
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,200,80,.9)" id="psyTurb">—</div>
-          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">Amplitude mod</div>
-        </div>
-        <div style="background:var(--s2);padding:7px;border:1px solid var(--b1)">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:2px">ATMOS ABSORPT</div>
-          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,200,80,.9)" id="psyISO">—</div>
-          <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.3)">ISO 9613-1 @1k</div>
-        </div>
-      </div>
-    </div>
-
-<div class="st-item">BPF: <span class="st-val" id="stBPF">–</span></div>
-        <div class="st-item">Vtip: <span class="st-val" id="stVtip">–</span></div>
-        <div class="st-item">SPL(ff): <span class="st-val" id="stSPL">–</span></div>
-        <div class="st-item">Cabin: <span class="st-val" id="stCab">–</span></div>
-        <div class="st-right">Updated: <span id="stTime">–</span></div>
-      </div>
-
-      <!-- EASA / ICAO CERTIFICATION (bottom of page) -->
-      <!-- CERTIFICATION & COMPLIANCE (moved below plots) -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--b1)">
-        <div style="padding:10px 14px;border-right:1px solid var(--b1)">
-          <div style="font-family:var(--mono);font-size:7px;letter-spacing:2px;color:var(--muted);margin-bottom:4px">EPNL ESTIMATE</div>
-          <div class="met-val" id="mEPNL" style="font-size:16px">—</div>
-          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">EPNdB flyover</div>
-        </div>
-        <div style="padding:10px 14px">
-          <div style="font-family:var(--mono);font-size:7px;letter-spacing:2px;color:var(--muted);margin-bottom:4px">ICAO SC-VTOL-01 COMPLIANCE</div>
-          <div id="mComp" style="padding-top:2px"><span class="chip pass">CALCULATING…</span></div>
-          <div style="font-family:var(--mono);font-size:7px;color:var(--muted);margin-top:3px">@ 300m ref · EASA CS-VTOL</div>
-        </div>
-      </div>
-
-
     </div><!-- /content -->
   </div><!-- /tool-body -->
 </div><!-- /step-tool -->
@@ -2299,10 +2316,16 @@ function showApp(email){
   <div class="footer-models">
     ACOUSTIC MODELS<br>
     Thickness: Lowson (1970) &amp; Farassat 1A<br>
-    Loading: Ffowcs Williams–Hawkings<br>
-    Broadband: Brooks-Pope-Marcolini (BPM)<br>
-    BVI: Rotorcraft Noise Model (RNM)<br>
-    Standard: ICAO Annex 16 Vol. I / SAE ARP1579
+    Loading: Ffowcs Williams–Hawkings + Hanson-Parzych<br>
+    Broadband: Brooks-Pope-Marcolini (BPM) + Amiet LEI<br>
+    BVI: Leishman (2006) rotorcraft noise model<br>
+    Coaxial interaction: Casagrande Hirono et al. (JSV 2024)<br>
+    Side-by-side UAM: Sagaga &amp; Lee (JSV 2024)<br>
+    Airframe noise: Zhang &amp; Barakos (JSV 2024)<br>
+    Blade sweep opt.: Sarikaya et al. (JSV 2024)<br>
+    Ground-board: Go &amp; Kingan (JSV 2024) + Kingan et al. (JSV 2023)<br>
+    Propagation: ISO 9613-1/2 · ICAO Annex 16 Vol. I<br>
+    Standard: SAE ARP1779 · EASA SC-VTOL-01
   </div>
 </div>
 
@@ -2320,6 +2343,52 @@ let activeFoamModel = 'jca';  // default foam model
 let calcTimer = null;
 let autoRefresh = true;
 let calcCount = 0;
+
+/* ── NEW: rotor interaction state ── */
+let rotorConfig = 'isolated';   // 'isolated' | 'coaxial' | 'sidebyside'
+let measMethod  = 'freefield';  // 'freefield' | 'groundboard'
+let gbSurface   = 'grass';      // 'asphalt' | 'grass' | 'sand'
+
+function setRotorConfig(el, cfg){
+  document.querySelectorAll('#rotorConfigRow .choice-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  rotorConfig = cfg;
+  document.getElementById('ctrl-axial').style.display   = cfg==='coaxial'   ? 'block' : 'none';
+  document.getElementById('ctrl-overlap').style.display = cfg==='sidebyside'? 'block' : 'none';
+  const notes = {
+    isolated:   'Single / independent rotors — no interaction penalty',
+    coaxial:    'Contra-rotating stack: axial spacing controls tonal/broadband trade-off (Casagrande Hirono et al. 2024)',
+    sidebyside: 'Intermeshing rotors: overlap % changes harmonic structure and OASPL by 3–5 dBA (Sagaga & Lee 2024)'
+  };
+  document.getElementById('rotorConfigNote').textContent = notes[cfg];
+  schedCalc();
+}
+
+function setMeasMethod(el, m){
+  document.querySelectorAll('#measMethodRow .choice-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  measMethod = m;
+  document.getElementById('ctrl-gbsurface').style.display = m==='groundboard' ? 'block' : 'none';
+  const notes = {
+    freefield:   'Free-field microphone — no ground-board correction needed',
+    groundboard: 'ICAO Annex 16 ground-board: +6 dB ideal; deviates >3 dB above 1 kHz on grass (Go & Kingan 2024)'
+  };
+  document.getElementById('measMethodNote').textContent = notes[m];
+  schedCalc();
+}
+
+function setGbSurf(el, s){
+  document.querySelectorAll('#gbSurfRow .choice-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  gbSurface = s;
+  const sigma = {asphalt:30e6, grass:400e3, sand:1.7e6}[s];
+  const dev   = {asphalt:'<1 dB', grass:'up to ±3 dB above 1 kHz', sand:'~1.5 dB'}[s];
+  document.getElementById('gbCorrNote').textContent =
+    'σ_e=' + (sigma>=1e6?(sigma/1e6).toFixed(0)+' MN':''+Math.round(sigma/1e3)+' kN') +
+    '·s/m⁴ — EA−6 dB deviation: ' + dev + ' (Go & Kingan 2024 / Kingan et al. 2023)';
+  schedCalc();
+}
+
 
 /* ══════════════════════════════════════════════
    AIRCRAFT DEFAULTS
@@ -2659,6 +2728,108 @@ function calcAcoustics(){
   const SPL_raw = logSum(SPL_thick, SPL_load, SPL_bb, SPL_bvi, SPL_swirl)
                 + gndBoost + absCorr + dopBoost + windDoppler + turbAM*0.5;
 
+  /* ══════════════════════════════════════════════
+     NEW: ROTOR INTERACTION PHYSICS
+     Sources: Sagaga & Lee (JSV 2024), Casagrande Hirono et al. (JSV 2024),
+              Sarikaya et al. (JSV 2024), Zhang & Barakos (JSV 2024)
+  ══════════════════════════════════════════════ */
+
+  /* 1. AXIAL SPACING — contra-rotating / coaxial (Casagrande Hirono et al. 2024)
+     At z/D < 0.2: potential field interaction dominates → high even-harmonic tones
+     At z/D = 0.3: balance point, minimum OASPL (~7 dB quieter than z/D=0.1)
+     At z/D > 0.4: broadband rises (wake/turbulence interaction)
+  */
+  let interactionPenalty_dB = 0;
+  let axialNote = '', overlapNote = '';
+  const zD = +(document.getElementById('sAxial')||{value:0.3}).value;
+
+  if(rotorConfig === 'coaxial'){
+    /* Potential field interaction: decays exponentially with z/D.
+       Even-BPF tone amplitude ~ 20 dB·exp(−4·z/D) above broadband at z/D=0.1
+       Broadband from wake interaction rises ~10 dB from z/D=0.1 → 0.6 */
+    const tonal_interact  = 7.4 * Math.exp(-5.0 * zD);           // 0 at z/D→∞
+    const bb_interact     = Math.max(0, 10*(zD - 0.25)/0.75);    // rises for z/D>0.25
+    interactionPenalty_dB = tonal_interact + bb_interact - 3.5;   // offset: optimum ~0 dB at z/D=0.3
+    /* Harmonic signature flag for source bar */
+    if(zD < 0.2)     axialNote = '▲ Potential field dominant — high even-harmonic tones. Increase z/D.';
+    else if(zD<0.4)  axialNote = '✓ Optimal balance (z/D='+zD.toFixed(2)+') — tonal and broadband ~equal.';
+    else             axialNote = '▲ Wake/turbulence dominant — broadband rising. Consider reducing z/D.';
+    if(document.getElementById('axialNote')) document.getElementById('axialNote').textContent = axialNote;
+  }
+
+  /* 2. ROTOR OVERLAP — side-by-side (Sagaga & Lee JSV 2024)
+     0% overlap: maximum upwash from fuselage → all BPF harmonics excited → highest OASPL
+     25% overlap: BVI at even harmonics only + destructive interference strips → 3–5 dBA quieter
+     Note: this is the *opposite* of isolated rotors where 25% overlap is noisier.
+  */
+  const overlapPct = +(document.getElementById('sOverlap')||{value:0}).value;
+  if(rotorConfig === 'sidebyside'){
+    /* 0% overlap → all harmonics + upwash interactions → +4 dBA vs 25% */
+    /* 25% overlap → even harmonics only + destructive interference → quietest */
+    const overlapGain = -0.16 * overlapPct;   // −4 dBA at 25% (linear approx)
+    /* Upwash BVI bonus at low overlap (0% and 5%) — extra irregular peaks */
+    const upwashPenalty = overlapPct < 5 ? 3.5 : overlapPct < 10 ? 1.5 : 0;
+    interactionPenalty_dB += overlapGain + upwashPenalty;
+    if(overlapPct===0)      overlapNote = '▲ Max upwash — all BPF harmonics + fuselage interactions (+3.5 dBA). Add overlap.';
+    else if(overlapPct<=5)  overlapNote = '△ Mild upwash reduction. Even+odd harmonics still present.';
+    else if(overlapPct<=15) overlapNote = '◇ Mixed regime — transition to even-harmonic-dominant spectrum.';
+    else                     overlapNote = '✓ Even harmonics only — destructive interference strips present. Quietest.';
+    if(document.getElementById('overlapNote')) document.getElementById('overlapNote').textContent = overlapNote;
+  }
+
+  /* 3. AIRFRAME BLOCKAGE (Zhang & Barakos JSV 2024 — Skybus)
+     Fuselage blockage force = X% of MTOW acts as stationary dipole source.
+     Loading variation standard deviation gives airframe noise contribution.
+     At Skybus: 13% blockage → airframe noise comparable to middle propellers.
+  */
+  const airframePct = +(document.getElementById('sAirframe')||{value:0}).value / 100;
+  let SPL_airframe = -200;
+  if(airframePct > 0){
+    /* Airframe thrust fluctuation: σ(F_z)/MTOW ≈ airframePct with σ~0.1% per MTOW.
+       Loading dipole: SPL_af ∝ 20·log(σ_F / 4πρ₀a₀r²) + correction */
+    const F_af = airframePct * AUW * 9.81;           // airframe drag force N
+    const F_af_std = F_af * 0.01;                     // ~1% unsteady variation
+    SPL_airframe = 20*Math.log10(Math.max(1e-20, F_af_std * BPF / (4*Math.PI*rho*a0*Robs*Robs))) + 94
+                   + 10*Math.log10(N);
+  }
+  const SPL_raw_with_af = logSum(SPL_raw, SPL_airframe);
+
+  /* 4. BLADE TIP SWEEP (Sarikaya et al. JSV 2024 — VKI / DJI)
+     Forward sweep smears tip-vortex interaction phase along span → reduces BLH amplitude.
+     A-weighted 3rd BPF harmonic: ~3.5 dB/40° of forward sweep after RPM correction.
+     Also attenuates aft-rotor BLH orders 1–5 where inter-rotor interaction is strongest.
+  */
+  const sweepAngle = +(document.getElementById('sSweep')||{value:0}).value;
+  /* Effective sweep noise reduction — linear in forward sweep, saturates near 40° */
+  const sweepReduction = sweepAngle > 0
+    ? Math.min(4.0, sweepAngle * 0.1)   // up to −4 dB at 40°
+    : sweepAngle * 0.05;                  // small penalty for aft sweep (trailing-edge effect)
+
+  /* 5. GROUND-BOARD MEASUREMENT CORRECTION (Go & Kingan 2024 / Kingan 2023)
+     Standard 0.4 m diameter ICAO ground-board on grass: EA−6 dB deviates by up to ±3 dB
+     above 1 kHz due to finite impedance of surrounding ground.
+     Flat ground reflection (+3 dB) already included in gndBoost.
+     Additional correction term: frequency-averaged uncertainty band.
+  */
+  const sigma_e = {asphalt:30e6, grass:400e3, sand:1.7e6}[gbSurface] || 400e3;
+  /* Normalised impedance from Embleton-Daigle one-parameter model at 1 kHz:
+     z̃ ≈ 1 + 9.08·(f/σ_e)^0.75 + 11.9i·(f/σ_e)^0.73
+     EA deviation at ICAO microphone location (0.15 m from centre, 20 mm board height):
+     larger deviation for lower σ_e (softer ground). */
+  let gbCorrection = 0;
+  if(measMethod === 'groundboard'){
+    /* At grass (σ_e=400 kN·s/m⁴) deviations peak ~3 dB at 2 kHz (paper Fig 27)
+       At asphalt (σ_e=30 MN·s/m⁴) deviations <1 dB at all frequencies.
+       Smooth interpolation: correction ∝ −log(σ_e/400e3). Added as systematic offset. */
+    gbCorrection = -1.2 * Math.log10(Math.max(1, sigma_e / 400e3)) + 3.0;
+    /* board height above ground = 20mm (ICAO spec), adds to correction at high freq */
+    gbCorrection = Math.min(3.0, gbCorrection);  // cap at ±3 dB range per paper
+  }
+
+  /* ── Apply all new corrections to total SPL ── */
+  const SPL_total_new = SPL_raw_with_af + interactionPenalty_dB - sweepReduction + gbCorrection;
+
+
   /* ── Build spectrum (with ISO absorption per band) ── */
   const bands = useThd ? THIRD_OCT : OCT_BANDS;
 
@@ -2677,22 +2848,45 @@ function calcAcoustics(){
       const bw  = fh * 0.12;
       const near= Math.exp(-0.5 * Math.pow((f-fh)/Math.max(1,bw), 2));
       /* Harmonic fall-off: 20*log(h) per order + compressibility */
-      const Lh  = (SPL_load+SPL_thick)/2 - 20*Math.log10(Math.max(1,h))
+      let Lh  = (SPL_load+SPL_thick)/2 - 20*Math.log10(Math.max(1,h))
                   + compCorr*0.5 + machLoadCorr*0.3;
+      /* Interaction harmonics: coaxial even-BPF boost at low z/D */
+      if(rotorConfig==='coaxial' && h%2===0){
+        const evenBoost = 7*Math.exp(-5*zD);   // up to +7 dB at z/D=0.05 on even harmonics
+        Lh += evenBoost;
+      }
+      /* Side-by-side: even harmonics only for overlap>=15%, odd suppressed */
+      if(rotorConfig==='sidebyside' && overlapPct>=15 && h%2!==0){
+        Lh -= 8;   // odd harmonics attenuated — consistent with Sagaga & Lee paper
+      }
       hSum += Math.pow(10, Lh/10) * near;
+    }
+    /* Airframe noise contribution — BPF-correlated stationary dipole */
+    if(airframePct > 0){
+      const afLh = SPL_airframe - 10*Math.log10(N) - atmAbs;
+      const afNear = Math.exp(-0.5*Math.pow((f-BPF)/Math.max(1,BPF*0.3),2));
+      hSum += Math.pow(10,afLh/10)*afNear*0.5;
     }
     /* Broadband with Strouhal shaping */
     const fpk  = Math.max(1, Vtip * St_pk / chord);
     const St   = f * chord / Math.max(0.1, Vtip);
     const bbS  = Math.exp(-0.5 * Math.pow((St - St_pk*0.8)/0.4, 2));
-    const bbV  = Math.pow(10, SPL_bb/10) * bbS;
+    /* Coaxial: broadband rises with z/D above 0.3 (wake interaction grows) */
+    let bbBoost = 0;
+    if(rotorConfig==='coaxial') bbBoost = Math.max(0, 5*(zD-0.3)/0.7);
+    const bbV  = Math.pow(10, (SPL_bb+bbBoost)/10) * bbS;
     /* Swirl noise */
     const swirlV = Math.pow(10, SPL_swirl/10) * Math.exp(-Math.pow((f-BPF*0.5)/Math.max(1,BPF*0.3),2));
 
     const raw  = 10*Math.log10(Math.max(1e-20, hSum+bbV+swirlV));
     const aw   = getAW(f);
     const wind_f = windDoppler * (f>500?1.2:0.8);
-    return raw + aw + gndBoost + absCorr + dopBoost - atmAbs + wind_f;
+    /* Apply sweep reduction (frequency-weighted: sweep mainly helps >BPF/2) */
+    const sweepF = sweepAngle>0 && f>BPF*0.5 ? sweepReduction*(f/(BPF*3)) : 0;
+    /* Ground-board frequency correction: largest above 1 kHz */
+    const gbF  = measMethod==='groundboard' ? gbCorrection*(Math.min(1,(f-500)/2000)) : 0;
+    return raw + aw + gndBoost + absCorr + dopBoost - atmAbs + wind_f
+           + interactionPenalty_dB - Math.min(sweepF, sweepReduction) + gbF;
   }
 
   const spectrum = bands.map(f=>({f, spl:bandSPL(f)}));
@@ -2742,8 +2936,12 @@ function calcAcoustics(){
     const Dl = Math.pow(Math.abs(Math.sin(th)),1.5)*0.7+0.3;
     /* BVI: peaks at low-elevation forward arc */
     const Dbvi = 0.5+0.5*Math.cos(th)*Math.cos(windRad);
-    const Dc   = (Dt*0.35 + Dl*0.45 + Dbvi*0.2);
-    return Math.max(30, SPL_raw + 10*Math.log10(Math.max(0.01,Dc)));
+    /* Side-by-side: destructive interference strips in hemisphere */
+    const Dinterf = (rotorConfig==='sidebyside' && overlapPct>=15)
+      ? 1 - 0.4*Math.pow(Math.sin(2*th),2)   // notches in directivity at 45° and 135°
+      : 1;
+    const Dc   = (Dt*0.35 + Dl*0.45 + Dbvi*0.2) * Dinterf;
+    return Math.max(30, SPL_total_new + 10*Math.log10(Math.max(0.01,Dc)));
   });
 
   /* ── Source percentages ── */
@@ -2751,16 +2949,32 @@ function calcAcoustics(){
   const p_ld  = Math.pow(10,SPL_load/10);
   const p_bb  = Math.pow(10,SPL_bb/10);
   const p_bvi = Math.pow(10,SPL_bvi/10);
-  const p_tot = p_th+p_ld+p_bb+p_bvi + 1e-20;
+  const p_af  = airframePct>0 ? Math.pow(10,SPL_airframe/10) : 0;
+  const p_tot = p_th+p_ld+p_bb+p_bvi+p_af + 1e-20;
   const pct   = x=>Math.round(100*x/p_tot);
+
+  /* ── Interaction summary labels ── */
+  let interactLabel = '';
+  if(rotorConfig==='coaxial'){
+    interactLabel = zD<0.2 ? '⬆ TONAL INTERACT' : zD<0.4 ? '✓ OPTIMAL z/D' : '⬆ WAKE BB';
+  } else if(rotorConfig==='sidebyside'){
+    interactLabel = overlapPct>=15 ? '✓ EVEN HARM. ONLY' : overlapPct>0 ? '△ MIXED HARM.' : '⬆ ALL HARMONICS';
+  }
+  const sweepLabel = sweepAngle>0 ? ('↓ SWEEP −'+sweepReduction.toFixed(1)+'dB') : sweepAngle<0 ? '△ AFT SWEEP' : '';
+  const gbLabel = measMethod==='groundboard' ? ('GND-BOARD ±'+(Math.abs(gbCorrection)).toFixed(1)+'dB') : '';
 
   return {
     BPF, Vtip, Mach, splA, splCab, EPNL, Robs, N,
     spectrum, cabSpec, hFreqs, hLevels, polAngles, polData, bands,
-    src:{ th:pct(p_th), ld:pct(p_ld), bvi:pct(p_bvi), bb:pct(p_bb) },
+    src:{ th:pct(p_th), ld:pct(p_ld), bvi:pct(p_bvi), bb:pct(p_bb), af:pct(p_af) },
     splRaw: SPL_raw,
+    splTotal: SPL_total_new,
+    /* Interaction physics outputs */
+    interactionPenalty_dB, sweepReduction, gbCorrection,
+    rotorConfig, zD, overlapPct, airframePct,
+    interactLabel, sweepLabel, gbLabel,
     /* Extra outputs for Advanced Noise page */
-    SPL_thick, SPL_load, SPL_bb, SPL_bvi, SPL_swirl,
+    SPL_thick, SPL_load, SPL_bb, SPL_bvi, SPL_swirl, SPL_airframe,
     BPF, rho, a0, Vtip, Mach, chord, R, Omega, T_each,
     Re, CT, J, mu, Gamma, v_i, phFac, compCorr, machLoadCorr,
     windDoppler, turbAM, isoAbsorp,
@@ -2843,18 +3057,35 @@ function runCalc(){
   document.getElementById('pLoad').textContent   = `LOADING ${res.src.ld}%`;
   document.getElementById('pBVI').textContent    = `BVI ${res.src.bvi}%`;
   document.getElementById('pBB').textContent     = `BROADBAND ${res.src.bb}%`;
+  const afEl = document.getElementById('srcAF');
+  const pAfEl = document.getElementById('pAF');
+  if(afEl) afEl.style.flex = res.src.af || 0;
+  if(pAfEl) pAfEl.textContent = `AIRFRAME ${res.src.af||0}%`;
   document.getElementById('srcTotal').textContent= `${res.splA.toFixed(1)} dB(A)`;
+
+  /* Interaction physics chips — show corrections applied */
+  const interEl = document.getElementById('interactChip');
+  if(interEl){
+    const parts = [];
+    if(res.interactLabel) parts.push(res.interactLabel);
+    if(res.sweepLabel)    parts.push(res.sweepLabel);
+    if(res.gbLabel)       parts.push(res.gbLabel);
+    interEl.textContent = parts.length ? parts.join(' · ') : 'NO INTERACTION';
+    interEl.style.color = res.interactionPenalty_dB > 2 ? '#ff9955'
+                        : res.splA < res.splRaw - 1     ? '#00ffaa' : '#4d9ad4';
+  }
 
   /* Plot sub-labels */
   document.getElementById('p1sub').textContent = `@ ${Math.round(res.Robs)}m · ${flightPhase}`;
   document.getElementById('p3sub').textContent = `BPF = ${Math.round(res.BPF)} Hz`;
 
   /* Status bar */
-  document.getElementById('stBPF').textContent  = Math.round(res.BPF)+' Hz';
-  document.getElementById('stVtip').textContent = Math.round(res.Vtip)+' m/s';
-  document.getElementById('stSPL').textContent  = res.splA.toFixed(1)+' dB(A)';
-  document.getElementById('stCab').textContent  = res.splCab.toFixed(1)+' dB(A)';
-  document.getElementById('stTime').textContent = new Date().toLocaleTimeString();
+  function _stSet(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  _stSet('stBPF',  Math.round(res.BPF)+' Hz');
+  _stSet('stVtip', Math.round(res.Vtip)+' m/s');
+  _stSet('stSPL',  res.splA.toFixed(1)+' dB(A)');
+  _stSet('stCab',  res.splCab.toFixed(1)+' dB(A)');
+  _stSet('stTime', new Date().toLocaleTimeString());
 
   /* Psychoacoustic metrics */
   if(res.psych){
@@ -2880,6 +3111,12 @@ function runCalc(){
 
   /* Charts */
   updateCharts(res);
+
+  /* Auto-refresh Sound Quality page if it's currently visible */
+  var advPage=document.getElementById('page-advanced');
+  if(advPage && advPage.style.display!=='none'){
+    if(typeof advRun==='function') setTimeout(advRun,0);
+  }
 }
 
 /* ══════════════════════════════════════════════
@@ -3156,6 +3393,9 @@ function showPage(p){ window.dispatchEvent(new Event("soniqPageChange"));
   });
   document.querySelectorAll('.gnav-tab').forEach(t=>t.classList.remove('active'));
   const at=document.getElementById('gtab-'+p); if(at) at.classList.add('active');
+  /* Footer only visible on glossary */
+  const footer=document.getElementById('footer');
+  if(footer) footer.style.display = p==='glossary' ? 'flex' : 'none';
   if(p==='select'){
     document.getElementById('step-select').style.display='flex';
   } else if(p==='tool'){
@@ -4213,6 +4453,173 @@ function loadHelmPreset(p){
   <div>FAA AC 36-4C. Noise certification procedures.</div>
 </div>
 
+<!-- ── PAPERS — INTEGRATED INTO SONONAI PHYSICS ── -->
+<div class="glos-section-title">PAPERS INTEGRATED INTO SONONAI PHYSICS</div>
+<div style="background:var(--s1);border:2px solid rgba(0,102,187,.4);padding:0">
+
+  <!-- Paper 1 -->
+  <div style="padding:16px 22px;border-bottom:1px solid var(--b1)">
+    <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+      <div style="font-family:var(--disp);font-size:10px;letter-spacing:2px;color:var(--cyan);background:rgba(0,102,187,.12);padding:4px 10px;white-space:nowrap;flex-shrink:0">P1 · MEASUREMENT</div>
+      <div style="flex:1;min-width:260px">
+        <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);margin-bottom:3px">
+          On the use of ground-board mounted microphones for outdoor noise measurements
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px">
+          Go, S.T., Kingan, M.J., Schmid, G., Hall, A. · Journal of Sound and Vibration 584 (2024) 118432 · University of Auckland
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--dim);line-height:1.7">
+          Experimental + BEM investigation of 0.4 m circular ground-board microphones on grass (σ_e = 400 kN·s/m⁴, indoors 630 kN·s/m⁴). Key findings: EA−6 dB deviates &gt;3 dB above 1 kHz on grass at ICAO microphone position; inverted configuration (7 mm height) performs as well as flush-mounted; microphone body affects measurements above 3 kHz; do not place microphone at board centre for overhead sources. SONONAI implementation: measurement method toggle adds frequency-dependent correction from Embleton-Daigle ground impedance model.
+        </div>
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--cyan);color:var(--cyan)">GND-BOARD TOGGLE</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--b2);color:var(--muted)">ICAO Annex 16</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--b2);color:var(--muted)">EASA UAS Guidelines</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paper 2 -->
+  <div style="padding:16px 22px;border-bottom:1px solid var(--b1)">
+    <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+      <div style="font-family:var(--disp);font-size:10px;letter-spacing:2px;color:var(--cyan);background:rgba(0,102,187,.12);padding:4px 10px;white-space:nowrap;flex-shrink:0">P2 · MEASUREMENT</div>
+      <div style="flex:1;min-width:260px">
+        <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);margin-bottom:3px">
+          On the modelling of ground-board mounted microphones for outdoor noise measurements
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px">
+          Kingan, M.J., Go, S.T., Piscoya, R., Ochmann, M. · Journal of Sound and Vibration 565 (2023) 117894 · University of Auckland / BHT Berlin
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--dim);line-height:1.7">
+          Boundary element method (BEM) using Ochmann's tailored Green's function for infinite impedance half-space. Two formulations: finite-thickness and zero-thickness (flush) ground-board. Ground impedance via Embleton-Daigle one-parameter model: z̃ = 1 + 0.051(f/σ_e)^−0.75 + 0.0769i·(f/σ_e)^−0.73. Ground types modelled: grass (σ_e = 200 kN·s/m⁴), sandy (1.7 MN·s/m⁴), asphalt (30 MN·s/m⁴). EA−6 dB variations significant for all ground types above 1 kHz. SONONAI uses this impedance model to compute the ground-surface frequency correction applied when GROUND-BOARD measurement method is selected.
+        </div>
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--cyan);color:var(--cyan)">GND-BOARD TOGGLE</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--cyan);color:var(--cyan)">SURFACE σ_e SELECTOR</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--b2);color:var(--muted)">BEM · FEM validated</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paper 3 -->
+  <div style="padding:16px 22px;border-bottom:1px solid var(--b1)">
+    <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+      <div style="font-family:var(--disp);font-size:10px;letter-spacing:2px;color:#00ffaa;background:rgba(0,255,170,.08);padding:4px 10px;white-space:nowrap;flex-shrink:0">P3 · AEROACOUSTICS</div>
+      <div style="flex:1;min-width:260px">
+        <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);margin-bottom:3px">
+          High-fidelity computational study of aerodynamic noise of side-by-side rotor in full configuration
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px">
+          Sagaga, J., Lee, S. · Journal of Sound and Vibration 592 (2024) 118607 · UC Davis
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--dim);line-height:1.7">
+          NASA side-by-side UAM reference vehicle: 2 rotors, 4 blades, R=3.2 m, RPM=500, GW=1792 kg. HPCMP CREATE Helios CFD (SA-DES, 691M grid points) + PSU-WOPWOP (Farassat 1A). Four overlap cases: 0%, 5%, 15%, 25%. Key findings: (1) Fuselage increases FM by 10–12%; (2) 0% overlap is noisier than 25% in full configuration — opposite of isolated rotors; (3) 0–5% overlap: all BPF harmonics excited (upwash interactions); 15–25%: even harmonics only (rotor-to-rotor BVI); (4) Acoustic destructive interference strips in hemisphere at 15–25% overlap; (5) 3–5 dBA reduction from 0% to 25% overlap. SONONAI implementation: SIDE-BY-SIDE arrangement + ROTOR OVERLAP % slider modulates harmonic structure and applies −0.16×overlap dBA reduction, with upwash penalty at low overlap.
+        </div>
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid #00ffaa;color:#00ffaa">SIDE-BY-SIDE ARRANGEMENT</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid #00ffaa;color:#00ffaa">OVERLAP % SLIDER</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--b2);color:var(--muted)">FW-H · BVI · Farassat 1A</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paper 4 -->
+  <div style="padding:16px 22px;border-bottom:1px solid var(--b1)">
+    <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+      <div style="font-family:var(--disp);font-size:10px;letter-spacing:2px;color:#00ffaa;background:rgba(0,255,170,.08);padding:4px 10px;white-space:nowrap;flex-shrink:0">P4 · AEROACOUSTICS</div>
+      <div style="flex:1;min-width:260px">
+        <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);margin-bottom:3px">
+          High-fidelity aero-acoustic evaluations of a heavy-lift eVTOL in hover
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px">
+          Zhang, T., Barakos, G.N., Filippone, A., Furqan · Journal of Sound and Vibration 584 (2024) 118453 · Glasgow / Leicester / Manchester / GKN Aerospace
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--dim);line-height:1.7">
+          GKN Skybus: 6 tiltable propellers, 6 blades, RPM=338, BPF=33.86 Hz, M_tip=0.34, MTOW=14,000 kg, sea level OGE. HMB3 CFD (SAS turbulence, 3rd-order MUSCL, 116 M cells) + FW-H far-field via HFWH2. Three configs C1 (baseline), C2 (narrower fuselage), C3 (optimised blades). Key findings: (1) Airframe blockage 13% MTOW (C1), reduced to 10% (C2); (2) Fuselage noise comparable to middle propellers; (3) Low RPM places dominant energy below ~10th BPF → A-weighting attenuates; (4) Strongest A-weighted tone at ~15th BPF (508 Hz, ~70 dB(A)); (5) PNLT: 90.7 (C1), 90.5 (C2), 92.5 (C3) PNdB; (6) EPNL ~107 EPNdB at 10-min hover. SONONAI implementation: AIRFRAME BLOCKAGE slider adds stationary dipole noise source proportional to blockage force. Low-RPM BPF correct by formula.
+        </div>
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid #00ffaa;color:#00ffaa">AIRFRAME BLOCKAGE SLIDER</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--b2);color:var(--muted)">EASA EPTS reference</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--b2);color:var(--muted)">EPNL · PNLT</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paper 5 -->
+  <div style="padding:16px 22px;border-bottom:1px solid var(--b1)">
+    <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+      <div style="font-family:var(--disp);font-size:10px;letter-spacing:2px;color:#ffbe00;background:rgba(255,190,0,.08);padding:4px 10px;white-space:nowrap;flex-shrink:0">P5 · DESIGN OPT.</div>
+      <div style="flex:1;min-width:260px">
+        <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);margin-bottom:3px">
+          Aerodynamic and aeroacoustic design optimization of UAVs using a surrogate model
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px">
+          Sarikaya, B., Zarri, A., Christophe, J., Aissa, M.H., Verstraete, T., Schram, C. · Journal of Sound and Vibration 589 (2024) 118539 · von Karman Institute
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--dim);line-height:1.7">
+          DJI Phantom III (D=0.239 m, 2 blades, 6000 RPM, M_tip=0.22) in forward flight 10 m/s, pitch −5°. URANS (STAR-CCM+, SST k-ω) + FW-H strip theory (BATMANπ in-house solver). Blade optimisation via Differential Evolution + Kriging surrogate (CADO). Design variables: spanwise sweep angle (−40° to +40°) and chord modulation. Key findings: (1) Forward flight amplifies BLH by ~10× vs hover; (2) Aft rotors noisier than front — ingest upstream wake; (3) Optimising for unweighted 1st BPF SWL: only ~1 dB gain (steady thrust dominates); (4) Optimising for A-weighted 3rd BPF SWL: ~3.5 dB gain, sweep ~40° forward, 8% thrust penalty; (5) After RPM correction (M⁶ law): net 2.6 dB gain; (6) Sweep "smears" tip-vortex interaction along span → reduces high-order BLH. SONONAI implementation: BLADE TIP SWEEP slider applies −0.1 dB per degree of forward sweep (up to −4 dB at 40°), frequency-weighted above BPF/2.
+        </div>
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid #ffbe00;color:#ffbe00">BLADE TIP SWEEP SLIDER</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--b2);color:var(--muted)">A-weighted OPT.</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--b2);color:var(--muted)">Surrogate/Kriging</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paper 6 -->
+  <div style="padding:16px 22px;border-bottom:1px solid var(--b1)">
+    <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+      <div style="font-family:var(--disp);font-size:10px;letter-spacing:2px;color:#ff9955;background:rgba(255,153,85,.08);padding:4px 10px;white-space:nowrap;flex-shrink:0">P6 · COAXIAL</div>
+      <div style="flex:1;min-width:260px">
+        <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);margin-bottom:3px">
+          Acoustic and psychoacoustic characterisation of small-scale contra-rotating propellers
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px">
+          Casagrande Hirono, F., Robertson, J., Torija Martinez, A.J. · Journal of Sound and Vibration 569 (2024) 117971 · University of Salford
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--dim);line-height:1.7">
+          Custom contra-rotating rig, University of Salford anechoic chamber (−12.4 dB(A) background, 100 Hz cutoff). D=0.28 m, 2–6 blades, z/D = 0.1–1.0, thrust 4 N and 8 N. Key findings: (1) z/D=0.1: even-BPF tones up to 20 dB above odd → OASPL 81.1 dB; (2) z/D=0.3: tonal=broadband → OASPL minimum 73.7 dB (7.4 dB quieter); (3) Optimal configuration: 4–5 blades, z/D=0.3–0.4; (4) Higher blade counts lower OASPL at z/D&gt;0.3 via reduced tip Mach; (5) Psychoacoustic: Loudness min at z/D=0.3; Tonality increases slightly with blade count; annoyance at 180° driven by Loudness, Fluctuation Strength, Tonality (r&gt;0.82, p&lt;0.01). SONONAI implementation: COAXIAL arrangement + AXIAL SPACING z/D slider with exponential tonal interaction decay and linear broadband rise. Even-harmonic boost in spectrum at low z/D.
+        </div>
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid #ff9955;color:#ff9955">COAXIAL ARRANGEMENT</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid #ff9955;color:#ff9955">AXIAL SPACING z/D</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--b2);color:var(--muted)">Psychoacoustics · DIN 45631</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paper 7 -->
+  <div style="padding:16px 22px">
+    <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+      <div style="font-family:var(--disp);font-size:10px;letter-spacing:2px;color:#ff9955;background:rgba(255,153,85,.08);padding:4px 10px;white-space:nowrap;flex-shrink:0">P7 · TEST RIG</div>
+      <div style="flex:1;min-width:260px">
+        <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--white);margin-bottom:3px">
+          Development and commissioning of an aeroacoustic test bench for the investigation of single and coaxial propeller noise
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px">
+          Gallo, E., De Decker, J., Bresciani, A., Haezebrouck, P., Garone, E., Schram, C. · Acta Acustica 9:16 (2025) · von Karman Institute / ULB
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--dim);line-height:1.7">
+          VKI ALCOVES anechoic laboratory test rig for single and coaxial drone propellers (DJI 9450 and Mejzlik 2-blade). Controllable longitudinal distance and independent RPM. Validated against published DJI 9450 data. Two aeroacoustic databases released (open): DJI 9450 and Mejzlik single/coaxial. Key contribution: benchmark dataset for validation of low- and high-fidelity codes. SONONAI uses the validated DJI Phantom / DJI drone defaults to calibrate the blade loading and broadband models for small UAV propellers.
+        </div>
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid #ff9955;color:#ff9955">DJI DRONE DEFAULTS</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--b2);color:var(--muted)">Open dataset</span>
+          <span style="font-family:var(--mono);font-size:8px;padding:2px 8px;border:1px solid var(--b2);color:var(--muted)">VKI validation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /papers -->
+
 
 <!-- ── ENHANCED PHYSICS ── -->
 <div class="glos-section-title">ENHANCED ACOUSTIC PHYSICS</div>
@@ -4223,6 +4630,98 @@ function loadHelmPreset(p){
   <div class="gterm"><div class="gterm-sym">ISO 9613-1</div><div class="gterm-name">Atmospheric Absorption (1993)</div><div class="gterm-def">α(f,T,RH) per octave, from O₂/N₂ relaxation frequencies. Applied to each spectral band: L_band -= α·r. Ref: ISO 9613-1:1993.</div></div>
   <div class="gterm"><div class="gterm-sym">ISO 9613-2</div><div class="gterm-name">Wind &amp; Propagation (1996)</div><div class="gterm-def">Wind Doppler ΔL = 20·log₁₀((a₀+V_w cosθ)/a₀). Turbulence AM = 2·I_T·√(V_w·r/a₀) dB. Ref: ISO 9613-2:1996.</div></div>
   <div class="gterm"><div class="gterm-sym">Leishman BVI</div><div class="gterm-name">Blade-Vortex Interaction (2006)</div><div class="gterm-def">Active when μ > 0.05. SPL_BVI = SPL_load + 8μ + 6·log₁₀(Γ/z_BVI). z_BVI = c·(1+2.5|φ|). Ref: Leishman (2006) Helicopter Aerodynamics.</div></div>
+</div>
+
+<!-- ── INTERACTION PHYSICS (from papers) ── -->
+<div class="glos-section-title">ROTOR INTERACTION PHYSICS — PAPER MODELS</div>
+<div class="glos-grid">
+  <div class="gterm">
+    <div class="gterm-sym">Coaxial z/D</div>
+    <div class="gterm-name">Contra-Rotating Axial Spacing (Casagrande Hirono et al. 2024)</div>
+    <div class="gterm-desc">Axial separation-to-diameter ratio controls the trade-off between potential field interaction tones and wake broadband noise. Optimal range z/D = 0.2–0.4 minimises OASPL by balancing both mechanisms.</div>
+    <div class="gterm-formula">
+      ΔL_tonal(z/D) = −7.4·exp(−5·z/D) dB (potential field decay)<br>
+      ΔL_bb(z/D) = max(0, 5·(z/D − 0.3)/0.7) dB (wake BB rise)<br>
+      Even BPF tones boosted by +7·exp(−5·z/D) dB at low z/D<br>
+      Optimal: 4–5 blades, z/D = 0.3; minimises PWL and Loudness<br>
+      <span class="comment">Ref: Casagrande Hirono et al. (2024) JSV 569:117971. Experiments at Univ. Salford.</span>
+    </div>
+    <span class="gterm-unit">— / dB</span>
+  </div>
+
+  <div class="gterm">
+    <div class="gterm-sym">Side-by-side overlap</div>
+    <div class="gterm-name">UAM Rotor Overlap Effect (Sagaga &amp; Lee 2024)</div>
+    <div class="gterm-desc">In side-by-side UAM rotors with fuselage, increasing rotor overlap from 0% to 25% reduces OASPL by 3–5 dBA. This is opposite to isolated rotors. The fuselage provides a partial ground effect that increases upwash at low overlap, exciting all BPF harmonics.</div>
+    <div class="gterm-formula">
+      ΔL_overlap = −0.16 × overlap% dBA (−4 dBA at 25%)<br>
+      ΔL_upwash  = +3.5 dB at 0% / +1.5 dB at 5% (fuselage upwash)<br>
+      Harmonic signature: 0–5% → all harmonics; ≥15% → even only<br>
+      Directivity: interference strips (null in hemisphere) at ≥15%<br>
+      FM improvement: +10–12% vs isolated rotors (fuselage ground effect)<br>
+      <span class="comment">Ref: Sagaga &amp; Lee (2024) JSV 592:118607. HPCMP CREATE Helios + PSU-WOPWOP, NASA reference vehicle.</span>
+    </div>
+    <span class="gterm-unit">— / dBA</span>
+  </div>
+
+  <div class="gterm">
+    <div class="gterm-sym">Airframe blockage</div>
+    <div class="gterm-name">Fuselage Noise Contribution (Zhang &amp; Barakos 2024)</div>
+    <div class="gterm-desc">Airframe blockage force (fuselage downwash drag) generates stationary dipole noise at BPF and harmonics. For Skybus, 13% MTOW blockage produces airframe noise comparable to middle propellers. Fuselage noise ignored in single-rotor models is a significant error for heavy eVTOLs.</div>
+    <div class="gterm-formula">
+      F_af = blockage% × MTOW × g [N]<br>
+      SPL_af = 20·log₁₀(F_af · σ(F) · BPF / 4πρa₀r²) + 94 [dB]<br>
+      σ(F)/F_af ≈ 0.01 (1% unsteady loading variation)<br>
+      C1 (baseline): blockage=13%; C2 (redesign): 10%; C3: 9%<br>
+      PNLT: 90.7 / 90.5 / 92.5 PNdB; EPNL (10 min): ~107 EPNdB<br>
+      <span class="comment">Ref: Zhang, Barakos et al. (2024) JSV 584:118453. HMB3 CFD SAS + HFWH2, Skybus eVTOL.</span>
+    </div>
+    <span class="gterm-unit">dB</span>
+  </div>
+
+  <div class="gterm">
+    <div class="gterm-sym">Blade sweep ΔL</div>
+    <div class="gterm-name">Tip Sweep Noise Reduction (Sarikaya et al. 2024)</div>
+    <div class="gterm-desc">Forward blade tip sweep redistributes the phase of tip-vortex interactions across span, acting like a low-pass filter on the blade loading harmonics. Reduces A-weighted 3rd BPF SWL by ~3.5 dB at 40° sweep with ~8% thrust penalty.</div>
+    <div class="gterm-formula">
+      ΔL_sweep = −0.1 × α_sweep [dB] (forward sweep, α &gt; 0)<br>
+      Effective for f &gt; BPF/2; frequency-weighted<br>
+      After RPM correction (M⁶ scaling): net gain ~2.6 dB<br>
+      Aft rotor BLH orders 1–5 most reduced (front-rotor wake)<br>
+      Optimum: A-weighted 3rd BPF SWL, constraint T ≥ 0.9·T₀<br>
+      <span class="comment">Ref: Sarikaya, Zarri, Schram et al. (2024) JSV 589:118539. URANS+FW-H, VKI, DJI Phantom III.</span>
+    </div>
+    <span class="gterm-unit">dB</span>
+  </div>
+
+  <div class="gterm">
+    <div class="gterm-sym">EA − 6 dB</div>
+    <div class="gterm-name">Ground-Board Excess Attenuation (Go &amp; Kingan 2024)</div>
+    <div class="gterm-desc">Microphone on an acoustically rigid ground-board should measure exactly 6 dB above the incident field (pressure doubling). Finite impedance of surrounding ground and board edges causes narrow-band deviations of up to ±3 dB above 1 kHz on grass. Standard ICAO Annex 16 setup is affected.</div>
+    <div class="gterm-formula">
+      EA = 20·log₁₀(p_rms / p_rms,incident) [dB]<br>
+      Ideal: EA = 6 dB at all frequencies on rigid infinite ground<br>
+      Grass (σ_e=400 kN·s/m⁴): |EA−6| &gt; 3 dB above 1 kHz<br>
+      Asphalt (σ_e=30 MN·s/m⁴): |EA−6| &lt; 1 dB<br>
+      Normalised impedance: z̃ = 1 + 9.08·(f/σ_e)^0.75 + 11.9i·(f/σ_e)^0.73<br>
+      <span class="comment">Ref: Go, Kingan et al. (2024) JSV 584:118432 + Kingan et al. (2023) JSV 565:117894. BEM + experiment.</span>
+    </div>
+    <span class="gterm-unit">dB</span>
+  </div>
+
+  <div class="gterm">
+    <div class="gterm-sym">PWL opt.</div>
+    <div class="gterm-name">Sound Power Level as Optimisation Metric (Casagrande Hirono 2024)</div>
+    <div class="gterm-desc">SPL at a single emission angle is a poor optimisation metric for contra-rotating propellers because tonal directivity has a null at 90°. Sound Power Level (PWL), integrated over all emission angles, is a robust global metric. SONONAI source bar reflects total radiated power.</div>
+    <div class="gterm-formula">
+      PWL = 10·log₁₀(∫ S_psd(ψ)·r²·sinψ dψ dφ / P_ref)<br>
+      Optimal: 4 blades + z/D=0.4 (4N); 5 blades + z/D=0.3 (8N)<br>
+      Annoyance (180°): Loudness (r=0.957), Fluctuation Str. (r=0.822), Tonality (r=0.647)<br>
+      Annoyance (90°): Loudness (r=0.978), Tonality (r=0.511)<br>
+      <span class="comment">Ref: Casagrande Hirono et al. (2024) JSV 569:117971. Listening experiment, N=31 participants.</span>
+    </div>
+    <span class="gterm-unit">dB re 1 pW</span>
+  </div>
 </div>
 
 <!-- ── ADVANCED NOISE SOURCES ── -->
@@ -4251,9 +4750,8 @@ function loadHelmPreset(p){
   <div class="gterm"><div class="gterm-sym">Bark z</div><div class="gterm-name">Critical Band Rate — Zwicker (1961)</div><div class="gterm-def">Perceptual frequency scale: z = 13·arctan(0.76f/kHz) + 3.5·arctan(f/7.5kHz)². 24 Bark = full audible range. Each Bark ≈ 100 Hz at low f, ≈1300 Hz at 8 kHz. Ref: Zwicker (1961) J. Acoust. Soc. Am. 33(2).</div></div>
   <div class="gterm"><div class="gterm-sym">PNLTM</div><div class="gterm-name">Maximum Tone-Corrected PNL — FAR-36</div><div class="gterm-def">PNLTM = maximum value of PNLT during flyover. Tonal correction C computed from 1/3-oct SPL differences. C = F_k − SPL(k) where F_k is background average. Ref: FAR Part 36 App. A §A36.4.</div></div>
 </div>
-</div>
 
-<!-- ── EASA CERTIFICATION ── -->
+<!-- ── EASA / ICAO CERTIFICATION — end of glossary ── -->
 <div class="glos-section-title">EASA / ICAO CERTIFICATION</div>
 <div class="glos-grid">
   <div class="gterm"><div class="gterm-sym">SC-VTOL-01</div><div class="gterm-name">EASA Special Condition (2022)</div><div class="gterm-def">§F.800: VTOL noise certification. Three measurement points (approach/flyover/lateral). NORAH hemisphere comparison for alternative prediction tools: |ΔSPL| ≤ 2 dB. Ref: EASA SC-VTOL-01 Amendment 1 (2022).</div></div>
@@ -5208,172 +5706,207 @@ function loadHelmPreset(p){
 <!-- ═══════════════════════════════════════════════
      PAGE: ADV NOISE / PSYCHOACOUSTICS
 ═══════════════════════════════════════════════ -->
-<div id="page-advanced" style="display:none;padding:0;background:var(--bg)">
+<div id="page-advanced" style="display:none;padding:0;background:var(--bg);overflow-y:auto;height:calc(100vh - 110px)">
 
-  <div style="background:linear-gradient(135deg,#0a1824 0%,#1a0a2e 60%,#0a1824 100%);padding:18px 28px 14px;border-bottom:2px solid rgba(192,132,252,.3)">
-    <div style="font-family:var(--mono);font-size:9px;letter-spacing:3px;color:rgba(192,132,252,.7);margin-bottom:4px">ISO 532-1 · ECMA-418-2 · FAR-36 · ANSI S3.5 · NC CURVES</div>
-    <div style="font-family:var(--disp);font-size:clamp(14px,2vw,22px);font-weight:700;letter-spacing:3px;color:#fff">
-      PSYCHOACOUSTICS &amp; <span style="color:#c084fc">SOUND QUALITY</span>
+  <!-- ── HEADER BANNER ── -->
+  <div style="background:linear-gradient(135deg,#0a1824 0%,#1a0a2e 60%,#0a1824 100%);padding:14px 24px 10px;border-bottom:2px solid rgba(192,132,252,.3);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <div>
+      <div style="font-family:var(--mono);font-size:8px;letter-spacing:3px;color:rgba(192,132,252,.6);margin-bottom:3px">ISO 532-1 · ECMA-418-2 · FAR-36 · ANSI S3.5 · NC CURVES</div>
+      <div style="font-family:var(--disp);font-size:18px;font-weight:700;letter-spacing:3px;color:#fff">
+        PSYCHOACOUSTICS &amp; <span style="color:#c084fc">SOUND QUALITY</span>
+      </div>
     </div>
-    <div style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4);margin-top:4px">
-      Live from Acoustic Analysis &amp; Cabin Noise · Certification targets · Modify design to achieve compliant sound quality
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div id="psyq-cert-badges" style="display:flex;gap:6px;flex-wrap:wrap"><span style="font-family:var(--mono);font-size:9px;padding:3px 10px;border:1px solid var(--b1);color:var(--muted)">Run analysis first</span></div>
+      <button onclick="advRun()" style="padding:6px 14px;background:rgba(192,132,252,.15);border:1px solid rgba(192,132,252,.5);color:#c084fc;font-family:var(--mono);font-size:9px;cursor:pointer;letter-spacing:1px">⟳ REFRESH</button>
+      <button onclick="showPage('tool')" style="padding:6px 14px;background:transparent;border:1px solid rgba(0,102,187,.4);color:var(--cyan);font-family:var(--mono);font-size:9px;cursor:pointer">✎ MODIFY</button>
     </div>
   </div>
 
-  <div id="psyq-cert-banner" style="background:rgba(192,132,252,.08);border-bottom:1px solid rgba(192,132,252,.2);padding:10px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-    <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:rgba(192,132,252,.7)">CERT STATUS</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap" id="psyq-cert-badges"><span style="font-family:var(--mono);font-size:9px;padding:3px 10px;border:1px solid var(--b1);color:var(--muted)">Run analysis first</span></div>
-    <button onclick="showPage('tool')" style="margin-left:auto;padding:5px 12px;background:transparent;border:1px solid rgba(192,132,252,.4);color:#c084fc;font-family:var(--mono);font-size:9px;cursor:pointer">✎ MODIFY DESIGN</button>
-  </div>
+  <!-- ── MAIN GRID: 3 columns ── -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;min-height:0">
 
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--b1)">
+    <!-- COL 1: EXTERIOR -->
+    <div style="border-right:1px solid var(--b1);padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--cyan);padding-bottom:6px;border-bottom:1px solid var(--b1)">⊛ EXTERIOR — COMMUNITY NOISE</div>
 
-    <div style="border-right:1px solid var(--b1);padding:14px">
-      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--cyan);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--b1)">⊛ EXTERIOR — COMMUNITY</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:12px">
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px;position:relative">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">EPNL</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--cyan)" id="psyq-epnl">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">EPNdB · limit 98</div>
-          <div id="psyq-epnl-badge" style="position:absolute;top:5px;right:5px;font-family:var(--mono);font-size:7px;padding:2px 4px"></div>
+      <!-- Gauge row -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px;position:relative;overflow:hidden">
+          <div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--muted);margin-bottom:2px">EPNL</div>
+          <div style="font-family:var(--disp);font-size:22px;font-weight:700;color:var(--cyan);line-height:1" id="psyq-epnl">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:var(--dim);margin-top:2px">EPNdB · limit 98</div>
+          <div id="psyq-epnl-badge" style="position:absolute;top:4px;right:5px;font-family:var(--mono);font-size:7px;padding:2px 5px;border-radius:0"></div>
+          <!-- mini progress bar -->
+          <div style="height:3px;background:var(--b1);margin-top:5px;position:relative">
+            <div id="psyq-epnl-bar" style="height:100%;width:0%;background:var(--cyan);transition:width .5s"></div>
+          </div>
         </div>
         <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">PNLTM</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--cyan)" id="psyq-pnltm">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">PNdB peak</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">LOUDNESS N'</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--amber)" id="psyq-loud-ext">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">ISO 532-1 Zwicker</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">SHARPNESS S</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--amber)" id="psyq-sharp-ext">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">acum Aures</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">ROUGHNESS R</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--amber)" id="psyq-rough-ext">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">asper D&amp;W</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">TONALITY PR</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--amber)" id="psyq-ton-ext">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">dB ECMA-418</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">FLUCTUATION V</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--amber)" id="psyq-fluct-ext">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">vacil Fastl</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">ANNOYANCE</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--amber)" id="psyq-noys-ext">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">Kryter 1959</div>
+          <div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--muted);margin-bottom:2px">PNLTM</div>
+          <div style="font-family:var(--disp);font-size:22px;font-weight:700;color:var(--cyan);line-height:1" id="psyq-pnltm">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:var(--dim);margin-top:2px">PNdB peak</div>
+          <div style="height:3px;background:var(--b1);margin-top:5px"><div id="psyq-pnltm-bar" style="height:100%;width:0%;background:var(--cyan);transition:width .5s"></div></div>
         </div>
       </div>
-      <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-        <div style="font-family:var(--mono);font-size:8px;color:var(--cyan);margin-bottom:5px">EXTERIOR SPL SPECTRUM dB(A)</div>
-        <canvas id="psyq-c-ext" height="130" style="width:100%;display:block"></canvas>
-        <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.25);margin-top:2px;text-align:center">Frequency (Hz)</div>
+
+      <!-- Psychoacoustic gauge grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">LOUDNESS</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--amber);line-height:1.1" id="psyq-loud-ext">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">sone · Zwicker</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-loud-ext-bar" style="height:100%;width:0%;background:var(--amber);transition:width .5s"></div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">SHARPNESS</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--amber);line-height:1.1" id="psyq-sharp-ext">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">acum · Aures / &lt;1.75</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-sharp-ext-bar" style="height:100%;width:0%;background:var(--amber);transition:width .5s"></div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">ROUGHNESS</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--amber);line-height:1.1" id="psyq-rough-ext">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">asper · D&amp;W / &lt;0.3</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-rough-ext-bar" style="height:100%;width:0%;background:var(--amber);transition:width .5s"></div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">TONALITY PR</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--amber);line-height:1.1" id="psyq-ton-ext">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">dB · ECMA-418 / &lt;6</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-ton-ext-bar" style="height:100%;width:0%;background:var(--amber);transition:width .5s"></div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">FLUCTUATION</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--amber);line-height:1.1" id="psyq-fluct-ext">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">vacil · Fastl</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-fluct-ext-bar" style="height:100%;width:0%;background:var(--amber);transition:width .5s"></div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">ANNOYANCE</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--amber);line-height:1.1" id="psyq-noys-ext">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">Noy · Kryter</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-noys-ext-bar" style="height:100%;width:0%;background:var(--amber);transition:width .5s"></div></div>
+        </div>
+      </div>
+
+      <!-- Exterior SPL spectrum — bigger canvas -->
+      <div style="background:var(--s1);border:1px solid var(--b1);padding:8px 8px 4px;flex:1">
+        <div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--cyan);margin-bottom:4px">EXTERIOR SPL SPECTRUM  <span style="color:var(--dim)">dB(A) per octave band</span></div>
+        <canvas id="psyq-c-ext" style="width:100%;display:block;height:140px"></canvas>
       </div>
     </div>
 
-    <div style="border-right:1px solid var(--b1);padding:14px">
-      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--green);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--b1)">◉ CABIN — OCCUPANT COMFORT</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:12px">
+    <!-- COL 2: CABIN -->
+    <div style="border-right:1px solid var(--b1);padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--green);padding-bottom:6px;border-bottom:1px solid var(--b1)">◉ CABIN — OCCUPANT COMFORT</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
         <div style="background:var(--s2);border:1px solid var(--b1);padding:8px;position:relative">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">LOUDNESS N'</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--green)" id="psyq-loud-cab">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">ISO 532 · &lt;12 sone</div>
-          <div id="psyq-loud-cab-badge" style="position:absolute;top:5px;right:5px;font-family:var(--mono);font-size:7px;padding:2px 4px"></div>
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">LOUDNESS N'</div>
+          <div style="font-family:var(--disp);font-size:22px;font-weight:700;color:var(--green);line-height:1" id="psyq-loud-cab">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:var(--dim)">sone · &lt;12</div>
+          <div id="psyq-loud-cab-badge" style="position:absolute;top:4px;right:5px;font-family:var(--mono);font-size:7px;padding:2px 5px"></div>
+          <div style="height:3px;background:var(--b1);margin-top:5px"><div id="psyq-loud-cab-bar" style="height:100%;width:0%;background:var(--green);transition:width .5s"></div></div>
         </div>
         <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">SHARPNESS S</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--green)" id="psyq-sharp-cab">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">acum · &lt;1.75</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">ROUGHNESS R</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--green)" id="psyq-rough-cab">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">asper · &lt;0.3</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">SPEECH SII</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--green)" id="psyq-sii-cab">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">% · &gt;75%</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">FLUCTUATION V</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--green)" id="psyq-fluct-cab">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">vacil · &lt;0.1</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">NC RATING</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--green)" id="psyq-nc-cab">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">target NC-55</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">ARTICULATION AI</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--green)" id="psyq-ai-cab">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">% · &gt;65%</div>
-        </div>
-        <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">CABIN SPL(A)</div>
-          <div style="font-family:var(--disp);font-size:18px;font-weight:700;color:var(--green)" id="psyq-spl-cab">—</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted)">dB(A) · &lt;72</div>
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">CABIN SPL(A)</div>
+          <div style="font-family:var(--disp);font-size:22px;font-weight:700;color:var(--green);line-height:1" id="psyq-spl-cab">—</div>
+          <div style="font-family:var(--mono);font-size:7px;color:var(--dim)">dB(A) · &lt;72</div>
+          <div style="height:3px;background:var(--b1);margin-top:5px"><div id="psyq-spl-cab-bar" style="height:100%;width:0%;background:var(--green);transition:width .5s"></div></div>
         </div>
       </div>
-      <div style="background:var(--s2);border:1px solid var(--b1);padding:8px">
-        <div style="font-family:var(--mono);font-size:8px;color:var(--green);margin-bottom:5px">CABIN SPL SPECTRUM dB(A)</div>
-        <canvas id="psyq-c-cab" height="130" style="width:100%;display:block"></canvas>
-        <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.25);margin-top:2px;text-align:center">Frequency (Hz)</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">SPEECH SII</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--green);line-height:1.1" id="psyq-sii-cab">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">% · ANSI / &gt;75%</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-sii-bar" style="height:100%;width:0%;background:var(--green);transition:width .5s"></div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">NC RATING</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--green);line-height:1.1" id="psyq-nc-cab">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">target NC-55</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-nc-bar" style="height:100%;width:0%;background:var(--green);transition:width .5s"></div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">SHARPNESS</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--green);line-height:1.1" id="psyq-sharp-cab">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">acum · &lt;1.75</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-sharp-cab-bar" style="height:100%;width:0%;background:var(--green);transition:width .5s"></div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">ROUGHNESS</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--green);line-height:1.1" id="psyq-rough-cab">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">asper · &lt;0.3</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-rough-cab-bar" style="height:100%;width:0%;background:var(--green);transition:width .5s"></div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">FLUCTUATION</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--green);line-height:1.1" id="psyq-fluct-cab">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">vacil · &lt;0.1</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-fluct-cab-bar" style="height:100%;width:0%;background:var(--green);transition:width .5s"></div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--b1);padding:7px">
+          <div style="font-family:var(--mono);font-size:7px;color:var(--muted)">ARTICULATION</div>
+          <div style="font-family:var(--disp);font-size:17px;font-weight:700;color:var(--green);line-height:1.1" id="psyq-ai-cab">—</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">% · AI / &gt;65%</div>
+          <div style="height:2px;background:var(--b1);margin-top:4px"><div id="psyq-ai-bar" style="height:100%;width:0%;background:var(--green);transition:width .5s"></div></div>
+        </div>
+      </div>
+
+      <!-- Cabin SPL spectrum -->
+      <div style="background:var(--s1);border:1px solid var(--b1);padding:8px 8px 4px;flex:1">
+        <div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--green);margin-bottom:4px">CABIN SPL SPECTRUM  <span style="color:var(--dim)">dB(A) per octave band</span></div>
+        <canvas id="psyq-c-cab" style="width:100%;display:block;height:140px"></canvas>
       </div>
     </div>
 
-    <div style="padding:14px">
-      <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--amber);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--b1)">◈ CERTIFICATION &amp; GUIDANCE</div>
-      <div style="background:var(--s2);border:1px solid var(--b1);padding:8px;margin-bottom:10px">
-        <div style="font-family:var(--mono);font-size:8px;color:var(--amber);margin-bottom:6px">SOUND QUALITY RADAR</div>
-        <canvas id="psyq-c-radar" height="170" style="width:100%;display:block"></canvas>
+    <!-- COL 3: CERT + RADAR + RECS -->
+    <div style="padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-family:var(--mono);font-size:8px;letter-spacing:2px;color:#c084fc;padding-bottom:6px;border-bottom:1px solid var(--b1)">◈ CERTIFICATION &amp; SOUND QUALITY RADAR</div>
+
+      <!-- Radar chart — bigger -->
+      <div style="background:var(--s1);border:1px solid rgba(192,132,252,.3);padding:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:#c084fc">SOUND QUALITY RADAR</div>
+          <div style="font-family:var(--mono);font-size:6px;color:var(--dim)">purple = measured · amber ring = target</div>
+        </div>
+        <canvas id="psyq-c-radar" style="width:100%;display:block;height:180px"></canvas>
       </div>
-      <div style="background:var(--s2);border:1px solid var(--b1);padding:8px;margin-bottom:10px">
-        <div style="font-family:var(--mono);font-size:8px;color:var(--amber);margin-bottom:6px;letter-spacing:1px">CERTIFICATION REQUIREMENTS</div>
-        <table style="width:100%;font-family:var(--mono);font-size:9px;border-collapse:collapse">
-          <tr style="color:var(--muted);border-bottom:1px solid var(--b1)"><td style="padding:3px 4px">METRIC</td><td style="padding:3px 4px;text-align:center">VALUE</td><td style="padding:3px 4px;text-align:center">TARGET</td><td style="padding:3px 4px">STATUS</td></tr>
-          <tr><td style="padding:3px 4px;color:var(--muted)">EPNL</td><td style="padding:3px 4px;text-align:center" id="cert-v-epnl">—</td><td style="padding:3px 4px;text-align:center;color:rgba(255,255,255,.3)">≤98</td><td style="padding:3px 4px" id="cert-s-epnl">—</td></tr>
-          <tr><td style="padding:3px 4px;color:var(--muted)">Ext SPL</td><td style="padding:3px 4px;text-align:center" id="cert-v-spl">—</td><td style="padding:3px 4px;text-align:center;color:rgba(255,255,255,.3)">≤65</td><td style="padding:3px 4px" id="cert-s-spl">—</td></tr>
-          <tr><td style="padding:3px 4px;color:var(--muted)">Cabin SPL</td><td style="padding:3px 4px;text-align:center" id="cert-v-cabin">—</td><td style="padding:3px 4px;text-align:center;color:rgba(255,255,255,.3)">≤72</td><td style="padding:3px 4px" id="cert-s-cabin">—</td></tr>
-          <tr><td style="padding:3px 4px;color:var(--muted)">Tonality</td><td style="padding:3px 4px;text-align:center" id="cert-v-ton">—</td><td style="padding:3px 4px;text-align:center;color:rgba(255,255,255,.3)">≤6 dB</td><td style="padding:3px 4px" id="cert-s-ton">—</td></tr>
-          <tr><td style="padding:3px 4px;color:var(--muted)">SII</td><td style="padding:3px 4px;text-align:center" id="cert-v-sii">—</td><td style="padding:3px 4px;text-align:center;color:rgba(255,255,255,.3)">≥75%</td><td style="padding:3px 4px" id="cert-s-sii">—</td></tr>
-          <tr><td style="padding:3px 4px;color:var(--muted)">Loudness</td><td style="padding:3px 4px;text-align:center" id="cert-v-loud">—</td><td style="padding:3px 4px;text-align:center;color:rgba(255,255,255,.3)">≤12 sone</td><td style="padding:3px 4px" id="cert-s-loud">—</td></tr>
+
+      <!-- Certification table — cleaner -->
+      <div style="background:var(--s1);border:1px solid var(--b1);padding:8px">
+        <div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--amber);margin-bottom:6px">CERTIFICATION REQUIREMENTS</div>
+        <table style="width:100%;font-family:var(--mono);font-size:8px;border-collapse:collapse">
+          <thead><tr style="color:var(--dim);border-bottom:1px solid var(--b1)">
+            <td style="padding:3px 5px">METRIC</td>
+            <td style="padding:3px 5px;text-align:right">VALUE</td>
+            <td style="padding:3px 5px;text-align:right">LIMIT</td>
+            <td style="padding:3px 5px;text-align:center;width:60px">STATUS</td>
+          </tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:3px 5px;color:var(--muted)">EPNL</td><td style="padding:3px 5px;text-align:right;color:var(--white)" id="cert-v-epnl">—</td><td style="padding:3px 5px;text-align:right;color:var(--dim)">≤98</td><td style="padding:3px 5px;text-align:center" id="cert-s-epnl">—</td></tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:3px 5px;color:var(--muted)">Ext SPL</td><td style="padding:3px 5px;text-align:right;color:var(--white)" id="cert-v-spl">—</td><td style="padding:3px 5px;text-align:right;color:var(--dim)">≤65</td><td style="padding:3px 5px;text-align:center" id="cert-s-spl">—</td></tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:3px 5px;color:var(--muted)">Cabin SPL</td><td style="padding:3px 5px;text-align:right;color:var(--white)" id="cert-v-cabin">—</td><td style="padding:3px 5px;text-align:right;color:var(--dim)">≤72</td><td style="padding:3px 5px;text-align:center" id="cert-s-cabin">—</td></tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:3px 5px;color:var(--muted)">Tonality</td><td style="padding:3px 5px;text-align:right;color:var(--white)" id="cert-v-ton">—</td><td style="padding:3px 5px;text-align:right;color:var(--dim)">≤6 dB</td><td style="padding:3px 5px;text-align:center" id="cert-s-ton">—</td></tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:3px 5px;color:var(--muted)">SII</td><td style="padding:3px 5px;text-align:right;color:var(--white)" id="cert-v-sii">—</td><td style="padding:3px 5px;text-align:right;color:var(--dim)">≥75%</td><td style="padding:3px 5px;text-align:center" id="cert-s-sii">—</td></tr>
+            <tr><td style="padding:3px 5px;color:var(--muted)">Loudness</td><td style="padding:3px 5px;text-align:right;color:var(--white)" id="cert-v-loud">—</td><td style="padding:3px 5px;text-align:right;color:var(--dim)">≤12 sone</td><td style="padding:3px 5px;text-align:center" id="cert-s-loud">—</td></tr>
+          </tbody>
         </table>
       </div>
-      <div style="background:var(--s2);border:1px solid rgba(192,132,252,.3);padding:10px;margin-bottom:8px">
-        <div style="font-family:var(--mono);font-size:8px;color:#c084fc;margin-bottom:6px">DESIGN RECOMMENDATIONS</div>
-        <div id="psyq-recs" style="font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.8">Click refresh to generate.</div>
+
+      <!-- Design recommendations -->
+      <div style="background:var(--s2);border:1px solid rgba(192,132,252,.2);padding:8px;flex:1">
+        <div style="font-family:var(--mono);font-size:7px;letter-spacing:1px;color:#c084fc;margin-bottom:5px">DESIGN RECOMMENDATIONS</div>
+        <div id="psyq-recs" style="font-family:var(--mono);font-size:8px;color:var(--muted);line-height:1.9">Click refresh to generate.</div>
       </div>
-      <button onclick="advRun()" style="width:100%;padding:8px;background:rgba(192,132,252,.12);border:1px solid rgba(192,132,252,.4);color:#c084fc;font-family:var(--mono);font-size:9px;cursor:pointer;margin-bottom:5px">⟳ REFRESH PSYCHOACOUSTIC ANALYSIS</button>
-      <button onclick="showPage('tool')" style="width:100%;padding:7px;background:rgba(0,102,187,.1);border:1px solid rgba(0,102,187,.4);color:var(--cyan);font-family:var(--mono);font-size:9px;cursor:pointer;margin-bottom:5px">✎ MODIFY ROTOR / ACOUSTIC DESIGN</button>
-      <button onclick="showPage('cabin')" style="width:100%;padding:7px;background:rgba(0,136,68,.1);border:1px solid rgba(0,136,68,.4);color:var(--green);font-family:var(--mono);font-size:9px;cursor:pointer">◉ MODIFY CABIN TREATMENT</button>
+
+      <button onclick="showPage('cabin')" style="width:100%;padding:7px;background:rgba(0,136,68,.1);border:1px solid rgba(0,136,68,.4);color:var(--green);font-family:var(--mono);font-size:9px;cursor:pointer;letter-spacing:1px">◉ MODIFY CABIN TREATMENT</button>
     </div>
   </div>
 
-  <div style="padding:12px 16px;background:var(--bg);border-top:1px solid var(--b1)">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-      <div style="background:var(--s1);border:1px solid var(--b1);padding:10px">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-bottom:5px">NC NOISE CRITERION CURVES — Cabin vs NC contours (ASHRAE 2019)</div>
-        <canvas id="psyq-c-nc" height="150" style="width:100%;display:block"></canvas>
-        <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.25);margin-top:3px;text-align:center">Octave band frequency (Hz) · Y-axis: SPL dB</div>
-      </div>
-      <div style="background:var(--s1);border:1px solid var(--b1);padding:10px">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-bottom:5px">SPECIFIC LOUDNESS — Zwicker critical-band pattern (ISO 532-1)</div>
-        <canvas id="psyq-c-bark" height="150" style="width:100%;display:block"></canvas>
-        <div style="font-family:var(--mono);font-size:7px;color:rgba(255,255,255,.25);margin-top:3px;text-align:center">Critical band rate (Bark) · Y-axis: Specific loudness sone/Bark</div>
-      </div>
-    </div>
-  </div>
 
 </div><!-- /page-advanced -->
 
@@ -5901,147 +6434,221 @@ function _psyAI(specSPL){
 /* ── Canvas helpers ── */
 function _psySetCanvas(id){
   var C=document.getElementById(id); if(!C)return null;
-  var dpr=window.devicePixelRatio||1;
-  var W=Math.round((C.getBoundingClientRect().width||C.offsetWidth||400)*dpr);
-  if(W<8) W=400*dpr;
-  var H=Math.round(C.height*dpr);
-  C.width=W; C.height=H;
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  var rect=C.getBoundingClientRect();
+  /* Read CSS-declared size BEFORE touching canvas dimensions */
+  var cssW=rect.width||C.parentElement&&C.parentElement.clientWidth||400;
+  var cssH=parseInt(C.style.height)||rect.height||180;
+  C.width  = Math.round(cssW*dpr);
+  C.height = Math.round(cssH*dpr);
   var ctx=C.getContext('2d');
   ctx.scale(dpr,dpr);
-  return {ctx:ctx,W:C.getBoundingClientRect().width||400,H:C.height/dpr};
+  return {ctx:ctx, W:cssW, H:cssH};
 }
 
+/* ── SPL Spectrum (exterior & cabin) ── */
 function _psyDrawSpectrum(canvasId, specSPL, color, title){
   var cv=_psySetCanvas(canvasId); if(!cv)return;
   var ctx=cv.ctx, W=cv.W, H=cv.H;
-  var pad={l:42,r:10,t:10,b:22};
-  ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
+  var pad={l:38,r:10,t:16,b:28};
+  /* bg */
+  ctx.fillStyle='#07111a'; ctx.fillRect(0,0,W,H);
   var cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
   var vals=specSPL.map(function(s){return Math.max(0,s.spl);});
-  var vMax=Math.max(20,Math.max.apply(null,vals)+8);
+  var vMax=Math.ceil((Math.max(20,Math.max.apply(null,vals))+12)/10)*10;
   var bW=cW/specSPL.length;
-  var yS=function(v){return pad.t+cH*(1-v/vMax);};
-  /* Grid */
-  ctx.strokeStyle='rgba(255,255,255,.06)'; ctx.lineWidth=.5;
-  [0,25,50,75,100].forEach(function(pct){var gy=pad.t+cH*(1-pct/100);ctx.beginPath();ctx.moveTo(pad.l,gy);ctx.lineTo(W-pad.r,gy);ctx.stroke();});
-  /* Bars */
+  var yS=function(v){return pad.t+cH*(1-(v/vMax));};
+
+  /* grid lines with labels */
+  ctx.lineWidth=0.5;
+  var steps=5; var step=vMax/steps;
+  for(var gi=0;gi<=steps;gi++){
+    var gv=gi*step;
+    var gy=yS(gv);
+    ctx.strokeStyle=gi===0?'rgba(255,255,255,.18)':'rgba(255,255,255,.07)';
+    ctx.beginPath(); ctx.moveTo(pad.l,gy); ctx.lineTo(W-pad.r,gy); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.font='bold 9px JetBrains Mono,monospace';
+    ctx.textAlign='right'; ctx.fillText(Math.round(gv),pad.l-4,gy+3);
+  }
+
+  /* bars */
   specSPL.forEach(function(b,i){
     var v=Math.max(0,b.spl);
-    var x=pad.l+i*bW+bW*0.1, bWi=bW*0.8, top=yS(v);
-    /* Gradient fill */
-    var grad=ctx.createLinearGradient(x,top,x,pad.t+cH);
-    grad.addColorStop(0,color); grad.addColorStop(1,color.replace(/[\d.]+\)$/,'0.15)'));
-    ctx.fillStyle=grad; ctx.fillRect(x,top,bWi,pad.t+cH-top);
-    /* Border */
-    ctx.strokeStyle=color; ctx.lineWidth=1.5;
-    ctx.strokeRect(x,top,bWi,pad.t+cH-top);
-    /* Value */
-    if(v>3){
-      ctx.fillStyle='rgba(255,255,255,.85)'; ctx.font='bold 8px JetBrains Mono,monospace';
-      ctx.textAlign='center'; ctx.fillText(v.toFixed(0),x+bWi/2,top-2);
-    }
-    /* X label */
-    ctx.fillStyle='rgba(255,255,255,.45)'; ctx.font='8px JetBrains Mono,monospace';
+    var x=pad.l+i*bW+bW*0.1, bWi=bW*0.8, top=yS(v), bottom=yS(0);
+    /* gradient fill */
+    var grad=ctx.createLinearGradient(x,top,x,bottom);
+    /* colour shifts from cyan→amber→red by level */
+    var ratio=v/vMax;
+    var fillCol=ratio>0.8?'rgba(240,80,60,.9)':ratio>0.6?'rgba(240,180,0,.9)':color;
+    grad.addColorStop(0,fillCol);
+    grad.addColorStop(1,fillCol.replace(/[\d.]+\)$/,'0.08)'));
+    ctx.fillStyle=grad; ctx.fillRect(x,top,bWi,bottom-top);
+    /* border line at top */
+    ctx.strokeStyle=fillCol; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(x,top); ctx.lineTo(x+bWi,top); ctx.stroke();
+    /* value on top of bar — always shown */
+    ctx.fillStyle='rgba(255,255,255,.92)'; ctx.font='bold 9px JetBrains Mono,monospace';
+    ctx.textAlign='center'; ctx.fillText(v.toFixed(0),x+bWi/2,top-3);
+    /* frequency label */
+    ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='8px JetBrains Mono,monospace';
     ctx.textAlign='center';
-    ctx.fillText(b.f>=1000?(b.f/1000).toFixed(b.f>=10000?0:0)+'k':b.f,x+bWi/2,H-3);
-    ctx.textAlign='left';
+    var lbl=b.f>=1000?(b.f/1000).toFixed(0)+'k':b.f+'';
+    ctx.fillText(lbl,x+bWi/2,H-6);
   });
-  /* Y labels */
+
+  /* Y axis label */
+  ctx.save(); ctx.translate(11,pad.t+cH/2); ctx.rotate(-Math.PI/2);
   ctx.fillStyle='rgba(255,255,255,.4)'; ctx.font='8px JetBrains Mono,monospace';
-  [0,20,40,60,80,100].forEach(function(v){
-    if(v<=vMax) ctx.fillText(v,2,yS(v)+3);
-  });
-  /* Y axis title */
-  ctx.save(); ctx.translate(10,pad.t+cH/2); ctx.rotate(-Math.PI/2);
-  ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='8px JetBrains Mono,monospace';
-  ctx.textAlign='center'; ctx.fillText('SPL dB(A)',0,0); ctx.restore();
+  ctx.textAlign='center'; ctx.fillText('dB(A)',0,0); ctx.restore();
+
+  /* X axis label */
+  ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='8px JetBrains Mono,monospace';
+  ctx.textAlign='center'; ctx.fillText('Hz',W/2,H-1);
 }
 
+/* ── NC Curves ── */
 function _psyDrawNC(canvasId, specSPL){
   var cv=_psySetCanvas(canvasId); if(!cv)return;
   var ctx=cv.ctx, W=cv.W, H=cv.H;
-  ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
-  var pad={l:44,r:14,t:10,b:24};
+  ctx.fillStyle='#07111a'; ctx.fillRect(0,0,W,H);
+  var pad={l:38,r:14,t:12,b:28};
   var cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
   var nc_f=[63,125,250,500,1000,2000,4000,8000];
-  var vMax=90, vMin=0, bW=cW/nc_f.length;
+  var vMax=90, bW=cW/nc_f.length;
   var yS=function(v){return pad.t+cH*(1-v/vMax);};
   var xS=function(i){return pad.l+i*bW+bW/2;};
-  /* NC curves */
-  var nc_cols={20:'rgba(34,180,60,.4)',35:'rgba(240,192,64,.4)',50:'rgba(255,100,50,.4)',65:'rgba(200,0,0,.4)'};
-  [20,35,50,65].forEach(function(nc){
-    var limits=NC_CURVES[nc];
-    ctx.beginPath();
-    nc_f.forEach(function(f,i){ctx.lineTo(xS(i),yS(limits[i]));});
-    ctx.strokeStyle=nc_cols[nc]; ctx.lineWidth=1; ctx.setLineDash([4,3]);
-    ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle=nc_cols[nc]; ctx.font='bold 8px JetBrains Mono,monospace';
-    ctx.fillText('NC-'+nc,W-pad.r-24,yS(NC_CURVES[nc][NC_CURVES[nc].length-1])+3);
+
+  /* grid */
+  [0,20,40,60,80,90].forEach(function(v){
+    var gy=yS(v);
+    ctx.strokeStyle='rgba(255,255,255,.07)'; ctx.lineWidth=0.5;
+    ctx.beginPath(); ctx.moveTo(pad.l,gy); ctx.lineTo(W-pad.r,gy); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='bold 9px JetBrains Mono,monospace';
+    ctx.textAlign='right'; ctx.fillText(v,pad.l-4,gy+3);
   });
-  /* Cabin spectrum bars */
+
+  /* NC curves with thicker lines and end labels */
+  var nc_defs=[
+    {nc:20,col:'rgba(34,200,70,.75)'},
+    {nc:35,col:'rgba(240,192,64,.75)'},
+    {nc:50,col:'rgba(255,120,40,.75)'},
+    {nc:65,col:'rgba(220,40,40,.75)'}
+  ];
+  nc_defs.forEach(function(def){
+    var limits=NC_CURVES[def.nc];
+    ctx.beginPath();
+    nc_f.forEach(function(f,i){i===0?ctx.moveTo(xS(i),yS(limits[i])):ctx.lineTo(xS(i),yS(limits[i]));});
+    ctx.strokeStyle=def.col; ctx.lineWidth=1.5; ctx.setLineDash([6,3]);
+    ctx.stroke(); ctx.setLineDash([]);
+    /* end label */
+    ctx.fillStyle=def.col; ctx.font='bold 8px JetBrains Mono,monospace'; ctx.textAlign='left';
+    ctx.fillText('NC-'+def.nc, xS(nc_f.length-1)+4, yS(limits[limits.length-1])+3);
+  });
+
+  /* cabin bars */
   var cabVals=nc_f.map(function(f){
-    var b=(typeof specSPL!=='undefined'?specSPL:[]).find(function(s){return s.f===f;});
+    var b=(specSPL||[]).find(function(s){return s.f===f;});
     return b?Math.max(0,b.spl):0;
   });
   nc_f.forEach(function(f,i){
-    var v=cabVals[i]; var x=pad.l+i*bW+bW*0.15, bWi=bW*0.7;
-    var col=v>NC_CURVES[65][i]?'rgba(200,0,0,.8)':v>NC_CURVES[50][i]?'rgba(255,100,50,.8)':v>NC_CURVES[35][i]?'rgba(240,192,64,.8)':'rgba(34,180,60,.8)';
-    ctx.fillStyle=col; ctx.fillRect(x,yS(v),bWi,pad.t+cH-yS(v));
-    ctx.fillStyle='rgba(255,255,255,.8)'; ctx.font='bold 7px JetBrains Mono,monospace';
-    ctx.textAlign='center'; if(v>3) ctx.fillText(v.toFixed(0),x+bWi/2,yS(v)-2);
-    ctx.fillStyle='rgba(255,255,255,.4)'; ctx.fillText(f>=1000?(f/1000)+'k':f,x+bWi/2,H-3);
-    ctx.textAlign='left';
+    var v=cabVals[i];
+    var x=pad.l+i*bW+bW*0.15, bWi=bW*0.7, top=yS(v), bottom=yS(0);
+    var col=v>NC_CURVES[65][i]?'rgba(220,50,50,.85)':v>NC_CURVES[50][i]?'rgba(255,120,40,.85)':v>NC_CURVES[35][i]?'rgba(240,192,64,.85)':'rgba(34,170,255,.85)';
+    var grad=ctx.createLinearGradient(x,top,x,bottom);
+    grad.addColorStop(0,col); grad.addColorStop(1,col.replace(/[\d.]+\)$/,'0.15)'));
+    ctx.fillStyle=grad; ctx.fillRect(x,top,bWi,bottom-top);
+    ctx.strokeStyle=col; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(x,top); ctx.lineTo(x+bWi,top); ctx.stroke();
+    /* value */
+    ctx.fillStyle='rgba(255,255,255,.92)'; ctx.font='bold 9px JetBrains Mono,monospace';
+    ctx.textAlign='center'; if(v>2) ctx.fillText(v.toFixed(0),x+bWi/2,top-3);
+    /* freq label */
+    ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='8px JetBrains Mono,monospace';
+    ctx.fillText(f>=1000?(f/1000)+'k':f+'',x+bWi/2,H-6);
   });
-  /* Y axis */
-  ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='8px JetBrains Mono,monospace';
-  [0,20,40,60,80].forEach(function(v){ctx.fillText(v,2,yS(v)+3);});
-  ctx.save(); ctx.translate(12,pad.t+cH/2); ctx.rotate(-Math.PI/2);
-  ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='8px JetBrains Mono,monospace';
+
+  /* Y label */
+  ctx.save(); ctx.translate(11,pad.t+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='rgba(255,255,255,.4)'; ctx.font='8px JetBrains Mono,monospace';
   ctx.textAlign='center'; ctx.fillText('SPL dB',0,0); ctx.restore();
 }
 
+/* ── Bark Pattern ── */
 function _psyDrawBark(canvasId, barkPattern){
   var cv=_psySetCanvas(canvasId); if(!cv)return;
   var ctx=cv.ctx, W=cv.W, H=cv.H;
-  ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
-  var pad={l:42,r:14,t:10,b:24};
+  ctx.fillStyle='#07111a'; ctx.fillRect(0,0,W,H);
+  var pad={l:46,r:10,t:24,b:30};
   var cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
-  var vMax=Math.max(0.5,Math.max.apply(null,barkPattern.map(function(p){return p.N;}))+0.1);
+
+  /* Y scale: use actual max with sensible minimum so chart is never empty */
+  var rawMax=Math.max.apply(null,barkPattern.map(function(p){return p.N||0;}));
+  var vMax=Math.max(0.05, rawMax*1.2);
   var bW=cW/barkPattern.length;
-  var yS=function(v){return pad.t+cH*(1-v/vMax);};
-  /* Shading: green→amber→red by loudness */
-  barkPattern.forEach(function(p,i){
-    var v=p.N, x=pad.l+i*bW, bWi=bW*0.85;
-    var grad=ctx.createLinearGradient(x,yS(v),x,pad.t+cH);
-    var col=v>vMax*0.7?'rgba(200,40,40,.9)':v>vMax*0.4?'rgba(240,160,0,.9)':'rgba(34,170,255,.9)';
-    grad.addColorStop(0,col); grad.addColorStop(1,col.replace(/[\d.]+\)$/,'0.1)'));
-    ctx.fillStyle=grad; ctx.fillRect(x,yS(v),bWi,pad.t+cH-yS(v));
+  var yS=function(v){return pad.t+cH*(1-Math.min(1,v/vMax));};
+
+  /* grid */
+  [0,vMax*0.25,vMax*0.5,vMax*0.75,vMax].forEach(function(v,gi){
+    var gy=yS(v);
+    ctx.strokeStyle=gi===4?'rgba(255,255,255,.18)':'rgba(255,255,255,.06)'; ctx.lineWidth=0.5;
+    ctx.beginPath(); ctx.moveTo(pad.l,gy); ctx.lineTo(W-pad.r,gy); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.55)'; ctx.font='bold 8px JetBrains Mono,monospace';
+    ctx.textAlign='right';
+    var lbl=v===0?'0':v<0.001?v.toExponential(1):v<0.1?v.toFixed(3):v<1?v.toFixed(2):v.toFixed(1);
+    ctx.fillText(lbl, pad.l-3, gy+3);
   });
-  /* X labels: every 4th Bark */
-  ctx.fillStyle='rgba(255,255,255,.4)'; ctx.font='8px JetBrains Mono,monospace';
+
+  /* bars */
   barkPattern.forEach(function(p,i){
+    var v=Math.max(0,p.N||0);
+    var x=pad.l+i*bW+0.5, bWi=Math.max(1,bW-1);
+    var ratio=vMax>0?v/vMax:0;
+    var col=ratio>0.7?'rgba(200,50,50,.9)':ratio>0.4?'rgba(240,160,20,.9)':'rgba(34,170,255,.9)';
+    var top=yS(v), bottom=yS(0);
+    if(top<bottom-0.5){
+      var grad=ctx.createLinearGradient(x,top,x,bottom);
+      grad.addColorStop(0,col); grad.addColorStop(1,col.replace(/[\d.]+\)$/,'0.1)'));
+      ctx.fillStyle=grad; ctx.fillRect(x,top,bWi,bottom-top);
+      ctx.strokeStyle=col; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(x,top); ctx.lineTo(x+bWi,top); ctx.stroke();
+    }
+    /* Bark number every 4 */
     if(i%4===0||i===barkPattern.length-1){
-      ctx.textAlign='center'; ctx.fillText(p.bark,pad.l+i*bW+bW/2,H-3);
+      ctx.fillStyle='rgba(255,255,255,.5)'; ctx.font='8px JetBrains Mono,monospace';
+      ctx.textAlign='center'; ctx.fillText(''+(i+1), x+bWi/2, H-6);
     }
   });
-  ctx.textAlign='left';
-  /* Y axis */
-  ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='7px JetBrains Mono,monospace';
-  [0,vMax/2,vMax].forEach(function(v){ctx.fillText(v.toFixed(2),2,yS(v)+3);});
-  ctx.save(); ctx.translate(12,pad.t+cH/2); ctx.rotate(-Math.PI/2);
-  ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='8px JetBrains Mono,monospace';
+
+  /* peak marker — only if there's real signal */
+  if(rawMax>1e-6){
+    var peakIdx=barkPattern.reduce(function(mi,p,i){return (p.N||0)>(barkPattern[mi].N||0)?i:mi;},0);
+    var pk=barkPattern[peakIdx];
+    var px=pad.l+peakIdx*bW+bW/2, py=yS(pk.N||0)-6;
+    var pkL=pk.N<0.001?pk.N.toExponential(2):pk.N<0.1?pk.N.toFixed(3):pk.N.toFixed(2);
+    ctx.fillStyle='rgba(255,255,255,.85)'; ctx.font='bold 8px JetBrains Mono,monospace';
+    ctx.textAlign='center';
+    ctx.fillText('peak '+pkL, px, Math.max(14,py));
+  } else {
+    ctx.fillStyle='rgba(255,255,255,.2)'; ctx.font='10px JetBrains Mono,monospace';
+    ctx.textAlign='center'; ctx.fillText('Run analysis first', W/2, H/2);
+  }
+
+  /* Y label */
+  ctx.save(); ctx.translate(11,pad.t+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='rgba(255,255,255,.4)'; ctx.font='8px JetBrains Mono,monospace';
   ctx.textAlign='center'; ctx.fillText('sone/Bark',0,0); ctx.restore();
 }
 
-function _psyDrawRadar(canvasId, vals, targets, labels, colors){
+/* ── Radar ── */
+function _psyDrawRadar(canvasId, vals, targets, labels){
   var cv=_psySetCanvas(canvasId); if(!cv)return;
   var ctx=cv.ctx, W=cv.W, H=cv.H;
-  ctx.fillStyle='#020b14'; ctx.fillRect(0,0,W,H);
-  var cx=W/2, cy=H/2, R=Math.min(W,H)*0.38;
+  ctx.fillStyle='#07111a'; ctx.fillRect(0,0,W,H);
+  var cx=W/2, cy=(H/2)+4, R=Math.min(W,H)*0.33;
   var n=labels.length;
-  /* Normalised: >1 = exceeds target */
   var norm=vals.map(function(v,i){return Math.min(2,v/Math.max(0.001,targets[i]));});
-  /* Grid rings */
+
+  /* concentric rings */
   [0.25,0.5,0.75,1.0,1.5].forEach(function(t){
     ctx.beginPath();
     for(var i=0;i<n;i++){
@@ -6050,45 +6657,67 @@ function _psyDrawRadar(canvasId, vals, targets, labels, colors){
       i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
     }
     ctx.closePath();
-    ctx.strokeStyle=t===1?'rgba(240,192,64,.5)':'rgba(255,255,255,.08)';
-    ctx.lineWidth=t===1?1.5:0.5; ctx.stroke();
+    if(t===1.0){
+      ctx.strokeStyle='rgba(240,192,64,.7)'; ctx.lineWidth=1.5;
+    } else {
+      ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=0.5;
+    }
+    ctx.stroke();
+    /* ring label at top */
+    if(t===0.5||t===1.0){
+      ctx.fillStyle=t===1.0?'rgba(240,192,64,.7)':'rgba(255,255,255,.25)';
+      ctx.font='7px JetBrains Mono,monospace'; ctx.textAlign='center';
+      ctx.fillText(t===1.0?'TARGET':'50%', cx, cy-R*t-3);
+    }
   });
-  /* Spokes */
+
+  /* spokes */
   for(var i=0;i<n;i++){
     var ang=i*2*Math.PI/n-Math.PI/2;
     ctx.beginPath(); ctx.moveTo(cx,cy);
-    ctx.lineTo(cx+Math.cos(ang)*R*1.5,cy+Math.sin(ang)*R*1.5);
-    ctx.strokeStyle='rgba(255,255,255,.06)'; ctx.lineWidth=.5; ctx.stroke();
+    ctx.lineTo(cx+Math.cos(ang)*R*1.55,cy+Math.sin(ang)*R*1.55);
+    ctx.strokeStyle='rgba(255,255,255,.07)'; ctx.lineWidth=0.5; ctx.stroke();
   }
-  /* Data polygon */
+
+  /* filled polygon */
   ctx.beginPath();
   norm.forEach(function(v,i){
     var ang=i*2*Math.PI/n-Math.PI/2;
-    var x=cx+Math.cos(ang)*R*Math.min(1.5,v), y=cy+Math.sin(ang)*R*Math.min(1.5,v);
+    var rv=Math.min(1.5,v);
+    var x=cx+Math.cos(ang)*R*rv, y=cy+Math.sin(ang)*R*rv;
     i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
   });
   ctx.closePath();
-  ctx.fillStyle='rgba(192,132,252,.15)'; ctx.fill();
-  ctx.strokeStyle='rgba(192,132,252,.9)'; ctx.lineWidth=2; ctx.stroke();
-  /* Dots */
+  ctx.fillStyle='rgba(192,132,252,.18)'; ctx.fill();
+  ctx.strokeStyle='rgba(192,132,252,.95)'; ctx.lineWidth=2; ctx.stroke();
+
+  /* dots + value labels */
   norm.forEach(function(v,i){
     var ang=i*2*Math.PI/n-Math.PI/2;
-    var x=cx+Math.cos(ang)*R*Math.min(1.5,v), y=cy+Math.sin(ang)*R*Math.min(1.5,v);
+    var rv=Math.min(1.5,v);
+    var x=cx+Math.cos(ang)*R*rv, y=cy+Math.sin(ang)*R*rv;
     ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2);
-    ctx.fillStyle=v>1?'#ff4466':'rgba(192,132,252,.9)'; ctx.fill();
+    var dotCol=v>1?'#ff5577':v>0.85?'rgba(240,192,64,.9)':'rgba(80,220,120,.9)';
+    ctx.fillStyle=dotCol; ctx.fill();
+    /* value next to dot */
+    var vx=cx+Math.cos(ang)*R*(rv+0.22), vy=cy+Math.sin(ang)*R*(rv+0.22);
+    ctx.fillStyle='rgba(255,255,255,.8)'; ctx.font='bold 8px JetBrains Mono,monospace';
+    ctx.textAlign='center'; ctx.fillText((v*100).toFixed(0)+'%',vx,vy+3);
   });
-  /* Labels */
+
+  /* axis labels outside */
   labels.forEach(function(lbl,i){
     var ang=i*2*Math.PI/n-Math.PI/2;
-    var x=cx+Math.cos(ang)*(R*1.6), y=cy+Math.sin(ang)*(R*1.6);
-    ctx.fillStyle=norm[i]>1?'#ff4466':'rgba(255,255,255,.7)';
+    var x=cx+Math.cos(ang)*(R*1.65), y=cy+Math.sin(ang)*(R*1.65);
+    var isOver=norm[i]>1;
+    ctx.fillStyle=isOver?'#ff7788':'rgba(255,255,255,.75)';
     ctx.font='bold 8px JetBrains Mono,monospace'; ctx.textAlign='center';
     ctx.fillText(lbl,x,y+3);
-    ctx.textAlign='left';
+    if(isOver){
+      ctx.fillStyle='rgba(255,80,100,.6)'; ctx.font='7px JetBrains Mono,monospace';
+      ctx.fillText('▲',x,y+12);
+    }
   });
-  /* Target ring label */
-  ctx.fillStyle='rgba(240,192,64,.8)'; ctx.font='7px JetBrains Mono,monospace';
-  ctx.fillText('TARGET',cx+R+2,cy-2);
 }
 
 /* ─── MAIN advRun ─── */
@@ -6184,8 +6813,38 @@ function advRun(){
   _s('psyq-ai-cab', (cabAI*100).toFixed(0)); _s('psyq-spl-cab', cabSPLA.toFixed(1));
   _b('psyq-loud-cab-badge', cabLoud<=12, cabLoud<=16);
 
-  /* Certification table */
-  _certRow('cert-row-epnl','cert-v-epnl','cert-s-epnl',extEPNL.EPNL,98,false);
+  /* ── Animated progress bars ── */
+  function _bar(id, val, max, higherBetter){
+    var el=document.getElementById(id); if(!el) return;
+    var pct = higherBetter
+      ? Math.min(100, (val/max)*100)
+      : Math.min(100, (val/max)*100);
+    el.style.width = pct.toFixed(1)+'%';
+    /* colour: green if good, amber if marginal, red if over */
+    var ratio = higherBetter ? val/max : val/max;
+    el.style.background = (higherBetter ? ratio>=1 : ratio<=1)
+      ? 'var(--green)' : ratio<=(higherBetter?0.8:1.2)
+      ? 'var(--amber)' : 'var(--red)';
+  }
+  /* Exterior bars */
+  _bar('psyq-epnl-bar',   extEPNL.EPNL, 110, false);
+  _bar('psyq-pnltm-bar',  extEPNL.PNLTM, 115, false);
+  _bar('psyq-loud-ext-bar', extLoud, 50, false);
+  _bar('psyq-sharp-ext-bar', extSharp, 3, false);
+  _bar('psyq-rough-ext-bar', extRough, 1, false);
+  _bar('psyq-ton-ext-bar', extTon, 10, false);
+  _bar('psyq-fluct-ext-bar', extFluct, 0.2, false);
+  _bar('psyq-noys-ext-bar', extNoys, 200, false);
+  /* Cabin bars */
+  _bar('psyq-loud-cab-bar', cabLoud, 20, false);
+  _bar('psyq-spl-cab-bar', cabSPLA, 85, false);
+  _bar('psyq-sii-bar', cabSII*100, 100, true);
+  var ncNum = parseInt((cabNC||'55').replace(/[^\d]/g,''))||55;
+  _bar('psyq-nc-bar', ncNum, 65, false);
+  _bar('psyq-sharp-cab-bar', cabSharp, 3, false);
+  _bar('psyq-rough-cab-bar', cabRough, 1, false);
+  _bar('psyq-fluct-cab-bar', cabFluct, 0.2, false);
+  _bar('psyq-ai-bar', cabAI*100, 100, true);
   _certRow('cert-row-spl','cert-v-spl','cert-s-spl',extSPLA,65,false);
   _certRow('cert-row-cabin','cert-v-cabin','cert-s-cabin',cabSPLA,72,false);
   _certRow('cert-row-ton','cert-v-ton','cert-s-ton',extTon,6,false);
@@ -6225,9 +6884,6 @@ function advRun(){
   /* Draw charts */
   _psyDrawSpectrum('psyq-c-ext',extSpec,'rgba(34,170,255,.9)','Exterior SPL');
   _psyDrawSpectrum('psyq-c-cab',cabSpec,'rgba(34,180,60,.9)','Cabin SPL');
-  _psyDrawNC('psyq-c-nc',cabSpec);
-  _psyDrawBark('psyq-c-bark',cabBark);
-
   /* Radar — normalised values (1 = at target) */
   var radarVals=[extEPNL.EPNL, extSPLA, cabSPLA, extTon, cabSII*100, cabLoud];
   var radarTgts=[98, 65, 72, 6, 75, 12];
@@ -6980,7 +7636,7 @@ document.addEventListener('keydown',function(e){
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SONONAI — eVTOL Acoustic Intelligence | sononai.com</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:wght@300;400;600&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
@@ -7009,8 +7665,8 @@ document.addEventListener('keydown',function(e){
   --muted:#3a5a78;
   --dim:#6888a8;
   --mono:'JetBrains Mono',monospace;
-  --disp:'Orbitron',sans-serif;
-  --body:'Barlow',sans-serif;
+  --disp:'Syne',sans-serif;
+  --body:'Space Grotesk',sans-serif;
   --r:0px;
 }
 html{scroll-behavior:smooth}
@@ -7252,7 +7908,7 @@ body{
 .tool-body{
   display:grid;
   grid-template-columns:360px 1fr;
-  min-height:calc(100vh - 62px - 48px);
+  height:calc(100vh - 110px);overflow:hidden;
 }
 
 /* ══════════════════════════════════════════════════
@@ -7391,7 +8047,7 @@ input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 8
 /* ══════════════════════════════════════════════════
    MAIN CONTENT
 ══════════════════════════════════════════════════ */
-.content{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.content{display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;background:var(--bg);height:100%}
 
 /* AIRCRAFT VIEWER STRIP */
 .viewer-strip{
@@ -7500,7 +8156,7 @@ input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 8
   position:relative;z-index:10;
   background:var(--s1);border-top:1px solid var(--b1);
   padding:16px 40px;
-  display:flex;align-items:center;justify-content:space-between;
+  display:none;
   flex-wrap:wrap;gap:10px;
 }
 .footer-brand{font-family:var(--disp);font-size:15px;letter-spacing:4px;color:var(--cyan)}
@@ -7856,8 +8512,7 @@ input[type=text],input[type=number],input[type=password],select{font-size:16px!i
   grid-template-rows:1fr 1fr;
   flex:1;
   gap:0;
-  height:calc(100vh - 220px);
-  min-height:0;
+  min-height:280px;
 }
 @media(max-width:1024px){
   .plots{grid-template-columns:1fr}
@@ -7966,8 +8621,8 @@ input[type=text],input[type=number],input[type=password],select{font-size:16px!i
 .content{touch-action:pan-y}
 
 /* ── Compact mode toggle ── */
-.plots.compact .plot-panel{min-height:160px}
-.plots.compact .plot-panel .plot-wrap canvas{height:120px!important}
+.plots.compact .plot-panel{min-height:100px}
+.plots.compact .plot-panel .plot-wrap canvas{height:80px!important}
 
 
 @keyframes gradShift{0%{background-position:0% 0}100%{background-position:200% 0}}
@@ -9014,5 +9669,470 @@ function calcLiners(){
     </div>
   </div>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SONONAI HELP CHATBOX — AI-powered, full knowledge base
+═══════════════════════════════════════════════════════ -->
+<style>
+#snq-fab{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,#0055aa,#4422bb);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 18px rgba(0,85,170,.35);
+  transition:transform .2s,box-shadow .2s;
+  font-size:21px;color:#fff;
+}
+#snq-fab:hover{transform:scale(1.08);box-shadow:0 6px 26px rgba(0,85,170,.5)}
+#snq-badge{
+  position:absolute;top:-3px;right:-3px;
+  width:15px;height:15px;border-radius:50%;
+  background:#22b44c;border:2px solid var(--bg,#f2f6fa);
+  display:none;
+}
+#snq-panel{
+  position:fixed;bottom:88px;right:24px;z-index:9998;
+  width:380px;height:530px;
+  background:var(--s1,#fff);
+  border:1.5px solid var(--b1,#c0d0e0);
+  border-radius:14px;
+  display:none;flex-direction:column;
+  box-shadow:0 12px 48px rgba(0,50,120,.15);
+  overflow:hidden;
+  font-family:'Space Grotesk','Segoe UI',sans-serif;
+}
+#snq-hdr{
+  background:linear-gradient(135deg,#0055aa 0%,#3311aa 100%);
+  padding:12px 14px;
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;
+}
+.snq-live{
+  width:7px;height:7px;border-radius:50%;
+  background:#22e088;flex-shrink:0;
+  animation:livePulse 2s infinite;
+}
+.snq-title{font-size:11px;font-weight:700;letter-spacing:1.5px;color:#fff;flex:1;font-family:'Syne',sans-serif}
+.snq-sub{font-size:7.5px;color:rgba(255,255,255,.65);letter-spacing:.5px;margin-top:1px}
+#snq-x{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:16px;padding:2px 6px;line-height:1}
+#snq-x:hover{color:#fff}
+#snq-body{
+  flex:1;overflow-y:auto;padding:12px;
+  display:flex;flex-direction:column;gap:8px;
+  background:var(--bg,#f2f6fa);
+  scrollbar-width:thin;scrollbar-color:rgba(0,85,170,.2) transparent;
+}
+#snq-body::-webkit-scrollbar{width:3px}
+#snq-body::-webkit-scrollbar-thumb{background:rgba(0,85,170,.2);border-radius:2px}
+.snq-bot,.snq-user{
+  font-size:12px;line-height:1.65;padding:9px 12px;border-radius:10px;
+  word-wrap:break-word;max-width:94%;
+}
+.snq-bot{
+  background:#fff;border:1px solid var(--b1,#c0d0e0);
+  color:var(--white,#0d1f2e);align-self:flex-start;
+  border-radius:3px 10px 10px 10px;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
+.snq-user{
+  background:linear-gradient(135deg,#0055aa,#3311aa);
+  color:#fff;align-self:flex-end;
+  border-radius:10px 3px 10px 10px;
+  font-size:11.5px;
+}
+.snq-think{
+  font-size:11px;padding:8px 12px;
+  color:var(--dim,#6888a8);font-style:italic;
+  align-self:flex-start;
+  background:#fff;border:1px solid var(--b1,#c0d0e0);
+  border-radius:3px 10px 10px 10px;
+}
+.snq-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.snq-chip{
+  font-size:10px;padding:4px 10px;
+  border:1.5px solid rgba(0,85,170,.25);
+  color:#0055aa;background:rgba(0,85,170,.06);
+  cursor:pointer;border-radius:20px;
+  transition:.15s;white-space:nowrap;
+  font-family:'Space Grotesk',sans-serif;
+}
+.snq-chip:hover{background:rgba(0,85,170,.14);border-color:#0055aa}
+#snq-foot{
+  border-top:1.5px solid var(--b1,#c0d0e0);
+  padding:9px 10px;flex-shrink:0;
+  display:flex;gap:7px;align-items:flex-end;
+  background:#fff;
+}
+#snq-inp{
+  flex:1;background:var(--bg,#f2f6fa);
+  border:1.5px solid var(--b1,#c0d0e0);
+  color:var(--white,#0d1f2e);
+  font-family:'Space Grotesk','Segoe UI',sans-serif;
+  font-size:11.5px;
+  padding:7px 10px;outline:none;resize:none;border-radius:8px;
+  line-height:1.4;max-height:80px;overflow-y:auto;
+  transition:border-color .2s;
+}
+#snq-inp:focus{border-color:#0055aa}
+#snq-inp::placeholder{color:var(--dim,#6888a8);font-size:11px}
+#snq-btn{
+  width:32px;height:32px;flex-shrink:0;
+  background:linear-gradient(135deg,#0055aa,#3311aa);
+  border:none;color:#fff;cursor:pointer;border-radius:8px;font-size:15px;
+  display:flex;align-items:center;justify-content:center;transition:.15s;
+}
+#snq-btn:hover{opacity:.85}
+#snq-btn:disabled{opacity:.35;cursor:not-allowed}
+.snq-ref{font-size:10px;color:var(--dim,#6888a8);margin-top:4px;padding:4px 8px;background:rgba(0,85,170,.04);border-radius:4px;border-left:2px solid rgba(0,85,170,.2)}
+</style>
+
+<button id="snq-fab" onclick="snqToggle(event)" title="SONONAI Help">
+  <span style="pointer-events:none">⊛</span><div id="snq-badge" style="pointer-events:none"></div>
+</button>
+
+<div id="snq-panel">
+  <div id="snq-hdr">
+    <div class="snq-live"></div>
+    <div>
+      <div class="snq-title">SONONAI ASSISTANT</div>
+      <div class="snq-sub">eVTOL Acoustics Expert · Always available</div>
+    </div>
+    <button id="snq-x" onclick="snqToggle(event)">✕</button>
+  </div>
+  <div id="snq-body"></div>
+  <div id="snq-foot">
+    <textarea id="snq-inp" placeholder="Ask about parameters, noise physics, results…" rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();snqSend()}"
+      oninput="this.style.height='auto';this.style.height=Math.min(80,this.scrollHeight)+'px'"></textarea>
+    <button id="snq-btn" onclick="snqSend()">↑</button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════
+   FULL KNOWLEDGE BASE — all acoustic physics, all papers,
+   all app parameters, all design guidance
+═══════════════════════════════════════════════════════════ */
+var KB = [
+
+/* ── NAVIGATION ── */
+{k:['navigate','page','tool','where','go','find','open'],
+t:'App pages',
+a:'SONONAI has 7 pages: Aircraft Select (choose vehicle), Acoustic Analysis (main tool with 4 live plots), Cabin Noise (interior treatment), Far-Field Radiation (3D hemisphere), Sound Quality (psychoacoustics), Liners (foam/MPP design), Benchmarks (compare to real vehicles), and Glossary (all equations and references). Switch using the top navigation tabs.'},
+
+/* ── BPF ── */
+{k:['bpf','blade pass','frequency','fundamental','tone','tonal','hertz','hz'],
+t:'Blade Passing Frequency',
+a:'BPF = B × RPM / 60 (Hz). This is the fundamental tonal frequency — all harmonics are multiples of it. For example, 3 blades at 1800 RPM gives BPF = 90 Hz. The spectrum shows harmonics 1×BPF, 2×BPF, 3×BPF… A-weighting then determines which harmonics are most audible. Low RPM designs push BPF below the ear\'s sensitive range, reducing perceived loudness significantly.',
+r:'SONONAI: BPF shown live in viewer strip at top of Acoustic Analysis page.'},
+
+/* ── TIP SPEED / MACH ── */
+{k:['tip speed','mach','mach number','tip mach','vtip','compressib'],
+t:'Tip speed & Mach number',
+a:'Vtip = π × D × RPM / 60 (m/s). Tip Mach = Vtip / a₀ where a₀ ≈ 340 m/s at sea level. Keep Tip Mach below 0.6 (≈205 m/s) to avoid sharp compressibility noise increase. Above Mach 0.5 the thickness noise rises with a compressibility correction: C_comp = 20·log₁₀(1/(1−M²·0.4)). Thickness noise scales as M³ so doubling tip speed adds ~18 dB.',
+r:'Slider: D (diameter) and RPM both affect tip speed. Shown live in viewer strip.'},
+
+/* ── SPL HIGH ── */
+{k:['spl','high','loud','noise','reduce','lower','quiet','decibel','dba'],
+t:'Reducing far-field SPL',
+a:'Primary levers in order of effectiveness: 1) Reduce RPM and increase D to maintain thrust — lower tip speed cuts all noise sources simultaneously. 2) Increase blade count B to distribute loading across more blades (lower tonal amplitude per blade). 3) Add forward blade sweep (+40° gives up to −4 dB A-weighted). 4) Increase altitude or observer distance. 5) Reduce disk loading DL (N/m²). Check the source bar to see which mechanism dominates.',
+r:'Source bar shows % split: Thickness / Loading / BVI / Broadband / Airframe.'},
+
+/* ── SOURCE BAR ── */
+{k:['source bar','source','thickness','loading','bvi','broadband','airframe','purple','cyan','segment'],
+t:'Source bar explained',
+a:'The coloured source bar shows what fraction of total acoustic power comes from each mechanism. Cyan = Thickness noise (blade volume, Farassat 1A, scales as M³). Green = Loading noise (thrust forces, Ffowcs Williams-Hawkings). Amber = BVI (blade-vortex interaction, activates in descent when advance ratio μ > 0.05). Red = Broadband trailing-edge (Brooks-Pope-Marcolini). Purple = Airframe blockage (fuselage drag force, from Zhang & Barakos 2024). Focus noise reduction on the dominant colour.',
+r:'Airframe (purple) only appears when Airframe Blockage slider > 0%.'},
+
+/* ── BVI ── */
+{k:['bvi','blade vortex','vortex','interaction','descent','approach','impulsive','chop','thwop'],
+t:'Blade-Vortex Interaction (BVI)',
+a:'BVI occurs when a rotor blade slices through the tip vortex shed by a preceding blade or another rotor. It creates loud impulsive tones — the distinctive "thwop" of helicopters in descent. In SONONAI, BVI activates when advance ratio μ = V/(Ω·R) > 0.05. Worst in Approach and Descent flight phases. To reduce: slow down in descent, increase altitude, set flight phase to Hover, or increase blade pitch to keep rotor loaded. BVI model: Leishman (2006) rotorcraft aerodynamics.',
+r:'BVI shows as amber in source bar. Switch flight phase to Hover to deactivate it.'},
+
+/* ── ICAO / CERTIFICATION ── */
+{k:['icao','pass','fail','certif','compliance','limit','65db','98epnl','easa','sc-vtol','epnl','epndb'],
+t:'ICAO certification & compliance',
+a:'The ICAO SC-VTOL-01 limit is ≤65 dB(A) at 300m observer distance. The EPNL (Effective Perceived Noise Level) FAR-36 limit for rotorcraft is ≤98 EPNdB. The ICAO chip in the viewer strip shows PASS (green) / WARN / FAIL (red) live. To pass: reduce RPM, increase D, add forward blade sweep, or fly lower advance ratio. EPNL = PNLT_peak − 13 (simplified for 10s flyover). PNLT = PNL + tonal correction C (max 6.7 dB).',
+r:'ICAO chip is always visible in viewer strip at top of Acoustic Analysis page.'},
+
+/* ── OBSERVER ── */
+{k:['observer','distance','range','measurement','300m','100m','far field','farfield'],
+t:'Observer distance',
+a:'SPL drops by 20·log₁₀(r) with distance — each doubling of distance reduces SPL by 6 dB. ICAO uses 300m as the standard reference observer distance for the compliance check. Increase observer distance slider to simulate farther measurement points. The EPNL estimate also changes with distance. Note: atmospheric absorption (ISO 9613-1) is also applied per frequency band over the path length.',
+r:'Observer distance slider in sidebar. ICAO chip always uses 300m regardless of slider.'},
+
+/* ── COAXIAL Z/D ── */
+{k:['coaxial','contra','z/d','axial','spacing','separation','distance','stack'],
+t:'Coaxial rotor axial spacing (z/D)',
+a:'z/D is the axial separation between two contra-rotating rotors divided by their diameter. Key finding from Casagrande Hirono et al. (JSV 2024, 569:117971): at z/D < 0.2 potential-field interaction produces strong even-harmonic tones (up to +20 dB at 2×BPF, 4×BPF). At z/D = 0.3 tonal and broadband contributions balance — this is the optimum giving ~7.4 dB OASPL reduction vs z/D = 0.1. At z/D > 0.4 wake/turbulence broadband rises. Best config: 4–5 blades, z/D = 0.2–0.4.',
+r:'Select COAXIAL arrangement in Rotor Interactions sidebar to enable z/D slider.'},
+
+/* ── SIDE-BY-SIDE OVERLAP ── */
+{k:['side by side','sidebyside','overlap','fuselage','uam','upwash','even harmonic'],
+t:'Side-by-side rotor overlap',
+a:'Counterintuitive result from Sagaga & Lee (JSV 2024, 592:118607): in a full vehicle WITH fuselage, 25% overlap is 3–5 dBA QUIETER than 0% overlap. At 0% overlap the fuselage creates strong upwash that excites ALL BPF harmonics. At ≥15% overlap only even harmonics (2×BPF, 4×BPF) are excited and destructive interference reduces total OASPL. The fuselage also improves Figure of Merit by 10–12% (partial ground effect). Isolated rotors without fuselage behave opposite.',
+r:'Select SIDE-BY-SIDE arrangement in Rotor Interactions to enable overlap slider.'},
+
+/* ── AIRFRAME BLOCKAGE ── */
+{k:['airframe','blockage','fuselage','body','structure','skybus','heavy','lift'],
+t:'Airframe blockage noise',
+a:'From Zhang & Barakos (JSV 2024, 584:118453) studying the GKN Skybus heavy-lift eVTOL (MTOW=14,000 kg, 6 rotors, 6 blades, RPM=338, BPF=33.86 Hz, Mtip=0.34). The fuselage blockage force was 13% of MTOW, adding noise comparable to the middle propellers. Modelled as a stationary dipole source. For the Skybus, EPNL ~107 EPNdB at 10-min hover. Low RPM pushes tonal energy below A-weighting peak. Strongest A-weighted tone at ~15th BPF (508 Hz, ~70 dB(A)).',
+r:'Use Airframe Blockage slider in Rotor Interactions. Purple segment appears in source bar.'},
+
+/* ── BLADE SWEEP ── */
+{k:['sweep','swept','blade design','tip shape','leading edge','forward sweep'],
+t:'Blade tip sweep for noise reduction',
+a:'From Sarikaya et al. (JSV 2024, 589:118539) studying DJI Phantom III (D=0.239m, 2 blades, 6000 RPM, Mtip=0.22, 10 m/s forward flight). Forward blade sweep smears the tip-vortex interaction phase along the blade span, acting as a low-pass filter on blade loading harmonics. Optimising A-weighted 3rd BPF: ~40° forward sweep gives −3.5 dB SWL (−2.6 dB after RPM correction). Thrust penalty ~8%. Aft rotors are noisier than front (ingest upstream wake).',
+r:'Blade Tip Sweep slider in Rotor Interactions. SONONAI model: −0.1 dB/deg forward.'},
+
+/* ── GROUND BOARD ── */
+{k:['ground board','groundboard','grass','measurement','outdoor','microphone','icao standard','asphalt','sand','impedance'],
+t:'Ground-board measurement correction',
+a:'From Go & Kingan (JSV 2024, 584:118432) and Kingan et al. (JSV 2023, 565:117894). ICAO standard: 12.7mm inverted microphone, 7mm above a 0.4m diameter circular metal board. On grass (σe=400 kN·s/m⁴) the measured SPL can deviate >3 dB from the ideal +6 dB above free-field at frequencies above 1 kHz. Asphalt (σe=30 MN·s/m⁴) gives <1 dB deviation. Ground impedance: z̃=1+9.08·(f/σe)^−0.75+11.9i·(f/σe)^−0.73. Do NOT place microphone at board centre for overhead sources (destructive interference). Optimal inverted mic height: exactly 7mm.',
+r:'Toggle Measurement Method in Rotor Interactions to apply ground-board correction.'},
+
+/* ── BROADBAND ── */
+{k:['broadband','trailing edge','turbulent','boundary layer','bpm','amiet','re','reynolds'],
+t:'Broadband trailing-edge noise',
+a:'Modelled using Brooks-Pope-Marcolini (BPM, NASA RP-1218, 1989) + Amiet leading-edge ingestion. Displacement thicknesses: δ*_p = 0.1·c·Re^−0.165 (pressure side), δ*_s = 0.02·c·Re^−0.12 (suction side). Strouhal peak St = 0.02·M^−0.6. Turbulence ingestion adds +3·I_T dB. To reduce: increase chord (higher Re, thinner boundary layer relative to chord), reduce tip speed, or use laminar-flow blade profiles.',
+r:'Red segment in source bar. Affected by Chord slider, RPM, and Turbulence Intensity.'},
+
+/* ── ATMOSPHERIC ABSORPTION ── */
+{k:['atmospheric','absorption','humidity','temperature','altitude','propagation','iso 9613'],
+t:'Atmospheric propagation',
+a:'SONONAI applies ISO 9613-1:1993 molecular absorption α(f,T,RH) per octave band — absorption increases strongly with frequency above 2 kHz, so high-frequency broadband noise attenuates faster with distance than low-frequency BPF tones. Also applied: Doppler shift from wind (ISO 9613-2), turbulence amplitude modulation ΔL = 2·I_T·√(V_w·r/a₀) dB. Speed of sound: a₀ = 331.3·√(1+T/273.15) m/s. ISA model for air density vs altitude.',
+r:'Temperature, Humidity, Altitude, Wind, and Turbulence sliders all affect propagation.'},
+
+/* ── PSYCHOACOUSTICS ── */
+{k:['psycho','loudness','sharpness','roughness','tonality','fluctuation','sii','nc','annoyance','sound quality'],
+t:'Psychoacoustic metrics (Sound Quality page)',
+a:'Loudness N\' (sone): Zwicker ISO 532-1. Perceived volume. Cabin target <12 sone. Sharpness S (acum): Aures 1985. High-frequency content harshness. Target <1.75 acum. Roughness R (asper): Daniel & Weber 1997. AM modulation ~70 Hz range. Target <0.3 asper. Fluctuation V (vacil): Fastl & Zwicker. Low AM <20 Hz. Target <0.1 vacil. Tonality PR (dB): ECMA-418-2. Prominence of tones above broadband. Target <6 dB. SII (%): Speech Intelligibility Index, ANSI S3.5. Cabin target >75%. NC Rating: Noise Criterion per ASHRAE 2019. Target NC-55.',
+r:'Sound Quality page auto-updates when parameters change on Acoustic Analysis page.'},
+
+/* ── CABIN NOISE ── */
+{k:['cabin','interior','passenger','comfort','wall','tl','transmission','nc rating','nc-55'],
+t:'Cabin noise',
+a:'Cabin SPL = exterior SPL − TL + structural correction. TL (transmission loss) slider controls the wall insertion loss in dB. Cabin floor area affects structural radiation. Target cabin SPL <72 dB(A) for passenger comfort. NC-55 is the target for air taxi cabin environments. SII >75% ensures speech intelligibility. The Cabin Noise page provides detailed treatment design with foam, panel, and liner materials.',
+r:'Wall TL slider in sidebar. Cabin SPL shown in viewer strip. See Cabin Noise page for treatment.'},
+
+/* ── DISK LOADING ── */
+{k:['disk loading','dl','thrust','loading','n/m2','thrust per'],
+t:'Disk loading',
+a:'Disk loading DL = T / (π·R²) in N/m². It determines induced velocity and therefore loading noise. High DL (>500 N/m²) designs are significantly noisier. Most UAM vehicles target DL < 200 N/m² for community noise. In SONONAI the DL slider sets the thrust per unit disk area. The actual thrust per rotor is T = AUW·g / N_rotors. Reducing DL means larger rotor disk for the same thrust, which usually requires lower RPM — a dual benefit for noise.',
+r:'DL slider in sidebar. Affects loading noise (green segment in source bar).'},
+
+/* ── FLIGHT PHASES ── */
+{k:['flight phase','hover','climb','cruise','approach','advance ratio','forward flight'],
+t:'Flight phases and advance ratio',
+a:'Advance ratio μ = V/(Ω·R). In Hover: μ=0, BVI inactive. In Climb: moderate μ, some BVI. In Cruise: high μ, check for BVI if μ>0.05. In Approach: highest BVI risk — the rotor descends through its own wake. Set cruise speed with Vkts slider. BVI activates in SONONAI when μ>0.05 in non-hover phases. For quiet descent: reduce airspeed, which reduces μ and BVI severity.',
+r:'Flight phase toggle in sidebar (Hover/Climb/Cruise/Approach). Affects BVI and Doppler.'},
+
+/* ── BENCHMARKS ── */
+{k:['benchmark','compare','joby','archer','volocopter','ehang','lilium','wisk','real','actual'],
+t:'Benchmarks page',
+a:'The Benchmarks page compares SONONAI predictions against published noise data for real eVTOL vehicles: Joby S4 (45.2 dB at 500m, cruise), Archer (45.0 dB at 500m), Volocopter 2X (67.5 dB at 75m, hover), Ehang 216 (72 dB at 100m, hover), Lilium Jet (60 dB at 300m), Wisk Cora (62 dB at 500m). Use this page to validate your configuration against real-world references.',
+r:'Benchmarks tab in top navigation.'},
+
+/* ── PLOTS ── */
+{k:['plot','chart','graph','update','live','refresh','spectrum','polar','harmonic','directivity'],
+t:'Live plots',
+a:'Acoustic Analysis has 4 live plots that update automatically on every parameter change: 1) SPL Spectrum — octave or 1/3-octave bar chart in dB(A). 2) Harmonic levels — BPF harmonics 1st through 8th. 3) Polar directivity — 360° radiation pattern showing directivity peaks below rotor (thickness) and at rotor plane (loading). 4) Broadband spectrum. Sound Quality page also auto-refreshes when visible. If plots seem stuck, move any slider.',
+r:'All 4 plots live-update. 1/3-octave toggle in sidebar for higher spectral resolution.'},
+
+/* ── PHYSICS MODELS ── */
+{k:['model','physics','formula','equation','farassat','ffowcs','williams','hawkings','leishman','bpm'],
+t:'Acoustic physics models in SONONAI',
+a:'Thickness: Farassat 1A (NASA/TM-2007-214853) — blade volume displacement, scales M³. Loading: Ffowcs Williams-Hawkings (1969) + Hanson-Parzych (NASA CR-4499) — blade thrust forces, inflow angle correction. Broadband: Brooks-Pope-Marcolini 1989 (NASA RP-1218) + Amiet LEI turbulence ingestion. BVI: Leishman 2006 rotorcraft noise model. Propagation: ISO 9613-1/2. Psychoacoustics: ISO 532-1 (Zwicker), ECMA-418-2, ANSI S3.5, Daniel & Weber, Fastl & Zwicker. See Glossary page for full equations.',
+r:'All model citations and equations are in the Glossary page.'},
+
+/* ── VKI TEST RIG ── */
+{k:['vki','gallo','alcoves','test rig','benchmark dataset','mejzlik','dji 9450'],
+t:'VKI aeroacoustic test bench',
+a:'Gallo et al. (Acta Acustica 2025, 9:16) describes the ALCOVES anechoic lab at von Karman Institute (Belgium) for testing single and coaxial drone propellers. DJI 9450 (2-blade) and Mejzlik (2-blade) propellers. Adjustable z/D and independent RPM control. Two open benchmark databases are available. Key validation: potential field interaction dominates below z/D=0.25, consistent with Casagrande Hirono 2024. SONONAI uses these validated DJI defaults to calibrate the blade loading model.',
+r:'DJI Phantom preset uses parameters validated against this dataset.'},
+
+/* ── EPNL EXPLANATION ── */
+{k:['epnl','pnlt','pnl','noys','far36','far-36','perceived noise'],
+t:'EPNL and PNLT computation',
+a:'EPNL (EPNdB) = Effective Perceived Noise Level per FAR-36 Appendix A. Step 1: Convert spectrum to Noys (noisiness units). Step 2: PNL = 10·log₁₀(total Noys) + 40. Step 3: Tonal correction C = min(6.7, Tonality_PR). Step 4: PNLT = PNL + C. Step 5: EPNL = PNLT_peak − 13 (SONONAI simplified model assumes 10s effective flyover duration). ICAO rotorcraft limit: EPNL ≤ 98 EPNdB. The Skybus heavy-lift eVTOL achieved ~107 EPNdB at 10-min hover (Zhang & Barakos 2024).',
+r:'EPNL shown in viewer strip. Detailed metrics on Sound Quality page.'},
+
+/* ── ROTOR COUNT ── */
+{k:['rotors','number of rotors','n rotors','multi','quad','hex','octo','how many'],
+t:'Number of rotors',
+a:'More rotors allow smaller individual rotors for the same total thrust, which reduces tip speed at the same RPM (noise benefit). However more rotors increase interaction effects. SONONAI sums N independent rotors as uncoupled sources: SPL_total = SPL_single + 10·log₁₀(N). For N=4 rotors vs N=1: +6 dB from rotor count, but each rotor carries 1/4 the thrust so loading per rotor drops significantly. Optimal N for noise: 6–8 for large UAM vehicles.',
+r:'Number of Rotors input in sidebar. Affects total SPL and individual rotor thrust.'},
+
+/* ── GLOSSARY ── */
+{k:['glossary','reference','equation','paper','citation','define','definition','what is','meaning'],
+t:'Glossary & references',
+a:'The Glossary page has everything: all acoustic equations with derivations, all paper citations with key findings, psychoacoustic metric definitions, EASA/ICAO certification requirements, and a section on all research papers integrated into SONONAI\'s physics. If you want the full mathematical detail of any model — BPF, Farassat 1A, BPM, Leishman BVI, ISO 9613, EPNL — open the Glossary tab.',
+r:'Glossary tab in top navigation. Papers section at the bottom.'}
+
+];
+
+/* ─── State ─── */
+var _hist = [];
+var _open = false;
+var _welcomed = false;
+
+/* ─── UI ─── */
+function snqToggle(e){
+  if(e) e.stopPropagation();
+  _open = !_open;
+  document.getElementById('snq-panel').style.display = _open ? 'flex' : 'none';
+  document.getElementById('snq-badge').style.display = 'none';
+  if(_open && !_welcomed){ _welcomed = true; snqWelcome(); }
+  if(_open) setTimeout(function(){ document.getElementById('snq-inp').focus(); }, 60);
+}
+
+function snqScroll(){
+  var b = document.getElementById('snq-body');
+  b.scrollTop = b.scrollHeight;
+}
+
+function snqAddBot(text, ref, chips){
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;align-items:flex-start;gap:4px';
+
+  var msg = document.createElement('div');
+  msg.className = 'snq-bot';
+  msg.textContent = text;
+  wrap.appendChild(msg);
+
+  if(ref){
+    var refEl = document.createElement('div');
+    refEl.className = 'snq-ref';
+    refEl.textContent = '→ ' + ref;
+    wrap.appendChild(refEl);
+  }
+
+  if(chips && chips.length){
+    var row = document.createElement('div');
+    row.className = 'snq-chips';
+    chips.forEach(function(c){
+      var btn = document.createElement('button');
+      btn.className = 'snq-chip';
+      btn.textContent = c;
+      btn.onclick = function(){
+        document.getElementById('snq-inp').value = c;
+        snqSend();
+      };
+      row.appendChild(btn);
+    });
+    wrap.appendChild(row);
+  }
+  document.getElementById('snq-body').appendChild(wrap);
+  snqScroll();
+}
+
+function snqAddUser(text){
+  var d = document.createElement('div');
+  d.className = 'snq-user';
+  d.textContent = text;
+  document.getElementById('snq-body').appendChild(d);
+  snqScroll();
+}
+
+function snqWelcome(){
+  snqAddBot(
+    'Hi! I am the SONONAI acoustics assistant. I can explain any parameter, result, or design decision in the tool — from blade physics to certification requirements.',
+    null,
+    ['Why is my SPL high?','What is coaxial z/D?','How do I pass ICAO?','What is BVI noise?','Explain the source bar','How does blade sweep work?']
+  );
+}
+
+/* ─── Knowledge search ─── */
+function snqLiveState(){
+  var parts = [];
+  var map = {BPF:'mBPF','SPL(ff)':'mSPLff',Vtip:'mVtip',EPNL:'mEPNL',Mach:'mMach','Cabin SPL':'mSPLcab'};
+  Object.keys(map).forEach(function(k){
+    var el = document.getElementById(map[k]);
+    if(el && el.textContent && el.textContent !== '—' && el.textContent.trim())
+      parts.push(k + ': ' + el.textContent.trim());
+  });
+  return parts;
+}
+
+function snqSearch(q){
+  var ql = q.toLowerCase().split(/\s+/);
+  var scored = KB.map(function(entry){
+    var score = 0;
+    ql.forEach(function(word){
+      if(word.length < 2) return;
+      entry.k.forEach(function(kw){
+        if(kw.indexOf(word) !== -1 || word.indexOf(kw) !== -1) score += kw === word ? 3 : 1;
+      });
+      if(entry.t.toLowerCase().indexOf(word) !== -1) score += 2;
+      if(entry.a.toLowerCase().indexOf(word) !== -1) score += 1;
+    });
+    return {entry:entry, score:score};
+  }).filter(function(x){ return x.score > 0; });
+
+  scored.sort(function(a,b){ return b.score - a.score; });
+  return scored.length > 0 ? scored[0].entry : null;
+}
+
+function snqSend(){
+  var inp = document.getElementById('snq-inp');
+  var text = (inp.value || '').trim();
+  if(!text) return;
+  inp.value = ''; inp.style.height = 'auto';
+
+  snqAddUser(text);
+  _hist.push(text);
+
+  var result = snqSearch(text);
+
+  /* Augment with live state if relevant */
+  var state = snqLiveState();
+  var stateNote = '';
+  if(state.length && /(spl|bpf|epnl|high|low|fail|pass|result|current)/i.test(text)){
+    stateNote = 'Your current readings: ' + state.join(', ') + '. ';
+  }
+
+  if(result){
+    var answer = stateNote + result.a;
+
+    /* Pick smart follow-up chips */
+    var allChips = [
+      'How do I reduce SPL?','What is BVI noise?','How do I pass ICAO?',
+      'What is coaxial z/D?','Explain the source bar','What is EPNL?',
+      'How does blade sweep work?','What flight phase reduces noise?',
+      'What is disk loading?','How does blade count help?'
+    ];
+    /* Remove the chip that matches the current question */
+    var used = text.toLowerCase();
+    var chips = allChips.filter(function(c){ return c.toLowerCase().indexOf(used.split(' ')[0]) === -1; }).slice(0,3);
+
+    setTimeout(function(){
+      snqAddBot(answer, result.r || null, chips);
+    }, 180);
+  } else {
+    /* Fallback for unrecognised questions */
+    var fallback = stateNote + 'I didn\'t find a specific answer for that. Try asking about: BPF, tip speed, SPL, BVI, ICAO, coaxial z/D, blade sweep, source bar, EPNL, or any other parameter name. You can also check the Glossary page for full equations and references.';
+    setTimeout(function(){
+      snqAddBot(fallback, null, [
+        'What is BPF?','How do I reduce SPL?','What is BVI?','Explain the source bar'
+      ]);
+    }, 150);
+  }
+}
+
+/* ─── Exports & badge ─── */
+window.snqToggle = snqToggle;
+window.snqSend = snqSend;
+
+setTimeout(function(){
+  if(!_open) document.getElementById('snq-badge').style.display = 'block';
+}, 4000);
+
+})();
+</script>
 </body>
 </html>
