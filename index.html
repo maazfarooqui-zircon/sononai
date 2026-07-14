@@ -11,6 +11,7 @@
   --ink:#050e18;--ink2:#0a1824;--ink3:#0d1f2e;
   --ai:#22aaff;--ai2:#44ccff;
   --gold:#f0c040;--green:#22dd88;--red:#ff4455;
+  --teal:#00e8aa;--teal2:#22d4f0;
   --muted:rgba(255,255,255,.42);--faint:rgba(255,255,255,.06);
   --border:rgba(34,170,255,.13);--border2:rgba(34,170,255,.28);
   --mono:'JetBrains Mono',monospace;--disp:'Orbitron',sans-serif;
@@ -29,6 +30,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .nav-links a:hover{color:#fff}
 .nav-cta{margin-left:12px;padding:8px 20px;border:1px solid var(--border2);color:var(--ai);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:2px;text-decoration:none;transition:all .25s;cursor:none}
 .nav-cta:hover{background:var(--ai);color:var(--ink)}
+.nav-cta.c{color:var(--gold);border-color:rgba(240,192,64,.4)}
+.nav-cta.c:hover{background:var(--gold);color:var(--ink)}
+.nav-cta.p{color:var(--teal);border-color:rgba(0,232,170,.4)}
+.nav-cta.p:hover{background:var(--teal);color:var(--ink)}
 
 /* HERO */
 #hero{position:relative;height:100vh;min-height:720px;display:flex;align-items:center;justify-content:center;overflow:hidden;text-align:center}
@@ -48,33 +53,37 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .btn.a:hover{background:var(--ai2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(34,170,255,.3)}
 .btn.b{background:transparent;color:var(--gold);border:2px solid rgba(240,192,64,.35)}
 .btn.b:hover{border-color:var(--gold);transform:translateY(-3px)}
+.btn.p{background:transparent;color:var(--teal);border:2px solid rgba(0,232,170,.35)}
+.btn.p:hover{border-color:var(--teal);transform:translateY(-3px)}
 .hero-scroll{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:3;text-align:center;opacity:0;animation:fadeUp .5s 1.1s ease forwards}
 .hero-scroll span{font-family:var(--mono);font-size:11px;letter-spacing:4px;color:rgba(255,255,255,.3);display:block;margin-bottom:7px}
 .scroll-bar{width:1px;height:38px;background:linear-gradient(to bottom,rgba(34,170,255,.5),transparent);margin:0 auto;animation:scrollPulse 2s infinite}
 
 /* MISSION SPLIT */
-.mission{display:grid;grid-template-columns:1fr 1px 1fr;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.mission{display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .m-divider{background:linear-gradient(to bottom,transparent,var(--border2),transparent)}
-.m-half{padding:56px 60px;position:relative;overflow:hidden;transition:background .4s}
+.m-half{padding:52px 44px;position:relative;overflow:hidden;transition:background .4s}
 .m-half:hover{background:rgba(34,170,255,.025)}
 .m-big{font-family:var(--disp);font-size:88px;font-weight:900;position:absolute;right:24px;top:10px;color:rgba(255,255,255,.025);pointer-events:none;line-height:1}
 .m-tag{font-family:var(--mono);font-size:12px;letter-spacing:3px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .m-tag::before{content:'';width:14px;height:1px;background:currentColor}
-.m-tag.s{color:var(--ai)}.m-tag.c{color:var(--gold)}
+.m-tag.s{color:var(--ai)}.m-tag.c{color:var(--gold)}.m-tag.p{color:var(--teal)}
 .m-half h2{font-family:var(--disp);font-size:clamp(20px,2.8vw,28px);font-weight:700;letter-spacing:2px;margin-bottom:14px;line-height:1.2}
 .m-half p{font-size:15px;color:rgba(255,255,255,.5);line-height:1.9;font-weight:300;margin-bottom:22px;max-width:380px}
 .m-cta{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:2px;text-decoration:none;border-bottom:1px solid transparent;padding-bottom:3px;transition:all .25s;cursor:none}
 .m-cta.s{color:var(--ai);border-color:rgba(34,170,255,.25)}.m-cta.s:hover{gap:16px;border-color:var(--ai)}
 .m-cta.c{color:var(--gold);border-color:rgba(240,192,64,.25)}.m-cta.c:hover{gap:16px;border-color:var(--gold)}
+.m-cta.p{color:var(--teal);border-color:rgba(0,232,170,.25)}.m-cta.p:hover{gap:16px;border-color:var(--teal)}
 .m-canvas{width:100%;height:130px;display:block;margin-top:18px;border:1px solid var(--border)}
 
 /* STATS */
-.stats-bar{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--border)}
+.stats-bar{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--border)}
 .stat{padding:28px 20px;text-align:center;border-right:1px solid var(--border);transition:background .3s}
 .stat:last-child{border-right:none}
 .stat:hover{background:var(--faint)}
 .stat-n{font-family:var(--disp);font-size:42px;font-weight:700;line-height:1;color:var(--ai)}
 .stat-n.g{color:var(--gold)}
+.stat-n.p{color:var(--teal)}
 .stat-l{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:5px}
 
 /* SECTIONS */
@@ -91,6 +100,7 @@ h2.sh{font-family:var(--disp);font-size:clamp(24px,3.8vw,42px);font-weight:700;l
 .flow-tab{padding:12px 26px;font-family:var(--mono);font-size:12px;letter-spacing:2px;background:var(--faint);border:1px solid var(--border);color:var(--muted);cursor:none;transition:all .2s}
 .flow-tab.active{background:var(--ai);color:var(--ink);border-color:var(--ai)}
 .flow-tab.activeg{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.flow-tab.activep{background:var(--teal);color:var(--ink);border-color:var(--teal)}
 .flow-panel{display:none}.flow-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
 .flow-steps{display:flex;flex-direction:column;gap:0}
 .fstep{display:flex;gap:16px;position:relative}
@@ -99,7 +109,8 @@ h2.sh{font-family:var(--disp);font-size:clamp(24px,3.8vw,42px);font-weight:700;l
 .fstep-num{width:38px;height:38px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;transition:all .3s}
 .fstep:hover .fstep-num{background:rgba(34,170,255,.1);border-color:var(--ai)}
 .fstep.cert:hover .fstep-num{background:rgba(240,192,64,.1);border-color:var(--gold)}
-.fstep-num.s{color:var(--ai)}.fstep-num.c{color:var(--gold)}
+.fstep.prop:hover .fstep-num{background:rgba(0,232,170,.1);border-color:var(--teal)}
+.fstep-num.s{color:var(--ai)}.fstep-num.c{color:var(--gold)}.fstep-num.p{color:var(--teal)}
 .fstep-body{padding-bottom:28px}
 .fstep-tag{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:3px}
 .fstep-t{font-family:var(--disp);font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:5px}
@@ -127,13 +138,13 @@ table.bt tr:hover td{background:var(--faint)}
 /* FEATURES GRID — tool capabilities */
 #features{background:var(--ink2)}
 .features-header{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-bottom:52px}
-.feat-cols{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);border:1px solid var(--border)}
+.feat-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border);border:1px solid var(--border)}
 .feat-col{background:var(--ink2)}
 .feat-col-hdr{padding:20px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
 .feat-col-hdr-name{font-family:var(--disp);font-size:18px;font-weight:900;letter-spacing:3px}
-.feat-col-hdr-name.s{color:var(--ai)}.feat-col-hdr-name.c{color:var(--gold)}
+.feat-col-hdr-name.s{color:var(--ai)}.feat-col-hdr-name.c{color:var(--gold)}.feat-col-hdr-name.p{color:var(--teal)}
 .feat-col-hdr-badge{font-family:var(--mono);font-size:10px;letter-spacing:2px;padding:3px 8px}
-.feat-col-hdr-badge.s{background:var(--ai);color:var(--ink)}.feat-col-hdr-badge.c{background:var(--gold);color:var(--ink)}
+.feat-col-hdr-badge.s{background:var(--ai);color:var(--ink)}.feat-col-hdr-badge.c{background:var(--gold);color:var(--ink)}.feat-col-hdr-badge.p{background:var(--teal);color:var(--ink)}
 .feat-row{padding:16px 28px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start;transition:background .25s;cursor:none}
 .feat-row:last-child{border-bottom:none}
 .feat-row:hover{background:var(--faint)}
@@ -191,17 +202,65 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
 .reveal3{opacity:0;transform:translateY(24px);transition:opacity .75s .3s,transform .75s .3s}
 .reveal3.on{opacity:1;transform:none}
 
+/* ── TABLET / SMALL LAPTOP ── */
+@media(max-width:1280px){
+  .feat-cols{grid-template-columns:1fr}
+  .m-half{padding:44px 32px}
+  section{padding:80px 40px}
+}
+
+/* ── MOBILE / SMALL TABLET ── */
 @media(max-width:960px){
-  nav{padding:0 20px}.nav-links a{display:none}
+  nav{padding:0 14px}
+  .nav-links a:not(.nav-cta){display:none}
+  .nav-cta{padding:6px 10px;font-size:10px;letter-spacing:1px;margin-left:6px}
   section{padding:64px 22px}
   #spl-section{padding:64px 0}.spl-inner{padding:0 22px}
-  .mission{grid-template-columns:1fr;grid-template-rows:auto 1px auto}.m-divider{height:1px;width:100%}
+  .mission{grid-template-columns:1fr;grid-template-rows:auto 1px auto 1px auto 1px auto}.m-divider{height:1px;width:100%}
   .m-half{padding:36px 22px}
-  .stats-bar{grid-template-columns:1fr 1fr}
-  .bench-layout,.spl-layout,.flow-panel.active,.contact-layout,.features-header{grid-template-columns:1fr}
+  .stats-bar{grid-template-columns:repeat(3,1fr)}
+  .stat{border-bottom:1px solid var(--border)}
   .feat-cols{grid-template-columns:1fr}
+  .bench-layout,.spl-layout,.flow-panel.active,.contact-layout,.features-header{grid-template-columns:1fr}
+  .contact-layout{gap:36px}
   .sci-grid{grid-template-columns:1fr 1fr}
+  .flow-tabs{flex-direction:column}
+  .flow-tab{width:100%;text-align:left;padding:12px 18px}
   body{cursor:auto}#cursor,#cursor-ring{display:none}
+  .nav-cta,.nav-links a,.btn,.m-cta,.flow-tab,.feat-row,.hero-pill,.cc,.flinks a,.sci-card{cursor:pointer}
+}
+
+/* ── PHONES ── */
+@media(max-width:600px){
+  .logo{font-size:14px;letter-spacing:3px}
+  .nav-cta{padding:5px 7px;font-size:9px;margin-left:4px}
+  #hero{height:auto;min-height:100vh;min-height:100svh;padding:104px 0 64px}
+  .hero-anim-wrap{min-height:150px}
+  .hero-desc{margin-bottom:32px}
+  .hero-btns{flex-direction:column;align-items:stretch;padding:0 4px}
+  .hero-btns .btn{text-align:center;padding:14px 20px}
+  .hero-pills{flex-direction:column;align-items:stretch}
+  .hero-pill{max-width:none}
+  .hero-scroll{display:none}
+  section{padding:52px 16px}
+  .m-half{padding:30px 16px}
+  .m-big{font-size:64px}
+  .stats-bar{grid-template-columns:1fr 1fr}
+  .stat{padding:20px 12px}.stat-n{font-size:32px}
+  .sci-grid{grid-template-columns:1fr}
+  .features-header{gap:28px;margin-bottom:32px}
+  footer{justify-content:center;text-align:center}
+  .flinks{flex-wrap:wrap;justify-content:center;gap:12px}
+}
+
+/* ── LARGE / ULTRAWIDE SCREENS ── */
+@media(min-width:1800px){
+  nav{padding:0 calc((100vw - 1680px)/2)}
+  section{padding-left:calc((100vw - 1680px)/2);padding-right:calc((100vw - 1680px)/2)}
+  .mission,.stats-bar{padding-left:calc((100vw - 1680px)/2);padding-right:calc((100vw - 1680px)/2)}
+  footer{padding-left:calc((100vw - 1680px)/2);padding-right:calc((100vw - 1680px)/2)}
+  .spl-inner{max-width:1680px}
+  #spl-section{padding:96px 0}
 }
 
 /* ── HERO ANIMATION ── */
@@ -214,6 +273,7 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
 .hp-white{color:#fff;text-shadow:0 0 60px rgba(255,255,255,.12)}
 .hp-blue{color:var(--ai);text-shadow:0 0 60px rgba(34,170,255,.25)}
 .hp-gold{color:var(--gold);text-shadow:0 0 60px rgba(240,192,64,.2)}
+.hp-teal{color:var(--teal);text-shadow:0 0 60px rgba(0,232,170,.22)}
 
 /* Cursor blink on active phrase */
 .hp-big::after{content:'_';animation:blink .9s step-end infinite;opacity:.5}
@@ -226,6 +286,8 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
 .pill-blue:hover{border-color:var(--ai);background:rgba(34,170,255,.1)}
 .pill-gold{border-color:rgba(240,192,64,.3);background:rgba(240,192,64,.04)}
 .pill-gold:hover{border-color:var(--gold);background:rgba(240,192,64,.08)}
+.pill-teal{border-color:rgba(0,232,170,.3);background:rgba(0,232,170,.04)}
+.pill-teal:hover{border-color:var(--teal);background:rgba(0,232,170,.08)}
 .pill-ico{font-size:22px;flex-shrink:0}
 .pill-t{font-family:var(--disp);font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:5px;color:#fff}
 .pill-d{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.45);line-height:1.5}
@@ -246,7 +308,9 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
     <a href="#features">FEATURES</a>
     <a href="#science">SCIENCE</a>
     <a href="#contact">CONTACT</a>
-    <a class="nav-cta" href="/app">OPEN SONIQ →</a>
+    <a class="nav-cta" href="/app">⊛ SONIQ</a>
+    <a class="nav-cta p" href="/propiq">⊚ PROPIQ</a>
+    <a class="nav-cta c" href="/cert">◈ CERTIQ</a>
   </div>
 </nav>
 
@@ -254,7 +318,7 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
 <section id="hero">
   <canvas id="hero-bg"></canvas>
   <div class="hero-inner">
-    <div class="hero-badge">eVTOL ACOUSTIC INTELLIGENCE PLATFORM</div>
+    <div class="hero-badge">eVTOL ACOUSTIC INTELLIGENCE PLATFORM · THREE TOOLS</div>
 
     <!-- Animated headline — cycles through the three pillars -->
     <div class="hero-anim-wrap">
@@ -267,15 +331,20 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
         <span class="hp-big hp-blue">ACOUSTIC<br>ANALYSIS</span>
       </div>
       <div class="hero-phrase hidden" id="hp2">
+        <span class="hp-label">CITY-SCALE · ISO 9613 · 3D</span>
+        <span class="hp-big hp-teal">NOISE<br>PROPAGATION</span>
+      </div>
+      <div class="hero-phrase hidden" id="hp3">
         <span class="hp-label">ICAO · EASA · FAA</span>
         <span class="hp-big hp-gold">ACOUSTIC<br>CERTIFICATION</span>
       </div>
     </div>
 
-    <p class="hero-desc">From first rotor noise prediction to type certificate submission — SONONAI covers the complete eVTOL acoustic engineering workflow. Peer-reviewed physics, browser-based, no installation required.</p>
+    <p class="hero-desc">From first rotor noise prediction, through 3D noise propagation over real cityscapes, to type certificate submission — SONONAI covers the complete eVTOL acoustic engineering workflow. Peer-reviewed physics, browser-based, no installation required.</p>
 
     <div class="hero-btns">
       <a href="/app" class="btn a">⊛ ACOUSTIC ANALYSIS — SONIQ</a>
+      <a href="/propiq" class="btn p">⊚ NOISE PROPAGATION — PROPIQ</a>
       <a href="/cert" class="btn b">◈ CERTIFICATION PATH — CERTIQ</a>
     </div>
 
@@ -284,6 +353,10 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
       <div class="hero-pill pill-blue">
         <span class="pill-ico">⊛</span>
         <div><div class="pill-t">ACOUSTIC ANALYSIS</div><div class="pill-d">Rotor noise · Cabin treatment · SPL mapping · Benchmarks</div></div>
+      </div>
+      <div class="hero-pill pill-teal">
+        <span class="pill-ico">⊚</span>
+        <div><div class="pill-t">NOISE PROPAGATION</div><div class="pill-d">3D volumetric SPL · ISO 9613 · OSM buildings · Contours</div></div>
       </div>
       <div class="hero-pill pill-gold">
         <span class="pill-ico">◈</span>
@@ -307,6 +380,15 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
   <div class="m-divider"></div>
   <div class="m-half">
     <div class="m-big">02</div>
+    <div class="m-tag p">NOISE PROPAGATION · PROPIQ</div>
+    <h2>PROPAGATE IN 3D.<br>SEE NOISE ON THE MAP.</h2>
+    <p>Physics-based 3D hemispherical propagation over real cityscapes. ISO 9613 atmospheric absorption and ground effects, hard-reflecting OSM building footprints, volumetric SPL fields, wavefronts, and ground noise contours — click any point to probe local SPL and spectrum.</p>
+    <a href="/propiq" class="m-cta p">OPEN PROPIQ <span>→</span></a>
+    <canvas id="mc-prop" class="m-canvas" height="130"></canvas>
+  </div>
+  <div class="m-divider"></div>
+  <div class="m-half">
+    <div class="m-big">03</div>
     <div class="m-tag c">CERTIFICATION PATHWAY · CERTIQ</div>
     <h2>STRUCTURE COMPLIANCE.<br>FLY WITH CONFIDENCE.</h2>
     <p>Structured noise certification support from acoustic prediction to EPNdB calculation. ICAO Annex 16, EASA SC-VTOL-01, and FAR Part 36. Certification margin analysis across all measurement points.</p>
@@ -321,6 +403,7 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
   <div class="stat reveal2"><div class="stat-n">8</div><div class="stat-l">ACOUSTIC MODELS</div></div>
   <div class="stat reveal3"><div class="stat-n g">12</div><div class="stat-l">COMPANIES BENCHMARKED</div></div>
   <div class="stat reveal2"><div class="stat-n">±1.6</div><div class="stat-l">dB MEAN ERROR</div></div>
+  <div class="stat reveal3"><div class="stat-n p">3D</div><div class="stat-l">PROPAGATION DOMAIN</div></div>
   <div class="stat reveal"><div class="stat-n">100%</div><div class="stat-l">BROWSER-BASED</div></div>
 </div>
 
@@ -328,10 +411,11 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
 <section id="howit">
   <div class="sec-tag">WORKFLOW</div>
   <h2 class="sh">HOW SONONAI WORKS</h2>
-  <p class="sp">Two tools, two purposes, one platform. Switch between acoustic prediction and certification documentation seamlessly.</p>
+  <p class="sp">Three tools, one platform. Predict rotor noise at the source with SONIQ, propagate it in 3D over real cities with PROPIQ, and structure the certification case with CERTIQ.</p>
 
   <div class="flow-tabs">
     <button class="flow-tab active" onclick="switchFlow('soniq',this)">⊛ SONIQ — ACOUSTIC ANALYSIS</button>
+    <button class="flow-tab" onclick="switchFlow('propiq',this)">⊚ PROPIQ — PROPAGATION</button>
     <button class="flow-tab" onclick="switchFlow('certiq',this)">◈ CERTIQ — CERTIFICATION</button>
   </div>
 
@@ -438,6 +522,58 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
       </div>
     </div>
   </div>
+
+  <!-- PROPIQ flow -->
+  <div id="flow-propiq" class="flow-panel">
+    <div class="flow-steps">
+      <div class="fstep prop">
+        <div class="fstep-num p">01</div>
+        <div class="fstep-body">
+          <div class="fstep-tag">SOURCE · ENVIRON · LOCATION · SOLVER</div>
+          <div class="fstep-t">CONFIGURE THE NOISE SOURCE</div>
+          <div class="fstep-d">Define the aircraft noise source — rotor configuration, sound power, altitude, and flight phase — then set atmospheric conditions including temperature, humidity, and wind.</div>
+        </div>
+      </div>
+      <div class="fstep prop">
+        <div class="fstep-num p">02</div>
+        <div class="fstep-body">
+          <div class="fstep-tag">OSM BUILDING FOOTPRINTS</div>
+          <div class="fstep-t">PICK A REAL-WORLD LOCATION</div>
+          <div class="fstep-d">Load OpenStreetMap building footprints for any location. Buildings enter the propagation domain as hard-reflecting walls, so urban shielding and reflections are captured in the field.</div>
+        </div>
+      </div>
+      <div class="fstep prop">
+        <div class="fstep-num p">03</div>
+        <div class="fstep-body">
+          <div class="fstep-tag">ISO 9613 · HEMISPHERICAL DOMAIN</div>
+          <div class="fstep-t">RUN THE PROPAGATION SOLVER</div>
+          <div class="fstep-d">Physics-based 3D hemispherical acoustic propagation with ISO 9613 atmospheric absorption and ground effects. Solver computes the full volumetric SPL field around the aircraft.</div>
+        </div>
+      </div>
+      <div class="fstep prop">
+        <div class="fstep-num p">04</div>
+        <div class="fstep-body">
+          <div class="fstep-tag">VOLUME · RAYS · WAVEFRONTS · ISO-SURFACE</div>
+          <div class="fstep-t">EXPLORE THE 3D FIELD</div>
+          <div class="fstep-d">Toggle visual layers in the live 3D viewport: volumetric SPL field, propagation rays, animated wavefronts, ground noise contours, iso-surfaces, vertical slices, and city buildings.</div>
+        </div>
+      </div>
+      <div class="fstep prop">
+        <div class="fstep-num p">05</div>
+        <div class="fstep-body">
+          <div class="fstep-tag">dB(A) · PROBE · METRICS</div>
+          <div class="fstep-t">PROBE &amp; ANALYSE RESULTS</div>
+          <div class="fstep-d">Click any point in the domain to probe local SPL and its spectrum. Read peak SPL, ground-level dBA, domain min/mean/max, and source sound power from the analytics rail.</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="flow-viz" style="border-color:rgba(0,232,170,.15)">
+        <span class="flow-viz-label" style="color:var(--teal);border-color:rgba(0,232,170,.2)">PROPIQ · 3D PROPAGATION</span>
+        <canvas id="flow-canvas-p" height="420"></canvas>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- BENCHMARK -->
@@ -478,10 +614,11 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
     <div>
       <div class="sec-tag">TOOL CAPABILITIES</div>
       <h2 class="sh">WHAT EACH TOOL DOES</h2>
-      <p class="sp">SONIQ handles acoustic physics. CERTIQ handles certification structure. Together they cover the complete noise engineering workflow for eVTOL type certification.</p>
+      <p class="sp">SONIQ handles source acoustic physics. PROPIQ handles 3D noise propagation into the real world. CERTIQ handles certification structure. Together they cover the complete noise engineering workflow for eVTOL type certification.</p>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;justify-content:center">
       <a href="/app" style="display:block;padding:14px 28px;background:var(--ai);color:var(--ink);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:2px;text-decoration:none;text-align:center;transition:all .25s;cursor:none" onmouseover="this.style.background='#44ccff'" onmouseout="this.style.background='var(--ai)'">⊛ OPEN SONIQ →</a>
+      <a href="/propiq" style="display:block;padding:14px 28px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:2px;text-decoration:none;text-align:center;transition:all .25s;cursor:none" onmouseover="this.style.background='#22d4f0'" onmouseout="this.style.background='var(--teal)'">⊚ OPEN PROPIQ →</a>
       <a href="/cert" style="display:block;padding:14px 28px;background:var(--gold);color:var(--ink);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:2px;text-decoration:none;text-align:center;transition:all .25s;cursor:none" onmouseover="this.style.background='#f8d060'" onmouseout="this.style.background='var(--gold)'">◈ OPEN CERTIQ →</a>
     </div>
   </div>
@@ -497,6 +634,18 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
       <div class="feat-row"><span class="feat-row-ico">🗺</span><div><div class="feat-row-t">HD FAR-FIELD SPL HEATMAP</div><div class="feat-row-d">Multi-rotor incoherent summation at configurable positions. Ground absorption α. A-weighting. Dashed contour rings at 75/65/55/45 dB certification limits. Hover readout at any point.</div></div></div>
       <div class="feat-row"><span class="feat-row-ico">⊟</span><div><div class="feat-row-t">INDUSTRY BENCHMARKS</div><div class="feat-row-d">12-aircraft comparison with reported vs SONIQ predictions. Error bar chart, MTOW scatter, and per-aircraft calibration table with physics parameters and published references.</div></div></div>
       <div class="feat-row"><span class="feat-row-ico">§</span><div><div class="feat-row-t">COMPLETE GLOSSARY</div><div class="feat-row-d">30+ defined terms with full formulae and citations covering fundamental quantities, rotor parameters, noise metrics, porous media, resonators, and certification standards.</div></div></div>
+    </div>
+    <div class="feat-col">
+      <div class="feat-col-hdr">
+        <div class="feat-col-hdr-name p">PROPIQ</div>
+        <div class="feat-col-hdr-badge p">NOISE PROPAGATION</div>
+      </div>
+      <div class="feat-row"><span class="feat-row-ico">◍</span><div><div class="feat-row-t">3D PROPAGATION DOMAIN</div><div class="feat-row-d">Physics-based hemispherical acoustic propagation solved in a full 3D domain around the aircraft. Interactive viewport with orbit, top view, and animation controls.</div></div></div>
+      <div class="feat-row"><span class="feat-row-ico">🌡</span><div><div class="feat-row-t">ISO 9613 ATMOSPHERE &amp; GROUND</div><div class="feat-row-d">Frequency-dependent atmospheric absorption and ground effects per ISO 9613, with configurable temperature, humidity, and wind in the environment panel.</div></div></div>
+      <div class="feat-row"><span class="feat-row-ico">🏙</span><div><div class="feat-row-t">REAL CITY BUILDINGS (OSM)</div><div class="feat-row-d">OpenStreetMap building footprints loaded per location and treated as hard-reflecting walls — see how urban geometry shields, channels, and reflects aircraft noise.</div></div></div>
+      <div class="feat-row"><span class="feat-row-ico">◗</span><div><div class="feat-row-t">7 VISUAL LAYERS</div><div class="feat-row-d">Volumetric SPL field · propagation rays · animated wavefronts · ground contours · iso-surface · vertical slice · 3D buildings. Toggle each layer live in the viewport.</div></div></div>
+      <div class="feat-row"><span class="feat-row-ico">◎</span><div><div class="feat-row-t">POINT PROBE &amp; ANALYTICS</div><div class="feat-row-d">Click anywhere in the 3D field to probe local SPL and spectrum. Metrics rail reports peak SPL, ground dBA, domain min/mean/max, and source sound power level.</div></div></div>
+      <div class="feat-row"><span class="feat-row-ico">🔐</span><div><div class="feat-row-t">SECURE ACOUSTIC WORKSPACE</div><div class="feat-row-d">Personal sign-in with registration and access approval — just like SONIQ and CERTIQ — plus an instant guest demo mode to explore the simulator without an account.</div></div></div>
     </div>
     <div class="feat-col">
       <div class="feat-col-hdr">
@@ -563,13 +712,14 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
   <h2 class="sh">GET IN TOUCH</h2>
   <div class="contact-layout">
     <div>
-      <p style="font-size:16px;color:rgba(255,255,255,.58);line-height:1.9;font-weight:300;margin-bottom:14px">For licensing, custom acoustic analysis, eVTOL certification support, or any technical questions about rotorcraft noise engineering.</p>
+      <p style="font-size:16px;color:rgba(255,255,255,.58);line-height:1.9;font-weight:300;margin-bottom:14px">For licensing, custom acoustic analysis, urban noise propagation studies, eVTOL certification support, or any technical questions about rotorcraft noise engineering.</p>
       <p style="font-size:15px;color:rgba(255,255,255,.48);line-height:1.9;font-weight:300">SONONAI is developed by <strong style="color:#fff">Zirconique</strong> — an aerospace acoustics consultancy specialising in rotorcraft and advanced air mobility noise engineering.</p>
     </div>
     <div>
       <a href="/cdn-cgi/l/email-protection#e38a8d858ca3908c8d8c8d828acd808c8e" class="cc"><span class="cc-i">✉</span><div><div class="cc-l">EMAIL</div><div class="cc-v"><span class="__cf_email__" data-cfemail="cda4a3aba28dbea2a3a2a3aca4e3aea2a0">info@sononai.com</span></div></div></a>
       <a href="https://www.sononai.com" class="cc"><span class="cc-i">🌐</span><div><div class="cc-l">WEBSITE</div><div class="cc-v">www.sononai.com</div></div></a>
       <a href="/app" class="cc"><span class="cc-i" style="color:var(--ai)">⊛</span><div><div class="cc-l">ACOUSTIC TOOL</div><div class="cc-v">Launch SONIQ</div></div></a>
+      <a href="/propiq" class="cc"><span class="cc-i" style="color:var(--teal)">⊚</span><div><div class="cc-l">PROPAGATION TOOL</div><div class="cc-v">Launch PROPIQ</div></div></a>
       <a href="/cert" class="cc"><span class="cc-i" style="color:var(--gold)">◈</span><div><div class="cc-l">CERTIFICATION TOOL</div><div class="cc-v">Launch CERTIQ</div></div></a>
     </div>
   </div>
@@ -581,7 +731,7 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
   <div class="flinks">
     <a href="#howit">HOW IT WORKS</a><a href="#benchmark">BENCHMARKS</a>
     <a href="#features">FEATURES</a><a href="/app">SONIQ</a>
-    <a href="/cert">CERTIQ</a><a href="/cdn-cgi/l/email-protection#7b12151d143b08141514151a1255181416">CONTACT</a>
+    <a href="/propiq">PROPIQ</a><a href="/cert">CERTIQ</a><a href="/cdn-cgi/l/email-protection#7b12151d143b08141514151a1255181416">CONTACT</a>
   </div>
   <div class="fcopy">© 2025 SONONAI · SAE ARP1779 · ICAO ANNEX 16 · EASA SC-VTOL-01</div>
 </footer>
@@ -589,7 +739,7 @@ footer{background:#020a12;border-top:1px solid var(--border);padding:26px 48px;d
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js">
 /* ══ HERO PHRASE CYCLE ══ */
 (function(){
-  const phrases=['hp0','hp1','hp2'];
+  const phrases=['hp0','hp1','hp2','hp3'];
   let cur=0;
   function next(){
     const el=document.getElementById(phrases[cur]);
@@ -622,9 +772,10 @@ document.querySelectorAll('.reveal,.reveal2,.reveal3').forEach(el=>io.observe(el
 /* ══ FLOW TABS ══ */
 function switchFlow(id,btn){
   document.querySelectorAll('.flow-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.flow-tab').forEach(t=>{t.classList.remove('active','activeg');});
+  document.querySelectorAll('.flow-tab').forEach(t=>{t.classList.remove('active','activeg','activep');});
   document.getElementById('flow-'+id).classList.add('active');
-  btn.classList.add(id==='soniq'?'active':'activeg');
+  btn.classList.add(id==='soniq'?'active':id==='certiq'?'activeg':'activep');
+  window.dispatchEvent(new Event('resize')); // re-size canvases that were hidden (display:none => offsetWidth 0)
 }
 
 /* ══ BENCHMARK DATA ══ */
@@ -862,6 +1013,139 @@ document.getElementById('bench-tbody').innerHTML = BD.map(d=>{
   draw();
 })();
 
+
+/* ══ MISSION PROPIQ ══ */
+(function(){
+  const C=document.getElementById('mc-prop'),ctx=C.getContext('2d');let t=0;
+  function resize(){C.width=C.offsetWidth;C.height=130;}resize();window.addEventListener('resize',resize);
+  // pseudo-random city skyline (fixed seed pattern)
+  const blds=Array.from({length:14},(_,i)=>({w:14+((i*37)%18),h:16+((i*53)%42)}));
+  function draw(){
+    const W=C.width,H=C.height;ctx.clearRect(0,0,W,H);ctx.fillStyle='#02110c';ctx.fillRect(0,0,W,H);
+    const gy=H*.82,cx=W*.5,cy=H*.22;
+    // ground
+    ctx.strokeStyle='rgba(0,232,170,.25)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();
+    // buildings
+    let x=6,i=0;
+    while(x<W-10&&i<blds.length*3){
+      const b=blds[i%blds.length];
+      ctx.fillStyle='rgba(0,232,170,.07)';ctx.strokeStyle='rgba(0,232,170,.3)';ctx.lineWidth=.8;
+      ctx.fillRect(x,gy-b.h,b.w,b.h);ctx.strokeRect(x,gy-b.h,b.w,b.h);
+      x+=b.w+7;i++;
+    }
+    // expanding hemispherical wavefronts from aircraft
+    for(let k=0;k<4;k++){
+      const r=((t*34+k*32)%130);
+      const a=Math.max(0,.55-r/150);
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(34,212,240,${a})`;ctx.lineWidth=1.1;ctx.stroke();
+    }
+    // ground contour ellipses where field meets ground
+    [['rgba(255,80,0,.6)',26],['rgba(220,200,0,.55)',52],['rgba(0,232,170,.5)',84]].forEach(([col,r])=>{
+      ctx.beginPath();ctx.ellipse(cx,gy,r*(1+Math.sin(t+r)*.015),r*.16,0,0,Math.PI*2);
+      ctx.strokeStyle=col;ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+    });
+    // rays source -> ground
+    for(let k=0;k<7;k++){
+      const a=Math.PI*.15+k*Math.PI*.7/6;
+      const ex=cx+Math.cos(a)*(gy-cy)/Math.sin(a),ey=gy;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(Math.max(4,Math.min(W-4,ex)),ey);
+      ctx.strokeStyle='rgba(0,232,170,.14)';ctx.lineWidth=.7;ctx.stroke();
+    }
+    // aircraft
+    ctx.save();ctx.translate(cx,cy);ctx.strokeStyle='rgba(34,212,240,.95)';ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.rect(-5,-4,10,8);ctx.stroke();
+    [[-12,-8],[12,-8],[-12,8],[12,8]].forEach(([ax,ay])=>{
+      ctx.beginPath();ctx.arc(ax,ay,5,0,Math.PI*2);ctx.strokeStyle='rgba(0,232,170,.85)';ctx.lineWidth=1;ctx.stroke();
+      for(let b=0;b<2;b++){const a=t*4+b*Math.PI;ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax+Math.cos(a)*4,ay+Math.sin(a)*4);ctx.strokeStyle='rgba(34,212,240,.9)';ctx.lineWidth=1.3;ctx.stroke();}
+    });
+    ctx.restore();
+    t+=.02;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══ FLOW PROPIQ CANVAS — 3D propagation preview ══ */
+(function(){
+  const C=document.getElementById('flow-canvas-p'),ctx=C.getContext('2d');let t=0;
+  function resize(){C.width=C.offsetWidth;C.height=420;}resize();window.addEventListener('resize',resize);
+  const blds=Array.from({length:26},(_,i)=>({
+    gx:((i*137)%200-100)/100, gz:((i*89)%160-80)/100,
+    w:.07+((i*31)%10)/140, h:14+((i*47)%46)
+  }));
+  function draw(){
+    const W=C.width,H=C.height;ctx.clearRect(0,0,W,H);ctx.fillStyle='#02110c';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(0,232,170,.4)';ctx.font='bold 7px JetBrains Mono,monospace';
+    ctx.fillText('HEMISPHERICAL DOMAIN · ISO 9613 · OSM BUILDINGS',14,18);
+    const cx=W*.5,gy=H*.72,R=Math.min(W*.42,H*.5);
+    // isometric-ish projection helpers
+    const px=(gx,gz)=>cx+gx*R+gz*R*.42;
+    const py=(gz,h)=>gy+gz*R*.18-h;
+    // ground grid ellipse
+    ctx.strokeStyle='rgba(0,232,170,.12)';ctx.lineWidth=.6;
+    for(let g=-4;g<=4;g++){
+      ctx.beginPath();ctx.moveTo(px(-1,g/4),py(g/4,0));ctx.lineTo(px(1,g/4),py(g/4,0));ctx.stroke();
+      ctx.beginPath();ctx.moveTo(px(g/4,-1),py(-1,0));ctx.lineTo(px(g/4,1),py(1,0));ctx.stroke();
+    }
+    // ground SPL contours
+    [['rgba(255,80,0,.7)',.22],['rgba(230,205,0,.6)',.42],['rgba(50,210,80,.55)',.64],['rgba(34,170,255,.45)',.88]].forEach(([col,f])=>{
+      ctx.beginPath();ctx.ellipse(cx,gy,R*f*(1+Math.sin(t*1.2+f*9)*.01),R*f*.24,0,0,Math.PI*2);
+      ctx.strokeStyle=col;ctx.lineWidth=1.1;ctx.setLineDash([6,5]);ctx.stroke();ctx.setLineDash([]);
+    });
+    // buildings (sorted back-to-front)
+    blds.slice().sort((a,b)=>a.gz-b.gz).forEach(b=>{
+      const bx=px(b.gx,b.gz),by=py(b.gz,0),bw=b.w*R,bh=b.h;
+      // dim shielded side
+      ctx.fillStyle='rgba(0,232,170,.06)';ctx.strokeStyle='rgba(0,232,170,.32)';ctx.lineWidth=.8;
+      ctx.fillRect(bx-bw/2,by-bh,bw,bh);ctx.strokeRect(bx-bw/2,by-bh,bw,bh);
+      ctx.strokeStyle='rgba(0,232,170,.14)';
+      ctx.strokeRect(bx-bw/2+3,by-bh-3,bw,bh);
+      ctx.beginPath();ctx.moveTo(bx-bw/2,by-bh);ctx.lineTo(bx-bw/2+3,by-bh-3);
+      ctx.moveTo(bx+bw/2,by-bh);ctx.lineTo(bx+bw/2+3,by-bh-3);
+      ctx.moveTo(bx+bw/2,by);ctx.lineTo(bx+bw/2+3,by-3);ctx.stroke();
+    });
+    // hemisphere wireframe
+    const acy=gy-R*.62;
+    ctx.strokeStyle='rgba(34,212,240,.22)';ctx.lineWidth=.8;
+    for(let m=1;m<=3;m++){
+      ctx.beginPath();ctx.ellipse(cx,gy,R*.94,R*.94*.24,0,Math.PI,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.ellipse(cx,gy,R*.94*Math.cos(m*.42),R*.94*.24,0,Math.PI,Math.PI*2);
+      ctx.save();ctx.translate(0,-R*.94*Math.sin(m*.42)*.9);ctx.stroke();ctx.restore();
+    }
+    ctx.beginPath();ctx.ellipse(cx,gy,R*.94,R*.86,0,Math.PI,Math.PI*2);ctx.stroke();
+    // expanding wavefront shells
+    for(let k=0;k<3;k++){
+      const f=((t*.16+k/3)%1),a=Math.max(0,.5-f*.5);
+      ctx.beginPath();ctx.ellipse(cx,acy,R*.9*f,R*.9*f,0,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(34,212,240,${a})`;ctx.lineWidth=1.2;ctx.stroke();
+    }
+    // rays
+    for(let k=0;k<10;k++){
+      const a=k/10*Math.PI*2+t*.15;
+      const ex=cx+Math.cos(a)*R*.85,ey=acy+Math.sin(a)*R*.55;
+      ctx.beginPath();ctx.moveTo(cx,acy);ctx.lineTo(ex,Math.min(gy,ey));
+      ctx.strokeStyle='rgba(0,232,170,.12)';ctx.lineWidth=.7;ctx.stroke();
+    }
+    // aircraft
+    ctx.save();ctx.translate(cx,acy);ctx.strokeStyle='rgba(34,212,240,.95)';ctx.fillStyle='rgba(34,212,240,.08)';ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.rect(-9,-6,18,12);ctx.fill();ctx.stroke();
+    [[-20,-14],[20,-14],[-20,14],[20,14]].forEach(([ax,ay],i)=>{
+      ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(ax,ay);ctx.strokeStyle='rgba(34,212,240,.3)';ctx.lineWidth=.8;ctx.stroke();
+      ctx.beginPath();ctx.arc(ax,ay,8,0,Math.PI*2);ctx.strokeStyle='rgba(0,232,170,.85)';ctx.lineWidth=1.1;ctx.stroke();
+      for(let b=0;b<3;b++){const a=t*(i%2?3.4:-3.4)+b*Math.PI*2/3;ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax+Math.cos(a)*7,ay+Math.sin(a)*7);ctx.strokeStyle='rgba(34,220,240,.9)';ctx.lineWidth=1.4;ctx.stroke();}
+    });
+    ctx.restore();
+    // readouts
+    ctx.fillStyle='rgba(0,232,170,.7)';ctx.font='bold 8px JetBrains Mono,monospace';
+    ctx.fillText('PEAK SPL 96.2 dB',14,H-30);
+    ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='7px JetBrains Mono,monospace';
+    ctx.fillText('GROUND 63.8 dBA · ISO 9613 α(f) · HARD-WALL REFLECTIONS',14,H-16);
+    t+=.02;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
 /* ══ FLOW CANVASES ══ */
 (function(){
   // SONIQ flow viz — animated 4-chart preview
@@ -1083,7 +1367,7 @@ document.getElementById('bench-tbody').innerHTML = BD.map(d=>{
 
 /* ══ HERO PHRASE CYCLE ══ */
 (function(){
-  const phrases=['hp0','hp1','hp2'];
+  const phrases=['hp0','hp1','hp2','hp3'];
   let cur=0;
   function next(){
     const el=document.getElementById(phrases[cur]);
