@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PROPIQ — Aircraft Noise Propagation Simulator</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
@@ -32,9 +32,9 @@
   --txt:#1c2b3a;
   --muted:#54708a;
   --dim:#7e95a9;
-  --mono:'JetBrains Mono',monospace;
-  --disp:'Syne',sans-serif;
-  --body:'Space Grotesk',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --disp:'Sora',sans-serif;
+  --body:'Inter',sans-serif;
 }
 html{scroll-behavior:smooth}
 body{
@@ -65,7 +65,7 @@ body{
 .login-brand-overlay .tg{font-family:var(--mono);font-size:10px;letter-spacing:4px;
   color:rgba(34,212,240,.6);margin-top:8px;text-transform:uppercase}
 .login-live{position:absolute;top:48px;right:40px;z-index:5;display:flex;align-items:center;gap:8px;
-  font-family:var(--mono);font-size:9px;letter-spacing:2px;color:#00e8aa;
+  font-family:var(--mono);font-size:11px;letter-spacing:2px;color:#00e8aa;
   border:1px solid rgba(0,232,170,.35);border-radius:20px;padding:6px 14px;
   background:rgba(0,232,170,.06)}
 .login-live .dot{width:7px;height:7px;border-radius:50%;background:#00e8aa;
@@ -74,17 +74,22 @@ body{
   50%{opacity:.55;box-shadow:0 0 0 6px rgba(0,232,170,0)}}
 .login-metrics{position:absolute;bottom:150px;left:48px;right:40px;z-index:5;
   display:flex;gap:10px;flex-wrap:wrap}
-.lm-card{flex:1;min-width:110px;border:1px solid rgba(34,212,240,.22);border-radius:6px;
-  background:rgba(3,14,26,.55);backdrop-filter:blur(4px);padding:9px 12px}
-.lm-card .k{font-family:var(--mono);font-size:7px;letter-spacing:2px;
-  color:rgba(140,190,215,.65);text-transform:uppercase;margin-bottom:4px}
+.lm-card{flex:1;min-width:110px;border:1px solid rgba(120,220,255,.4);border-radius:6px;
+  background:rgba(6,10,26,.78);backdrop-filter:blur(6px);padding:10px 13px;
+  box-shadow:0 4px 18px rgba(0,0,0,.35)}
+.lm-card .k{font-family:var(--mono);font-size:9px;letter-spacing:2px;
+  color:rgba(140,190,215,.75);text-transform:uppercase;margin-bottom:4px}
 .lm-card .v{font-family:var(--mono);font-size:14px;font-weight:600;color:#eafaff}
-.lm-card .v small{font-size:8px;color:rgba(140,190,215,.7);margin-left:2px}
+.lm-card .v small{font-size:10px;color:rgba(140,190,215,.7);margin-left:2px}
 .login-feat{position:absolute;bottom:48px;left:48px;z-index:5;max-width:440px}
 .login-feat .ln{font-family:var(--mono);font-size:11px;letter-spacing:1px;
   color:rgba(220,235,248,.55);margin-bottom:10px;display:flex;align-items:center;gap:9px}
 .login-feat .ln::before{content:'▸';color:var(--cyan)}
 /* flowing gradient stripe across the top of the form panel (v27-style) */
+.lf-home{position:absolute;top:16px;right:18px;display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted);
+  text-decoration:none;border:1px solid var(--b1);border-radius:16px;padding:6px 12px;transition:.2s}
+.lf-home:hover{color:var(--cyan);border-color:var(--cyan);background:var(--cyanB)}
 .lf-stripe{position:absolute;top:0;left:0;right:0;height:3px;
   background:linear-gradient(90deg,#0784a8,#00c9a0,#0784a8,#7a4fd8,#0784a8);
   background-size:300% 100%;animation:pqStripe 7s linear infinite}
@@ -106,13 +111,13 @@ body{
   border-left:1px solid var(--b1)}
 .lf-head{margin-bottom:26px}
 .lf-head h2{font-family:var(--disp);font-size:21px;font-weight:700;letter-spacing:1px;color:#1c2b3a}
-.lf-head p{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--dim);
+.lf-head p{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--dim);
   margin-top:6px;text-transform:uppercase}
 .lf-tabs{display:flex;border-bottom:1px solid var(--b1);margin-bottom:22px}
 .lf-tab{flex:1;padding:9px;font-family:var(--mono);font-size:10px;font-weight:700;
   letter-spacing:2px;text-align:center;cursor:pointer;border-bottom:2px solid transparent;
   margin-bottom:-1px;transition:.2s;color:rgba(28,43,58,.35)}
-.lf-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;
+.lf-lbl{font-family:var(--mono);font-size:10px;letter-spacing:2px;
   color:rgba(34,212,240,.6);display:block;margin-bottom:5px}
 .lf-inp{width:100%;padding:11px 14px;background:#f5f8fb;
   border:1px solid var(--b1);color:#1c2b3a;font-family:var(--mono);
@@ -136,11 +141,11 @@ body{
 .hdr-brand{display:flex;align-items:center;gap:14px}
 .brand-wm{font-family:var(--disp);font-size:19px;font-weight:800;letter-spacing:4px;color:var(--cyan)}
 .brand-wm span{color:#1c2b3a}
-.brand-tg{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--muted);
+.brand-tg{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);
   border-left:1px solid var(--b2);padding-left:12px;line-height:1.4;text-transform:uppercase}
-.brand-tg b{display:block;color:var(--cyan);font-size:9px}
+.brand-tg b{display:block;color:var(--cyan);font-size:11px}
 .hdr-right{display:flex;align-items:center;gap:12px}
-.hdr-badge{font-family:var(--mono);font-size:8px;letter-spacing:2px;padding:4px 9px;
+.hdr-badge{font-family:var(--mono);font-size:10px;letter-spacing:2px;padding:4px 9px;
   border:1px solid var(--b2);color:var(--muted);text-transform:uppercase}
 .hdr-badge.live{border-color:var(--green);color:var(--green);background:var(--greenG);
   animation:livePulse 2s infinite}
@@ -151,7 +156,7 @@ body{
   display:flex;align-items:center;justify-content:center;font-family:var(--mono);
   font-weight:700;font-size:12px;color:#ffffff}
 .hdr-uname{font-family:var(--mono);font-size:10px;color:var(--txt);letter-spacing:.5px}
-.hdr-uname b{display:block;font-size:8px;color:var(--dim);letter-spacing:1px;font-weight:400}
+.hdr-uname b{display:block;font-size:10px;color:var(--dim);letter-spacing:1px;font-weight:400}
 
 #workspace{flex:1;display:flex;overflow:hidden;min-height:0}
 
@@ -159,7 +164,7 @@ body{
 #left-rail{width:340px;background:var(--s1);border-right:1px solid var(--b1);
   display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
 .rail-tabs{display:flex;border-bottom:1px solid var(--b1);flex-shrink:0;background:#f5f8fb}
-.rail-tab{flex:1;padding:10px 4px;font-family:var(--mono);font-size:8px;letter-spacing:1px;
+.rail-tab{flex:1;padding:10px 4px;font-family:var(--mono);font-size:10px;letter-spacing:1px;
   text-align:center;cursor:pointer;color:var(--dim);border-bottom:2px solid transparent;
   transition:.2s;text-transform:uppercase}
 .rail-tab:hover{color:var(--txt);background:var(--cyanB)}
@@ -169,7 +174,7 @@ body{
 .rail-pane.active{display:block}
 
 .panel{margin-bottom:16px;border:1px solid var(--b1);background:var(--s2)}
-.panel-head{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--cyan);
+.panel-head{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--cyan);
   padding:9px 12px;border-bottom:1px solid var(--b1);background:#f0f4f8;text-transform:uppercase;
   display:flex;align-items:center;gap:7px}
 .panel-head .ic{font-size:11px}
@@ -178,10 +183,10 @@ body{
 .field{margin-bottom:11px}
 .field:last-child{margin-bottom:0}
 .field-lbl{display:flex;justify-content:space-between;align-items:baseline;
-  font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--muted);
+  font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted);
   margin-bottom:4px;text-transform:uppercase}
 .field-val{color:var(--cyan);font-weight:600}
-.field-hint{font-family:var(--mono);font-size:8px;line-height:1.4;color:var(--muted);
+.field-hint{font-family:var(--mono);font-size:10px;line-height:1.4;color:var(--muted);
   margin-top:4px;opacity:.8}
 .field-inp,.field-sel{width:100%;padding:7px 10px;background:#ffffff;border:1px solid var(--b1);
   color:var(--txt);font-family:var(--mono);font-size:12px;outline:none;transition:.2s}
@@ -198,7 +203,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
 
 .spectrum-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .spec-band{display:flex;flex-direction:column;gap:2px}
-.spec-band label{font-family:var(--mono);font-size:7px;color:var(--dim);letter-spacing:.5px}
+.spec-band label{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.5px}
 .spec-band input{width:100%;padding:4px 6px;background:#ffffff;border:1px solid var(--b1);
   color:var(--txt);font-family:var(--mono);font-size:10px;outline:none}
 .spec-band input:focus{border-color:var(--cyan)}
@@ -220,21 +225,21 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
   color:var(--txt);font-family:var(--mono);font-size:11px;outline:none}
 .map-search input:focus{border-color:var(--cyan)}
 .loc-presets{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
-.chip{font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:4px 9px;cursor:pointer;
+.chip{font-family:var(--mono);font-size:10px;letter-spacing:1px;padding:4px 9px;cursor:pointer;
   border:1px solid var(--b1);border-radius:12px;color:var(--muted);background:#ffffff;transition:.15s}
 .chip:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyanB)}
 #map-results{display:none;margin:-4px 0 8px;border:1px solid var(--b1);background:#ffffff;
   max-height:150px;overflow-y:auto}
-#map-results .mr{padding:7px 10px;font-family:var(--mono);font-size:9px;color:var(--txt);
+#map-results .mr{padding:7px 10px;font-family:var(--mono);font-size:11px;color:var(--txt);
   cursor:pointer;border-bottom:1px solid var(--s3)}
 #map-results .mr:hover{background:var(--cyanB);color:var(--cyan)}
-#map-results .mr small{display:block;color:var(--dim);font-size:7px;margin-top:2px}
+#map-results .mr small{display:block;color:var(--dim);font-size:11px;margin-top:2px}
 .latlng-row{display:flex;gap:6px;margin-top:8px}
 .latlng-row input{flex:1;padding:6px 9px;background:#ffffff;border:1px solid var(--b1);
   color:var(--txt);font-family:var(--mono);font-size:10px;outline:none;min-width:0}
 .latlng-row input:focus{border-color:var(--cyan)}
 .latlng-row button{padding:6px 12px;background:var(--cyanG);border:1px solid var(--cyan);
-  color:var(--cyan);font-family:var(--mono);font-size:9px;letter-spacing:1px;cursor:pointer}
+  color:var(--cyan);font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer}
 .map-zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px;z-index:5}
 .map-zoom button{width:26px;height:26px;background:rgba(255,255,255,.92);border:1px solid var(--b1);
   color:var(--txt);font-size:14px;cursor:pointer;line-height:1}
@@ -243,7 +248,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
   color:var(--cyan);font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:1px}
 .map-coords{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .coord-box{background:#ffffff;border:1px solid var(--b1);padding:7px 9px}
-.coord-box .k{font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--dim)}
+.coord-box .k{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--dim)}
 .coord-box .v{font-family:var(--mono);font-size:12px;color:var(--cyan);font-weight:600}
 
 /* ═══════════════ VIEWPORT ═══════════════ */
@@ -255,12 +260,12 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
 .vp-tr{top:14px;right:14px;text-align:right}
 .vp-bl{bottom:14px;left:14px}
 .vp-title{font-size:10px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;margin-bottom:3px}
-.vp-sub{font-size:8px;color:var(--dim);letter-spacing:1px}
+.vp-sub{font-size:10px;color:var(--dim);letter-spacing:1px}
 .vp-readout{background:rgba(255,255,255,.88);border:1px solid var(--b1);padding:8px 11px;
   backdrop-filter:blur(8px);margin-bottom:6px}
-.vp-readout .k{font-size:7px;letter-spacing:1px;color:var(--dim)}
+.vp-readout .k{font-size:9px;letter-spacing:1px;color:var(--dim)}
 .vp-readout .v{font-size:15px;color:var(--cyan);font-weight:600}
-.vp-readout .v small{font-size:9px;color:var(--muted)}
+.vp-readout .v small{font-size:11px;color:var(--muted)}
 
 .vp-controls{position:absolute;bottom:14px;right:14px;display:flex;flex-direction:column;
   gap:6px;pointer-events:auto}
@@ -277,8 +282,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
 .legend-bar{width:240px;height:10px;border:1px solid var(--b1);
   background:linear-gradient(90deg,#000083 0%,#0000ff 12.5%,#00ffff 37.5%,#00ff00 50%,#ffff00 62.5%,#ff0000 87.5%,#800000 100%)}
 .legend-labels{display:flex;justify-content:space-between;font-family:var(--mono);
-  font-size:7px;color:var(--muted);margin-top:3px}
-.legend-title{font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--dim);
+  font-size:11px;color:var(--muted);margin-top:3px}
+.legend-title{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--dim);
   text-align:center;margin-bottom:4px;text-transform:uppercase}
 
 #vp-loader{position:absolute;inset:0;background:rgba(238,242,246,.92);display:none;
@@ -287,14 +292,58 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
   border-radius:50%;animation:spin .8s linear infinite}
 .loader-txt{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--cyan);
   margin-top:16px;text-transform:uppercase}
-.loader-sub{font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:6px}
+.loader-sub{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:6px}
 
 /* ═══════════════ RIGHT RESULTS ═══════════════ */
 #right-rail{width:320px;background:var(--s1);border-left:1px solid var(--b1);
   display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+/* "?" explainer buttons */
+.qbtn{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;
+  margin-left:6px;border-radius:50%;border:1px solid var(--b2);color:var(--muted);
+  font-family:var(--body);font-size:10px;font-weight:600;cursor:pointer;flex-shrink:0;
+  transition:.15s;vertical-align:middle;line-height:1}
+.qbtn:hover{border-color:var(--cyan);color:#fff;background:var(--cyan)}
+/* explainer modal */
+#explain-modal .modal-card{max-width:480px}
+#explain-body{font-family:var(--body);font-size:13px;line-height:1.75;color:var(--txt)}
+#explain-body .frm{margin-top:10px;padding:9px 12px;background:var(--s2);border-left:2px solid var(--cyan);
+  font-family:var(--mono);font-size:11px;color:var(--muted)}
+/* glossary modal */
+#glossary-modal .modal-card{max-width:720px;max-height:86vh;display:flex;flex-direction:column}
+#glossary-body{overflow-y:auto;padding-right:6px}
+.gl-term{padding:12px 0;border-bottom:1px solid var(--s3)}
+.gl-term h4{font-family:var(--disp);font-size:13px;font-weight:700;color:var(--cyan);margin-bottom:4px}
+.gl-term p{font-family:var(--body);font-size:12.5px;line-height:1.7;color:var(--txt)}
+.gl-term .frm{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:5px}
+.gl-sec{font-family:var(--disp);font-size:15px;font-weight:800;letter-spacing:1px;color:var(--txt);
+  margin:20px 0 6px;padding-bottom:6px;border-bottom:2px solid var(--cyan)}
+.gl-note{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:14px;line-height:1.6}
+/* chat */
+#chat-fab{position:fixed;right:22px;bottom:22px;z-index:6000;width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,#0784a8,#00c9a0);color:#fff;border:none;cursor:pointer;
+  font-size:22px;box-shadow:0 6px 22px rgba(7,132,168,.4);transition:.2s;display:none}
+#chat-fab:hover{transform:translateY(-2px) scale(1.05)}
+#chat-panel{position:fixed;right:22px;bottom:84px;z-index:6000;width:340px;height:440px;
+  background:#fff;border:1px solid var(--b1);border-radius:10px;display:none;flex-direction:column;
+  box-shadow:0 14px 48px rgba(20,40,60,.25);overflow:hidden}
+#chat-head{padding:11px 14px;background:linear-gradient(120deg,#0784a8,#00c9a0);color:#fff;
+  font-family:var(--disp);font-size:12px;font-weight:700;letter-spacing:1px;display:flex;
+  justify-content:space-between;align-items:center}
+#chat-head span{cursor:pointer;font-size:16px;line-height:1}
+#chat-log{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--s2)}
+.ch-msg{max-width:86%;padding:8px 11px;border-radius:10px;font-family:var(--body);font-size:12px;line-height:1.6}
+.ch-msg.bot{background:#fff;border:1px solid var(--b1);color:var(--txt);align-self:flex-start;border-bottom-left-radius:3px}
+.ch-msg.user{background:var(--cyan);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+.ch-sug{display:flex;flex-wrap:wrap;gap:5px;padding:0 12px 8px;background:var(--s2)}
+.ch-sug span{font-family:var(--mono);font-size:9px;padding:4px 8px;border:1px solid var(--b1);border-radius:10px;
+  color:var(--muted);cursor:pointer;background:#fff}
+.ch-sug span:hover{border-color:var(--cyan);color:var(--cyan)}
+#chat-inp-row{display:flex;border-top:1px solid var(--b1)}
+#chat-inp{flex:1;border:none;outline:none;padding:11px 13px;font-family:var(--body);font-size:12px;color:var(--txt)}
+#chat-send{border:none;background:var(--cyan);color:#fff;padding:0 16px;cursor:pointer;font-size:14px}
 .results-head{padding:12px 14px;border-bottom:1px solid var(--b1);background:#f5f8fb;flex-shrink:0}
 .results-head h3{font-family:var(--disp);font-size:13px;font-weight:700;letter-spacing:1px;color:#1c2b3a}
-.results-head p{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--dim);margin-top:3px}
+.results-head p{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--dim);margin-top:3px}
 .results-body{flex:1;overflow-y:auto;padding:14px}
 
 .metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
@@ -303,13 +352,13 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
 .metric.amber::after{background:var(--amber)}
 .metric.red::after{background:var(--red)}
 .metric.green::after{background:var(--green)}
-.metric .k{font-family:var(--mono);font-size:7px;letter-spacing:1px;color:var(--dim);text-transform:uppercase}
+.metric .k{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--dim);text-transform:uppercase}
 .metric .v{font-family:var(--disp);font-size:22px;font-weight:700;color:var(--txt);line-height:1.1;margin-top:3px}
 .metric .v small{font-size:10px;color:var(--muted);font-weight:400}
-.metric .d{font-family:var(--mono);font-size:7px;color:var(--dim);margin-top:2px}
+.metric .d{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:2px}
 
 .result-section{margin-bottom:16px}
-.result-section h4{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--cyan);
+.result-section h4{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--cyan);
   text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--b1)}
 .chart-box{background:var(--s2);border:1px solid var(--b1);padding:10px;height:150px;position:relative}
 .kv-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;
@@ -317,7 +366,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
 .kv-row .k{color:var(--muted)}
 .kv-row .v{color:var(--txt);font-weight:600}
 
-.probe-hint{font-family:var(--mono);font-size:8px;color:var(--dim);line-height:1.6;
+.probe-hint{font-family:var(--mono);font-size:10px;color:var(--dim);line-height:1.6;
   background:var(--cyanB);border-left:2px solid var(--cyan);padding:8px 10px;margin-bottom:12px}
 
 /* ═══════════════ MODAL ═══════════════ */
@@ -338,7 +387,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
   justify-content:center;font-family:var(--disp);font-weight:700;font-size:20px;color:#ffffff}
 .settings-uinfo .nm{font-family:var(--body);font-size:14px;font-weight:600;color:#1c2b3a}
 .settings-uinfo .em{font-family:var(--mono);font-size:10px;color:var(--muted)}
-.settings-uinfo .rl{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--cyan);margin-top:2px}
+.settings-uinfo .rl{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--cyan);margin-top:2px}
 
 @media(max-width:1400px){#left-rail{width:300px}#right-rail{width:280px}}
 @media(max-width:1100px){#right-rail{display:none}}
@@ -371,6 +420,10 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
 
   <div id="login-form-panel">
     <div class="lf-stripe"></div>
+    <a class="lf-home" href="https://www.sononai.com/" title="Back to sononai.com">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+      <span>sononai.com</span>
+    </a>
     <div class="lf-logo">
       <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle class="rip" cx="32" cy="32" r="26" fill="none" stroke="#0784a8" stroke-width="1.4"/>
@@ -404,23 +457,23 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
         onkeydown="if(event.key==='Enter')doSignIn()">
       <button id="si-btn" class="lf-btn" onclick="doSignIn()">SIGN IN →</button>
       <div style="text-align:center;margin-top:11px">
-        <a onclick="showForgot()" style="font-family:var(--mono);font-size:8px;letter-spacing:1px;
+        <a onclick="showForgot()" style="font-family:var(--mono);font-size:10px;letter-spacing:1px;
           color:rgba(34,212,240,.4);cursor:pointer">Forgot password?</a>
       </div>
       <div id="si-msg" class="lf-msg"></div>
       <div style="margin-top:16px;padding:10px 12px;background:rgba(34,212,240,.04);
-        border-left:2px solid rgba(34,212,240,.4);font-family:var(--mono);font-size:8px;
+        border-left:2px solid rgba(34,212,240,.4);font-family:var(--mono);font-size:10px;
         color:var(--muted);line-height:1.7">
-        <b style="color:var(--cyan)">DEMO MODE</b> — No account? Click
-        <a onclick="demoLogin()" style="color:var(--cyan);cursor:pointer;text-decoration:underline">Continue as Guest</a>
-        to explore the simulator instantly.
+        No account yet? Use the <b style="color:var(--cyan)">REGISTER</b> tab above, or
+        <a onclick="demoLogin()" style="color:var(--cyan);cursor:pointer;text-decoration:underline">continue as guest</a>
+        to start simulating right away.
       </div>
     </div>
 
     <!-- Register -->
     <div id="form-register" style="display:none">
       <div style="padding:12px 14px;background:var(--amberG);border-left:3px solid var(--amber);
-        margin-bottom:16px;font-family:var(--mono);font-size:9px;color:var(--amber);line-height:1.8">
+        margin-bottom:16px;font-family:var(--mono);font-size:11px;color:var(--amber);line-height:1.8">
         <b style="letter-spacing:1px">HOW IT WORKS</b><br>
         1. Enter your details and submit a request.<br>
         2. We review and email you a password.<br>
@@ -440,7 +493,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
 
     <!-- Forgot -->
     <div id="form-forgot" style="display:none">
-      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:14px;line-height:1.7">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.7">
         Enter your email to receive a password reset link.
       </div>
       <input type="email" id="fp-email" class="lf-inp" placeholder="you@institute.edu"
@@ -450,7 +503,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
       <button onclick="switchAuthTab('signin')" style="width:100%;padding:10px;background:transparent;
         border:1px solid var(--b2);font-family:var(--mono);font-size:10px;color:var(--cyan);cursor:pointer">
         ← BACK TO SIGN IN</button>
-      <div id="fp-msg" style="margin-top:10px;font-family:var(--mono);font-size:9px;color:rgba(34,212,240,.8)"></div>
+      <div id="fp-msg" style="margin-top:10px;font-family:var(--mono);font-size:11px;color:rgba(34,212,240,.8)"></div>
     </div>
   </div>
 </div>
@@ -464,6 +517,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
       <div class="brand-tg">Aircraft Noise<b>Propagation Sim</b></div>
     </div>
     <div class="hdr-right">
+      <div class="hdr-badge" id="hdr-gloss-btn" onclick="openGlossary()" style="cursor:pointer" title="All calculation descriptions + EASA / FAA / ICAO regulations">📖 GLOSSARY</div>
       <div class="hdr-badge live" id="hdr-status">● SOLVER READY</div>
       <div class="hdr-badge" id="hdr-loc-badge">NO LOCATION</div>
       <div class="hdr-user" onclick="openSettings()">
@@ -539,27 +593,27 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
       <div class="results-body" id="results-body">
         <div class="probe-hint">Configure the noise source and environment, select a location, then run the solver. Click any point in the 3D view to probe local SPL &amp; spectrum.</div>
         <div class="metric-grid">
-          <div class="metric"><div class="k">Max SPL</div><div class="v" id="m-max">—</div><div class="d">in domain</div></div>
-          <div class="metric"><div class="k">Min SPL</div><div class="v" id="m-min">—</div><div class="d">in domain</div></div>
-          <div class="metric"><div class="k">Avg SPL</div><div class="v" id="m-avg">—</div><div class="d">volume mean</div></div>
-          <div class="metric green"><div class="k">Source PWL</div><div class="v" id="m-pwl">—</div><div class="d">sound power</div></div>
+          <div class="metric"><div class="k">Max SPL <span class="qbtn" onclick="explain('maxspl')">?</span></div><div class="v" id="m-max">—</div><div class="d">in domain</div></div>
+          <div class="metric"><div class="k">Min SPL <span class="qbtn" onclick="explain('maxspl')">?</span></div><div class="v" id="m-min">—</div><div class="d">in domain</div></div>
+          <div class="metric"><div class="k">Avg SPL <span class="qbtn" onclick="explain('maxspl')">?</span></div><div class="v" id="m-avg">—</div><div class="d">volume mean</div></div>
+          <div class="metric green"><div class="k">Source PWL <span class="qbtn" onclick="explain('pwl')">?</span></div><div class="v" id="m-pwl">—</div><div class="d">sound power</div></div>
         </div>
         <div class="result-section">
-          <h4>Spectrum at probe</h4>
+          <h4>Spectrum at probe <span class="qbtn" onclick="explain('bands')">?</span></h4>
           <div class="chart-box"><canvas id="spec-chart"></canvas></div>
         </div>
         <div class="result-section">
-          <h4>Attenuation breakdown</h4>
+          <h4>Attenuation breakdown <span class="qbtn" onclick="explain('div')">?</span></h4>
           <div class="chart-box"><canvas id="atten-chart"></canvas></div>
         </div>
         <div class="result-section">
-          <h4>Probe point</h4>
+          <h4>Probe point <span class="qbtn" onclick="explain('probe')">?</span></h4>
           <div id="probe-data">
-            <div class="kv-row"><span class="k">Distance</span><span class="v" id="p-dist">—</span></div>
-            <div class="kv-row"><span class="k">SPL (linear)</span><span class="v" id="p-spl">—</span></div>
-            <div class="kv-row"><span class="k">SPL (A-weighted)</span><span class="v" id="p-dba">—</span></div>
-            <div class="kv-row"><span class="k">Atmos. absorption</span><span class="v" id="p-atm">—</span></div>
-            <div class="kv-row"><span class="k">Ground effect</span><span class="v" id="p-gnd">—</span></div>
+            <div class="kv-row"><span class="k">Distance <span class="qbtn" onclick="explain('div')">?</span></span><span class="v" id="p-dist">—</span></div>
+            <div class="kv-row"><span class="k">SPL (linear) <span class="qbtn" onclick="explain('spl')">?</span></span><span class="v" id="p-spl">—</span></div>
+            <div class="kv-row"><span class="k">SPL (A-weighted) <span class="qbtn" onclick="explain('dba')">?</span></span><span class="v" id="p-dba">—</span></div>
+            <div class="kv-row"><span class="k">Atmos. absorption <span class="qbtn" onclick="explain('atm')">?</span></span><span class="v" id="p-atm">—</span></div>
+            <div class="kv-row"><span class="k">Ground effect <span class="qbtn" onclick="explain('gnd')">?</span></span><span class="v" id="p-gnd">—</span></div>
           </div>
         </div>
       </div>
@@ -594,6 +648,39 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
         border:1px solid var(--red);color:var(--red);font-family:var(--mono);font-size:10px;
         font-weight:700;letter-spacing:2px;cursor:pointer">SIGN OUT</button>
     </div>
+  </div>
+</div>
+
+<!-- EXPLAINER MODAL -->
+<div class="modal" id="explain-modal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal-card">
+    <div class="modal-head"><h3 id="explain-title">—</h3>
+      <span class="modal-x" onclick="document.getElementById('explain-modal').style.display='none'">✕</span></div>
+    <div id="explain-body"></div>
+    <div style="margin-top:14px;text-align:right">
+      <button class="btn btn-ghost" onclick="document.getElementById('explain-modal').style.display='none';openGlossary()">FULL GLOSSARY →</button>
+    </div>
+  </div>
+</div>
+
+<!-- GLOSSARY MODAL -->
+<div class="modal" id="glossary-modal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal-card">
+    <div class="modal-head"><h3>Glossary & Regulations</h3>
+      <span class="modal-x" onclick="document.getElementById('glossary-modal').style.display='none'">✕</span></div>
+    <div id="glossary-body"></div>
+  </div>
+</div>
+
+<!-- ASSISTANT CHAT -->
+<button id="chat-fab" onclick="toggleChat()" title="Ask the Propiq assistant">💬</button>
+<div id="chat-panel">
+  <div id="chat-head">PROPIQ ASSISTANT <span onclick="toggleChat()">✕</span></div>
+  <div id="chat-log"></div>
+  <div class="ch-sug" id="chat-sug"></div>
+  <div id="chat-inp-row">
+    <input id="chat-inp" placeholder="Ask about any calculation…" onkeydown="if(event.key==='Enter')chatSend()">
+    <button id="chat-send" onclick="chatSend()">➤</button>
   </div>
 </div>
 
@@ -678,14 +765,14 @@ async function doSignIn() {
   const btn = document.getElementById('si-btn');
   if (!email || !pass) { _msg(msg, 'Please enter email and password.', false); return; }
   btn.textContent = 'SIGNING IN…'; btn.disabled = true; if (msg) msg.style.display = 'none';
-  if (!_supa) { _msg(msg, 'Auth service unavailable — use Continue as Guest.', false); btn.textContent = 'SIGN IN →'; btn.disabled = false; return; }
+  if (!_supa) { _msg(msg, 'Auth service unavailable — you can continue as guest below.', false); btn.textContent = 'SIGN IN →'; btn.disabled = false; return; }
   try {
     const { data, error } = await _supa.auth.signInWithPassword({ email, password: pass });
     if (error) throw error;
     _currentUser = data.user;
     showApp(_currentUser);
   } catch (e) {
-    _msg(msg, 'Error: ' + (e.message || 'Sign in failed') + '<br><span style="opacity:.7">Tip: use Continue as Guest to explore.</span>', false);
+    _msg(msg, 'Error: ' + (e.message || 'Sign in failed') + '<br><span style="opacity:.7">Tip: you can continue as guest below.</span>', false);
     btn.textContent = 'SIGN IN →'; btn.disabled = false;
   }
 }
@@ -699,7 +786,7 @@ async function doRegister() {
   if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { _msg(msg, 'Please enter a valid email address.', false); return; }
   if (!name) { _msg(msg, 'Please choose a username.', false); return; }
   btn.textContent = 'SENDING REQUEST…'; btn.disabled = true; if (msg) msg.style.display = 'none';
-  if (!_supa) { _msg(msg, 'Auth unavailable — use Continue as Guest.', false); btn.textContent = 'REQUEST ACCESS →'; btn.disabled = false; return; }
+  if (!_supa) { _msg(msg, 'Auth unavailable — you can continue as guest below.', false); btn.textContent = 'REQUEST ACCESS →'; btn.disabled = false; return; }
   try {
     const tempPass = 'AERO_' + Math.random().toString(36).slice(2, 10).toUpperCase() + '_tmp!9';
     const meta = { username: name, organisation: org, status: 'pending_approval', requested_at: new Date().toISOString() };
@@ -794,6 +881,7 @@ async function doChangePassword() {
 /* Reveal the app, wire up the username everywhere */
 function showApp(user) {
   document.getElementById('login-screen').style.display = 'none';
+  { const fab = document.getElementById('chat-fab'); if (fab) fab.style.display = 'block'; }
   document.getElementById('app').style.display = 'flex';
   _loginAnimRunning = false;
   const uname = deriveUsername(user);
@@ -844,6 +932,7 @@ function loginAnimInit() {
   function drawAircraft(ax, ay) {
     ctx.save();
     ctx.translate(ax, ay);
+    ctx.scale(1.5, 1.5); // larger, clearer silhouette
     // body
     ctx.fillStyle = '#dfeef5';
     ctx.strokeStyle = 'rgba(34,212,240,.9)';
@@ -881,13 +970,13 @@ function loginAnimInit() {
   function frame() {
     if (!_loginAnimRunning) return;
     t += 0.016;
-    // twilight aurora sky: indigo → violet → magenta → warm horizon glow
+    // twilight sky, fully repainted each frame — crisp, no motion smear
     const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0.00, 'rgba(16,10,46,0.32)');
-    g.addColorStop(0.38, 'rgba(49,22,92,0.32)');
-    g.addColorStop(0.72, 'rgba(133,38,116,0.32)');
-    g.addColorStop(0.90, 'rgba(224,105,74,0.30)');
-    g.addColorStop(1.00, 'rgba(12,8,24,0.32)');
+    g.addColorStop(0.00, '#100a2e');
+    g.addColorStop(0.38, '#31165c');
+    g.addColorStop(0.72, '#852674');
+    g.addColorStop(0.90, '#e0694a');
+    g.addColorStop(1.00, '#0c0818');
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     // drifting aurora curtain
     for (let a = 0; a < 3; a++) {
@@ -942,13 +1031,13 @@ function loginAnimInit() {
       const age = (t - rg.born) / 6;                 // 0 → 1
       const hue = 8 + age * 250;                     // red→yellow→green→cyan→blue→violet
       ctx.beginPath();
-      ctx.strokeStyle = `hsla(${hue},95%,62%,${a})`;
-      ctx.lineWidth = 1.6;
+      ctx.strokeStyle = `hsla(${hue},96%,64%,${Math.min(1, a * 1.5)})`;
+      ctx.lineWidth = 2.4;
       ctx.arc(rg.x, rg.y, rg.r, 0.05 * Math.PI, 0.95 * Math.PI); // lower arc → downward
       ctx.stroke();
       ctx.beginPath();
-      ctx.strokeStyle = `hsla(${hue + 36},95%,68%,${a * 0.55})`;
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = `hsla(${hue + 36},95%,70%,${a * 0.8})`;
+      ctx.lineWidth = 1.4;
       ctx.arc(rg.x, rg.y, rg.r * 0.78, 0.1 * Math.PI, 0.9 * Math.PI);
       ctx.stroke();
     });
@@ -1112,12 +1201,31 @@ const ACO = (function () {
     let best = 0;
     for (let i = 0; i < obst.length; i++) {
       const o = obst[i];
-      // closest approach of the horizontal path to the building centre
+      // broad phase: closest approach of the path to the bounding circle
       let t = ((o.cx - sx) * dx + (o.cy - sy) * dy) / dp2;
       if (t <= 0.02 || t >= 0.98) continue;           // building not between S and R
       const px = sx + t * dx, py = sy + t * dy;
       const ddx = o.cx - px, ddy = o.cy - py;
-      if (ddx * ddx + ddy * ddy > o.rad * o.rad) continue; // path misses footprint
+      if (ddx * ddx + ddy * ddy > o.rad * o.rad) continue;
+      // narrow phase: EXACT crossing of the footprint polygon.
+      // Find the parametric interval [tIn, tOut] where the path is inside.
+      let tIn = Infinity, tOut = -Infinity, hits = 0;
+      if (o.poly && o.poly.length >= 3) {
+        for (let e = 0, n = o.poly.length; e < n; e++) {
+          const [ex0, ey0] = o.poly[e], [ex1, ey1] = o.poly[(e + 1) % n];
+          const rxs = dx * (ey1 - ey0) - dy * (ex1 - ex0);
+          if (Math.abs(rxs) < 1e-12) continue;        // parallel
+          const qx = ex0 - sx, qy = ey0 - sy;
+          const tt = (qx * (ey1 - ey0) - qy * (ex1 - ex0)) / rxs;
+          const uu = (qx * dy - qy * dx) / rxs;
+          if (uu >= 0 && uu <= 1 && tt >= 0 && tt <= 1) {
+            hits++; if (tt < tIn) tIn = tt; if (tt > tOut) tOut = tt;
+          }
+        }
+        if (hits < 2) continue;                       // path does not truly cross the footprint
+        t = (tIn + tOut) / 2;                         // roof crossing at the mid-chord
+        if (t <= 0.02 || t >= 0.98) continue;
+      }
       const zLOS = sz + (rz - sz) * t;                // line-of-sight height there
       if (o.h <= zLOS) continue;                      // sight line clears the roof
       // diffraction over the roof edge at the crossing point
@@ -1240,7 +1348,7 @@ function currentSpectrum() {
 function railPaneSource() {
   return `
   <div class="panel">
-    <div class="panel-head"><span class="ic">✈</span> Noise Source</div>
+    <div class="panel-head"><span class="ic">✈</span> Noise Source <span class="qbtn" onclick="explain('pwl')" title="What is being computed here?">?</span></div>
     <div class="panel-body">
       <div class="field">
         <div class="field-lbl"><span>Sound Pressure Level</span><span class="field-val" id="v-spl">${SIM.source.splOverall} dB</span></div>
@@ -1281,7 +1389,7 @@ function railPaneSource() {
     </div>
   </div>
   <div class="panel">
-    <div class="panel-head"><span class="ic">⛰</span> Aircraft Position</div>
+    <div class="panel-head"><span class="ic">⛰</span> Aircraft Position <span class="qbtn" onclick="explain('hemi')">?</span></div>
     <div class="panel-body">
       <div class="field">
         <div class="field-lbl"><span>Altitude AGL</span><span class="field-val" id="v-alt">${SIM.source.altitude} m</span></div>
@@ -1307,7 +1415,7 @@ function railPaneSource() {
 function railPaneEnv() {
   return `
   <div class="panel">
-    <div class="panel-head"><span class="ic">🌡</span> Atmosphere</div>
+    <div class="panel-head"><span class="ic">🌡</span> Atmosphere <span class="qbtn" onclick="explain('atm')">?</span></div>
     <div class="panel-body">
       <div class="field">
         <div class="field-lbl"><span>Temperature</span><span class="field-val" id="v-temp">${SIM.env.temp} °C</span></div>
@@ -1327,7 +1435,7 @@ function railPaneEnv() {
     </div>
   </div>
   <div class="panel">
-    <div class="panel-head"><span class="ic">💨</span> Wind</div>
+    <div class="panel-head"><span class="ic">💨</span> Wind <span class="qbtn" onclick="explain('wind')">?</span></div>
     <div class="panel-body">
       <div class="field">
         <div class="field-lbl"><span>Wind speed</span><span class="field-val" id="v-ws">${SIM.env.windSpeed} m/s</span></div>
@@ -1342,7 +1450,7 @@ function railPaneEnv() {
     </div>
   </div>
   <div class="panel">
-    <div class="panel-head"><span class="ic">▦</span> Ground &amp; Surfaces</div>
+    <div class="panel-head"><span class="ic">▦</span> Ground &amp; Surfaces <span class="qbtn" onclick="explain('gnd')">?</span></div>
     <div class="panel-body">
       <div class="field">
         <div class="field-lbl"><span>Ground type</span></div>
@@ -1379,7 +1487,7 @@ function railPaneEnv() {
 function railPaneLocation() {
   return `
   <div class="panel">
-    <div class="panel-head"><span class="ic">🗺</span> Location</div>
+    <div class="panel-head"><span class="ic">🗺</span> Location <span class="qbtn" onclick="explain('osm')">?</span></div>
     <div class="panel-body">
       <div class="map-search">
         <input id="map-search-inp" placeholder="Search any place… (or paste lat,lng)"
@@ -1415,10 +1523,10 @@ function railPaneLocation() {
         <div class="coord-box"><div class="k">LATITUDE</div><div class="v" id="c-lat">—</div></div>
         <div class="coord-box"><div class="k">LONGITUDE</div><div class="v" id="c-lng">—</div></div>
         <div class="coord-box"><div class="k">ELEVATION</div><div class="v" id="c-elev">—</div></div>
-        <div class="coord-box"><div class="k">PLACE</div><div class="v" id="c-name" style="font-size:9px">—</div></div>
-        <div class="coord-box"><div class="k">BUILDINGS</div><div class="v" id="c-bldg" style="font-size:9px">${bldgStatusText()}</div></div>
+        <div class="coord-box"><div class="k">PLACE</div><div class="v" id="c-name" style="font-size:11px">—</div></div>
+        <div class="coord-box"><div class="k">BUILDINGS</div><div class="v" id="c-bldg" style="font-size:11px">${bldgStatusText()}</div></div>
       </div>
-      <div style="font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:8px;line-height:1.6">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:8px;line-height:1.6">
         Click the map to drop the simulation centre. Terrain elevation is sampled from open elevation data when online.
       </div>
     </div>
@@ -1428,14 +1536,14 @@ function railPaneLocation() {
 function railPaneSim() {
   return `
   <div class="panel">
-    <div class="panel-head"><span class="ic">◎</span> Computational Domain</div>
+    <div class="panel-head"><span class="ic">◎</span> Computational Domain <span class="qbtn" onclick="explain('hemi')">?</span></div>
     <div class="panel-body">
       <div class="field">
         <div class="field-lbl"><span>Hemisphere radius</span><span class="field-val" id="v-rad">${SIM.domain.radius} m</span></div>
         <input type="range" min="100" max="20000" step="100" value="${SIM.domain.radius}"
           oninput="updateRadius(this.value)">
       </div>
-      <div style="font-family:var(--mono);font-size:8px;color:var(--dim);line-height:1.6">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--dim);line-height:1.6">
         Defines the 3D hemispherical domain centred on the selected location. Grid resolution adapts to radius.
       </div>
     </div>
@@ -1457,7 +1565,7 @@ function railPaneSim() {
   </div>
   <div class="panel">
     <div class="panel-head"><span class="ic">ℹ</span> Method</div>
-    <div class="panel-body" style="font-family:var(--mono);font-size:8px;color:var(--muted);line-height:1.7">
+    <div class="panel-body" style="font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.7">
       Engine: octave-band ray propagation per ISO 9613-1/2.<br>
       Models: spherical divergence · atmospheric absorption (T,RH,p) · ground interference · hard-reflecting building walls (+3 dB, Maekawa roof diffraction shielding) · terrain barriers · wind refraction.<br>
       <span style="color:var(--dim)">Architecture supports drop-in FEM / BEM / ray-tracing solvers via the ACO.propagate interface.</span>
@@ -1770,12 +1878,43 @@ function initMap() {
   MAP.canvas = cv; MAP.ctx = cv.getContext('2d');
   function size() { cv.width = host.offsetWidth; cv.height = host.offsetHeight; MAP.w = cv.width; MAP.h = cv.height; drawMap(); }
   size();
-  cv.onclick = (e) => {
-    const r = cv.getBoundingClientRect();
-    const px = e.clientX - r.left, py = e.clientY - r.top;
-    const ll = pxToLatLng(px, py);
-    setLocation(ll.lat, ll.lng);
+  /* Drag to pan smoothly; a plain click (< 5 px movement) drops the pin. */
+  let drag = null;
+  const px2world = () => 256 * Math.pow(2, MAP.zoom); // world pixels at zoom
+  const startDrag = (x, y) => { drag = { x, y, lat: MAP.lat, lng: MAP.lng, moved: false }; cv.style.cursor = 'grabbing'; };
+  const moveDrag = (x, y) => {
+    if (!drag) return;
+    const dx = x - drag.x, dy = y - drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 5) drag.moved = true;
+    if (!drag.moved) return;
+    const wp = px2world();
+    // invert web-mercator: shift centre by pixel delta
+    const latR = drag.lat * Math.PI / 180;
+    const dLng = -dx / wp * 360;
+    const mercY0 = Math.log(Math.tan(Math.PI / 4 + latR / 2));
+    const mercY1 = mercY0 + (dy / wp) * 2 * Math.PI;
+    const newLat = (2 * Math.atan(Math.exp(mercY1)) - Math.PI / 2) * 180 / Math.PI;
+    MAP.lng = ((drag.lng + dLng + 540) % 360) - 180;
+    MAP.lat = Math.max(-85, Math.min(85, newLat));
+    drawMap();
   };
+  const endDrag = (x, y) => {
+    if (!drag) return;
+    const wasClick = !drag.moved;
+    drag = null; cv.style.cursor = 'grab';
+    if (wasClick && x != null) {
+      const r = cv.getBoundingClientRect();
+      const ll = pxToLatLng(x - r.left, y - r.top);
+      setLocation(ll.lat, ll.lng);
+    }
+  };
+  cv.style.cursor = 'grab';
+  cv.onmousedown = (e) => startDrag(e.clientX, e.clientY);
+  window.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+  window.addEventListener('mouseup', (e) => endDrag(e.clientX, e.clientY));
+  cv.addEventListener('touchstart', (e) => { const t = e.touches[0]; startDrag(t.clientX, t.clientY); }, { passive: true });
+  cv.addEventListener('touchmove', (e) => { const t = e.touches[0]; moveDrag(t.clientX, t.clientY); e.preventDefault(); }, { passive: false });
+  cv.addEventListener('touchend', (e) => { const t = e.changedTouches[0]; endDrag(t ? t.clientX : null, t ? t.clientY : null); });
   cv.onwheel = (e) => {
     e.preventDefault();
     MAP.zoom = Math.max(3, Math.min(17, MAP.zoom + (e.deltaY < 0 ? 1 : -1)));
@@ -1967,29 +2106,51 @@ async function fetchBuildings(lat, lng) {
   const radius = Math.min(Math.max(SIM.domain.radius * 0.4, 250), 900);
   const around = `(around:${Math.round(radius)},${lat},${lng})`;
   try {
-    const q = `[out:json][timeout:20];(` +
+    const q = `[out:json][timeout:25];(` +
       `way["building"]${around};` +
+      `relation["building"]${around};` +
       `way["natural"="water"]${around};` +
       `way["waterway"="riverbank"]${around};` +
-      `);out geom 300;`;
+      `);out geom 800;`;
     const j = await overpassFetch(q, (msg) => { if (token === _bldgToken) setBadge(msg); });
     if (token !== _bldgToken) return; // stale response — location changed again
     const mPerLat = 110540, mPerLng = 111320 * Math.cos(lat * Math.PI / 180);
     const blds = [], water = [];
-    (j.elements || []).forEach(el => {
-      if (!el.geometry || el.geometry.length < 3) return;
-      const poly = el.geometry.map(p => [(p.lon - lng) * mPerLng, (p.lat - lat) * mPerLat]);
-      const tg = el.tags || {};
-      if (tg.building) {
-        // height from tags: explicit height > levels*3.2 > deterministic default
-        let h = 0;
-        if (tg.height) h = parseFloat(tg.height) || 0;
-        if (!h && tg['building:levels']) h = (parseFloat(tg['building:levels']) || 0) * 3.2;
-        if (!h) h = 8 + (Math.abs(el.id || 0) % 17); // 8–24 m deterministic
-        blds.push({ poly, h });
-      } else if (tg.natural === 'water' || tg.waterway === 'riverbank') {
-        water.push({ poly });
+    // OSM height tags may carry units: "12", "12 m", "40 ft", "40'"
+    const parseHeight = (v) => {
+      if (v == null) return 0;
+      const m = String(v).match(/(-?[\d.]+)\s*(m|ft|')?/i);
+      if (!m) return 0;
+      let h = parseFloat(m[1]) || 0;
+      if (/ft|'/i.test(m[2] || '')) h *= 0.3048;
+      return h;
+    };
+    const heightOf = (tg, id) => {
+      let h = parseHeight(tg.height);
+      if (!h) h = parseHeight(tg['building:height']);
+      if (!h && tg['building:levels']) {
+        const lv = parseFloat(tg['building:levels']) || 0;
+        const roofLv = parseFloat(tg['roof:levels']) || 0;
+        h = (lv + roofLv) * 3.2;
       }
+      if (!h) h = 8 + (Math.abs(id || 0) % 17); // deterministic default when untagged
+      return h;
+    };
+    const toLocal = (gm) => gm.map(pt => [(pt.lon - lng) * mPerLng, (pt.lat - lat) * mPerLat]);
+    (j.elements || []).forEach(el => {
+      const tg = el.tags || {};
+      if (el.type === 'relation' && tg.building) {
+        // multipolygon buildings: extrude each OUTER member ring
+        (el.members || []).forEach(mb => {
+          if (mb.role !== 'outer' || !mb.geometry || mb.geometry.length < 3) return;
+          blds.push({ poly: toLocal(mb.geometry), h: heightOf(tg, el.id) });
+        });
+        return;
+      }
+      if (!el.geometry || el.geometry.length < 3) return;
+      const poly = toLocal(el.geometry);
+      if (tg.building) blds.push({ poly, h: heightOf(tg, el.id) });
+      else if (tg.natural === 'water' || tg.waterway === 'riverbank') water.push({ poly });
     });
     SIM.buildings = blds;              // may legitimately be EMPTY (open water etc.)
     SIM.water = water;
@@ -2112,12 +2273,18 @@ function prepObstacles() {
   const list = [];
   blds.forEach(b => {
     if (!b.poly || b.poly.length < 3) return;
-    let cx = 0, cy = 0;
-    b.poly.forEach(p => { cx += p[0]; cy += p[1]; });
-    cx /= b.poly.length; cy /= b.poly.length;
+    // exact area centroid (shoelace) — robust for elongated/L-shaped footprints
+    let A = 0, cx = 0, cy = 0;
+    for (let i = 0, n = b.poly.length; i < n; i++) {
+      const [x0, y0] = b.poly[i], [x1, y1] = b.poly[(i + 1) % n];
+      const cr = x0 * y1 - x1 * y0;
+      A += cr; cx += (x0 + x1) * cr; cy += (y0 + y1) * cr;
+    }
+    if (Math.abs(A) > 1e-6) { A *= 0.5; cx /= (6 * A); cy /= (6 * A); }
+    else { cx = 0; cy = 0; b.poly.forEach(pt => { cx += pt[0]; cy += pt[1]; }); cx /= b.poly.length; cy /= b.poly.length; }
     let r2 = 0;
-    b.poly.forEach(p => { const dx = p[0] - cx, dy = p[1] - cy; const q = dx * dx + dy * dy; if (q > r2) r2 = q; });
-    list.push({ cx, cy, rad: Math.sqrt(r2), h: b.h || 10 });
+    b.poly.forEach(pt => { const dx = pt[0] - cx, dy = pt[1] - cy; const q = dx * dx + dy * dy; if (q > r2) r2 = q; });
+    list.push({ cx, cy, rad: Math.sqrt(r2), h: b.h || 10, poly: b.poly });
   });
   _obstCache = { ref: blds, list };
   return list;
@@ -2870,6 +3037,144 @@ function bootSimulator() {
     setTimeout(() => { switchRail('source'); }, 300);
   }, 200);
   updateRadius(SIM.domain.radius);
+}
+
+
+/* ════════════════ GLOSSARY, EXPLAINERS & ASSISTANT ════════════════ */
+const GLOSSARY = {
+  spl:   { t: 'Sound Pressure Level (SPL)', frm: 'Lp = 20·log10(p/p0),  p0 = 20 µPa',
+    d: 'Logarithmic measure of acoustic pressure relative to the threshold of hearing (20 µPa). Every +6 dB doubles the sound pressure; +10 dB is perceived as roughly twice as loud.' },
+  dba:   { t: 'A-weighting (dBA)', frm: 'LA = 10·log10 Σ 10^((Lp,i + Ai)/10)  (IEC 61672 weights Ai)',
+    d: 'Frequency weighting that mimics human hearing sensitivity — low and very high frequencies are attenuated. All community-noise metrics and most regulations use A-weighted levels.' },
+  pwl:   { t: 'Sound Power Level (PWL / Lw)', frm: 'Lw ≈ Lp(1 m) + 11 dB   (point source, spherical radiation)',
+    d: 'Total acoustic power emitted by the source, independent of distance. Propiq converts your source SPL (referenced at 1 m) to a power level, then propagates it outward.' },
+  bands: { t: 'Octave bands', frm: '31.5 · 63 · 125 · 250 · 500 · 1000 · 2000 · 4000 · 8000 Hz',
+    d: 'The spectrum is computed in standard octave bands because every propagation effect (air absorption, ground effect, diffraction) is strongly frequency-dependent. Overall levels are energy sums across bands.' },
+  div:   { t: 'Spherical divergence', frm: 'Adiv = 20·log10(d) + 11 dB   (ISO 9613-2)',
+    d: 'Geometric spreading of the wavefront: doubling the distance costs 6 dB. The dominant attenuation mechanism at all ranges.' },
+  atm:   { t: 'Atmospheric absorption', frm: 'Aatm = α(f, T, RH, p) · d   (ISO 9613-1)',
+    d: 'Air converts acoustic energy to heat via molecular relaxation of O₂ and N₂. Strongly frequency-dependent (~0.005 dB/m at 1 kHz, ~0.08 dB/m at 8 kHz at 20 °C / 70 % RH) — high frequencies fade first with distance.' },
+  gnd:   { t: 'Ground effect', frm: 'Agr per ISO 9613-2 — hard ground G = 0 … porous G = 1',
+    d: 'Interference between the direct ray and the ground reflection. Hard surfaces (water, concrete) add up to ~+3 dB constructively; soft porous ground (grass, snow) creates a destructive dip around 200–600 Hz.' },
+  refl:  { t: 'Building reflection (hard walls)', frm: 'ΔLrefl = 10·log10(1 + (1 − α)) → +3 dB at α = 0',
+    d: 'All façades and roofs are treated as acoustically HARD (absorption α = 0) unless you select absorptive treatment. Hard surfaces reflect nearly all energy, raising levels by up to 3 dB (pressure doubling).' },
+  bar:   { t: 'Barrier & building diffraction', frm: 'Abar = 10·log10(3 + 20·N),  N = 2δ f / c  (Maekawa)',
+    d: 'When a building or terrain feature cuts the line of sight, sound must diffract over the edge. The insertion loss grows with the path difference δ (metres of detour over the roof) and with frequency — high frequencies are shielded most.' },
+  wind:  { t: 'Wind refraction', frm: 'Sound bends by the vertical gradient of (wind + temperature)',
+    d: 'Downwind, sound bends toward the ground (levels rise slightly); upwind, it bends upward creating a shadow zone with strong excess attenuation at long range.' },
+  hemi:  { t: 'Hemispherical domain', frm: 'Receiver grid over a half-sphere of radius R centred on the site',
+    d: 'The solver samples thousands of receiver points through the air volume above the location and on the ground plane. Radius is adjustable from 100 m to 20 km.' },
+  contour:{ t: 'Noise contours', frm: 'Iso-lines of equal dBA on the ground plane (marching squares)',
+    d: 'Lines connecting points of equal ground-level noise, like elevation contours on a topographic map. Standard deliverable for land-use planning around airports and vertiports.' },
+  iso:   { t: 'Iso-surface', frm: '3-D surface where SPL = chosen level',
+    d: 'The three-dimensional analogue of a contour — the boundary of the volume where noise exceeds a given level.' },
+  probe: { t: 'Point probe', frm: 'Click any point in the 3-D view',
+    d: 'Reports the exact SPL, dBA, full octave spectrum and the attenuation breakdown (divergence, air, ground, barrier, wind, reflection) at that receiver.' },
+  fft:   { t: 'Uploaded noise data / FFT', frm: 'Hann window → radix-2 FFT → octave integration',
+    d: 'Frequency-domain CSVs (Hz, dB) are integrated directly into octave bands. Time-domain WAV/CSV recordings are Fourier-transformed to extract the spectrum shape, then scaled to your overall SPL (recordings carry no absolute calibration).' },
+  osm:   { t: 'OSM site geometry', frm: 'OpenStreetMap buildings & water via the Overpass API',
+    d: 'Building footprints and heights (explicit tags, or storey count × 3.2 m) plus water polygons are fetched for the exact coordinates you select. They act as hard reflecting obstacles in the solver. Zero buildings = a genuinely unbuilt site.' },
+  maxspl:{ t: 'Max / Min / Avg SPL', frm: 'Statistics over all receiver points in the domain',
+    d: 'Max occurs closest to the aircraft; Avg is the energy-relevant mean across the hemisphere; Min sits at the far shielded edges of the domain.' }
+};
+const REGS = [
+  { t: 'ICAO Annex 16, Volume I — Aircraft Noise',
+    d: 'The global baseline for aircraft noise certification under the Chicago Convention. Defines measurement points (approach, flyover/departure, lateral), the EPNL metric (EPNdB), and noise limits by aircraft category and weight: Chapter 3 and the stricter Chapter 14 for jets and heavy propeller aircraft, Chapters 8 and 11 for helicopters. Detailed test procedures live in ICAO Doc 9501 (Environmental Technical Manual).' },
+  { t: 'FAA — 14 CFR Part 36 (United States)',
+    d: 'US noise-certification standard, harmonised with ICAO Annex 16. Aircraft are grouped in "Stages": Stage 3 ≈ ICAO Ch. 3, Stage 4 ≈ Ch. 4, Stage 5 ≈ Ch. 14. Separate subparts cover helicopters (using SEL and EPNL). Land-use compatibility around airports is handled by 14 CFR Part 150 using the DNL (day-night average level) metric, with 65 dB DNL as the primary compatibility threshold.' },
+  { t: 'EASA — CS-36 & EU framework (Europe)',
+    d: 'EASA Certification Specification CS-36 implements ICAO Annex 16 for aircraft certified in the EU. Operational noise management at airports follows EU Regulation 598/2014, which mandates the ICAO "Balanced Approach" (reduction at source, land-use planning, operational procedures, operating restrictions). Environmental noise mapping uses Lden / Lnight under Directive 2002/49/EC.' },
+  { t: 'eVTOL / UAM noise (emerging)',
+    d: 'EASA certifies eVTOL under SC-VTOL with dedicated Environmental Protection Technical Specifications defining hover, departure, approach and flyover noise measurement. The FAA is applying tailored Part 36 rules to powered-lift aircraft. ICAO CAEP is developing harmonised UAM noise standards. Community tolerance — not just certification limits — is the design driver, which is exactly what location-specific propagation studies like Propiq support.' },
+  { t: 'Key metrics used in regulation',
+    d: 'EPNL (Effective Perceived Noise Level, EPNdB) — tone- and duration-corrected certification metric. SEL / LAE — single-event A-weighted exposure. LAmax — maximum A-level of an event. DNL / Lden — 24-h average with evening/night penalties for land-use planning. Propiq computes free-field LA (dBA) fields, the physical input from which such event metrics are assembled.' }
+];
+
+function explain(key) {
+  const g = GLOSSARY[key]; if (!g) return;
+  document.getElementById('explain-title').textContent = g.t;
+  document.getElementById('explain-body').innerHTML =
+    '<p>' + g.d + '</p>' + (g.frm ? '<div class="frm">' + g.frm + '</div>' : '');
+  document.getElementById('explain-modal').style.display = 'flex';
+}
+function openGlossary() {
+  const body = document.getElementById('glossary-body');
+  body.innerHTML =
+    '<div class="gl-sec">Calculations & Terms</div>' +
+    Object.keys(GLOSSARY).map(k => {
+      const g = GLOSSARY[k];
+      return '<div class="gl-term"><h4>' + g.t + '</h4><p>' + g.d + '</p>' +
+             (g.frm ? '<div class="frm">' + g.frm + '</div>' : '') + '</div>';
+    }).join('') +
+    '<div class="gl-sec">Regulations — EASA · FAA · ICAO</div>' +
+    REGS.map(r => '<div class="gl-term"><h4>' + r.t + '</h4><p>' + r.d + '</p></div>').join('') +
+    '<div class="gl-note">Regulatory summaries are provided for engineering orientation only and are not a substitute for the official texts of ICAO, EASA or the FAA.</div>';
+  document.getElementById('glossary-modal').style.display = 'flex';
+}
+
+/* ── Assistant chat: keyword answers over the glossary + live results ── */
+function toggleChat() {
+  const pnl = document.getElementById('chat-panel');
+  const open = pnl.style.display !== 'flex';
+  pnl.style.display = open ? 'flex' : 'none';
+  if (open && !document.getElementById('chat-log').children.length) {
+    chatBot("Hi " + deriveUsername(_currentUser) + "! I'm the Propiq assistant. Ask me about any calculation — divergence, air absorption, ground effect, building shielding, dBA — or about your current results.");
+    chatSuggest(['What is dBA?', 'How do buildings shield noise?', 'My results', 'Regulations']);
+  }
+}
+function chatBot(txt) {
+  const log = document.getElementById('chat-log');
+  const el = document.createElement('div'); el.className = 'ch-msg bot'; el.innerHTML = txt;
+  log.appendChild(el); log.scrollTop = log.scrollHeight;
+}
+function chatUser(txt) {
+  const log = document.getElementById('chat-log');
+  const el = document.createElement('div'); el.className = 'ch-msg user'; el.textContent = txt;
+  log.appendChild(el); log.scrollTop = log.scrollHeight;
+}
+function chatSuggest(arr) {
+  const box = document.getElementById('chat-sug');
+  box.innerHTML = arr.map(a => '<span onclick="chatAsk(\'' + a.replace(/'/g, "\\'") + '\')">' + a + '</span>').join('');
+}
+function chatAsk(q) { const inp = document.getElementById('chat-inp'); inp.value = q; chatSend(); }
+function chatSend() {
+  const inp = document.getElementById('chat-inp');
+  const q = (inp.value || '').trim(); if (!q) return;
+  inp.value = '';
+  chatUser(q);
+  setTimeout(() => chatBot(chatAnswer(q)), 240);
+}
+const CHAT_KEYS = [
+  [/dba|a-weight|weighting/i, 'dba'], [/spl|pressure level/i, 'spl'],
+  [/pwl|power level|sound power/i, 'pwl'], [/octave|band|spectrum/i, 'bands'],
+  [/diverg|spread|distance|6 db/i, 'div'], [/absorp|atmosph|air|humidity/i, 'atm'],
+  [/ground/i, 'gnd'], [/reflect|hard wall|facade|façade/i, 'refl'],
+  [/barrier|diffract|shield|maekawa|block/i, 'bar'], [/wind|refract/i, 'wind'],
+  [/hemisphere|domain|radius/i, 'hemi'], [/contour/i, 'contour'], [/iso/i, 'iso'],
+  [/probe|click point/i, 'probe'], [/fft|upload|wav|time domain|frequency domain/i, 'fft'],
+  [/osm|building data|footprint|openstreetmap|water/i, 'osm'], [/max|min|avg|average|statistic/i, 'maxspl']
+];
+function chatAnswer(q) {
+  if (/result|my (run|solve|field)|current/i.test(q)) {
+    if (typeof FIELD !== 'undefined' && FIELD) {
+      const st = FIELD.stats, si = FIELD.site || {};
+      return 'Your latest solve: <b>' + FIELD.points.length.toLocaleString() + '</b> receiver points over <b>' +
+        (si.name || 'the site') + '</b> (' + (si.buildings || 0) + ' OSM buildings). Max <b>' + st.maxA.toFixed(1) +
+        ' dBA</b>, avg ' + st.avgA.toFixed(1) + ' dBA, min ' + st.minA.toFixed(1) + ' dBA. Source power level ' +
+        st.pwl.toFixed(1) + ' dB. Click any point in the 3-D view to probe it.';
+    }
+    return 'No solve yet — pick a location, then press ▶ RUN SIMULATION in the SOLVER tab.';
+  }
+  if (/regulat|icao|faa|easa|certif|law|limit/i.test(q)) {
+    return 'Noise certification follows <b>ICAO Annex 16 Vol I</b> (EPNL limits by chapter), implemented as <b>FAA 14 CFR Part 36</b> (Stages 3–5) in the US and <b>EASA CS-36</b> in Europe; land-use planning uses DNL / Lden. eVTOL noise is covered by EASA SC-VTOL specifications. Open the 📖 GLOSSARY (header) for the full summaries.';
+  }
+  if (/how.*(use|start)|help|tutorial/i.test(q)) {
+    return 'Quick start: <b>1)</b> LOCATION tab — search a place or click the map (buildings load automatically). <b>2)</b> SOURCE tab — set SPL, altitude, spectrum or upload a recording. <b>3)</b> ENVIRON tab — atmosphere, wind, surfaces. <b>4)</b> SOLVER tab — ▶ RUN. Then explore the 3-D field, click to probe, and export JSON.';
+  }
+  for (const [re, key] of CHAT_KEYS) {
+    if (re.test(q)) { const g = GLOSSARY[key]; return '<b>' + g.t + '</b> — ' + g.d + (g.frm ? '<br><i style="opacity:.75">' + g.frm + '</i>' : ''); }
+  }
+  return "I can explain every calculation in Propiq (try 'ground effect', 'diffraction', 'dBA'), summarise EASA/FAA/ICAO rules, or report your current results ('my results'). What would you like to know?";
 }
 
 </script>
