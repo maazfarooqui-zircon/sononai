@@ -95,7 +95,7 @@ body{
   background-size:300% 100%;animation:pqStripe 7s linear infinite}
 @keyframes pqStripe{0%{background-position:0% 0}100%{background-position:300% 0}}
 @keyframes pqBtnFlow{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
-.lf-tab.active{border-bottom:2px solid transparent!important;
+.lf-tab.active{color:#0784a8!important;border-bottom:2px solid transparent!important;
   border-image:linear-gradient(90deg,#0784a8,#00c9a0,#7a4fd8) 1!important}
 /* animated rotor logo with ripple rings */
 .lf-logo{width:64px;height:64px;margin-bottom:14px;position:relative}
@@ -114,11 +114,12 @@ body{
 .lf-head p{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--dim);
   margin-top:6px;text-transform:uppercase}
 .lf-tabs{display:flex;border-bottom:1px solid var(--b1);margin-bottom:22px}
-.lf-tab{flex:1;padding:9px;font-family:var(--mono);font-size:10px;font-weight:700;
+.lf-tab{flex:1;padding:10px;font-family:var(--mono);font-size:11px;font-weight:700;
   letter-spacing:2px;text-align:center;cursor:pointer;border-bottom:2px solid transparent;
-  margin-bottom:-1px;transition:.2s;color:rgba(28,43,58,.35)}
+  margin-bottom:-1px;transition:.2s;color:#5a7189}
+.lf-tab:hover{color:#1c2b3a}
 .lf-lbl{font-family:var(--mono);font-size:10px;letter-spacing:2px;
-  color:rgba(34,212,240,.6);display:block;margin-bottom:5px}
+  color:#0a6d8c;display:block;margin-bottom:5px;font-weight:600}
 .lf-inp{width:100%;padding:11px 14px;background:#f5f8fb;
   border:1px solid var(--b1);color:#1c2b3a;font-family:var(--mono);
   font-size:13px;outline:none;transition:.2s;margin-bottom:14px}
@@ -215,6 +216,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
 .btn-primary:hover{opacity:.9;transform:translateY(-1px)}
 .btn-primary:disabled{opacity:.5;cursor:wait;animation:none}
 .btn-ghost{color:var(--cyan);background:transparent;border:1px solid var(--b2)}
+.btn.danger{background:linear-gradient(135deg,#c02020,#e04848)!important;color:#fff!important}
 .btn-ghost:hover{background:var(--cyanB);border-color:var(--cyan)}
 
 /* ═══════════════ MAP ═══════════════ */
@@ -458,7 +460,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
       <button id="si-btn" class="lf-btn" onclick="doSignIn()">SIGN IN →</button>
       <div style="text-align:center;margin-top:11px">
         <a onclick="showForgot()" style="font-family:var(--mono);font-size:10px;letter-spacing:1px;
-          color:rgba(34,212,240,.4);cursor:pointer">Forgot password?</a>
+          color:#0a6d8c;cursor:pointer;text-decoration:underline">Forgot password?</a>
       </div>
       <div id="si-msg" class="lf-msg"></div>
       <div style="margin-top:16px;padding:10px 12px;background:rgba(34,212,240,.04);
@@ -503,7 +505,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
       <button onclick="switchAuthTab('signin')" style="width:100%;padding:10px;background:transparent;
         border:1px solid var(--b2);font-family:var(--mono);font-size:10px;color:var(--cyan);cursor:pointer">
         ← BACK TO SIGN IN</button>
-      <div id="fp-msg" style="margin-top:10px;font-family:var(--mono);font-size:11px;color:rgba(34,212,240,.8)"></div>
+      <div id="fp-msg" style="margin-top:10px;font-family:var(--mono);font-size:11px;color:#0a6d8c"></div>
     </div>
   </div>
 </div>
@@ -535,6 +537,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
         <div class="rail-tab active" data-pane="source" onclick="switchRail('source')">SOURCE</div>
         <div class="rail-tab" data-pane="env" onclick="switchRail('env')">ENVIRON</div>
         <div class="rail-tab" data-pane="location" onclick="switchRail('location')">LOCATION</div>
+        <div class="rail-tab" data-pane="data" onclick="switchRail('data')">DATA</div>
         <div class="rail-tab" data-pane="sim" onclick="switchRail('sim')">SOLVER</div>
       </div>
       <div class="rail-body" id="rail-body"><!-- panes injected --></div>
@@ -734,7 +737,7 @@ function switchAuthTab(tab) {
     if (f) f.style.display = t === tab ? 'block' : 'none';
     const tb = document.getElementById('tab-' + t);
     if (tb) {
-      tb.style.color = t === tab ? '#22d4f0' : 'rgba(255,255,255,.25)';
+      tb.style.color = t === tab ? '#0784a8' : '#5a7189';
       tb.style.borderBottomColor = t === tab ? '#22d4f0' : 'transparent';
     }
   });
@@ -1326,6 +1329,7 @@ const SIM = {
          barrier: false, barrierDelta: 3 },
   domain: { radius: 2000 },
   location: { lat: null, lng: null, name: '', elevation: 0 },
+  meas: { cal: 120, running: false },   // live-measurement calibration + state
   buildings: [],          // current-location footprints [{poly:[[x,y]…], h}] — OSM only
   water: [],              // current-location water polygons [{poly}] — OSM only
   buildingsSource: 'none', // 'pending' | 'osm' | 'unavailable' | 'none'
@@ -1373,18 +1377,10 @@ function railPaneSource() {
         <div class="field-lbl" style="margin-bottom:6px"><span>Octave band PWL (dB)</span></div>
         <div class="spectrum-grid" id="spec-grid"></div>
       </div>
-      <div class="field" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--b1)">
-        <div class="field-lbl"><span>Upload aircraft noise data</span></div>
-        <select class="field-sel" id="upl-mode" style="margin-bottom:6px">
-          <option value="auto" selected>Auto-detect format</option>
-          <option value="freq">Frequency domain — CSV (Hz, dB)</option>
-          <option value="time">Time domain — WAV or CSV (t, amplitude)</option>
-        </select>
-        <input type="file" id="upl-file" accept=".csv,.txt,.wav" class="field-inp"
-          style="padding:5px" onchange="handleNoiseUpload(this)">
-        <div class="field-hint">Frequency: two columns (Hz, dB SPL) — levels used directly.
-          Time: WAV or CSV waveform — FFT → octave spectrum shape, scaled to the SPL slider.</div>
-        <div class="field-hint" id="upl-status" style="color:var(--cyan)"></div>
+      <div class="field-hint" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--b1)">
+        Have real aircraft noise? Upload a file or <b>measure live with a microphone</b> in the
+        <a onclick="switchRail('data')" style="color:var(--cyan);cursor:pointer;text-decoration:underline">DATA tab</a>
+        — the spectrum feeds straight into this source.
       </div>
     </div>
   </div>
@@ -1533,6 +1529,59 @@ function railPaneLocation() {
   </div>`;
 }
 
+function railPaneData() {
+  return `
+  <div class="panel">
+    <div class="panel-head"><span class="ic">📂</span> Upload Noise Data <span class="qbtn" onclick="explain('fft')">?</span></div>
+    <div class="panel-body">
+      <div class="field">
+        <select class="field-sel" id="upl-mode" style="margin-bottom:6px">
+          <option value="auto" selected>Auto-detect format</option>
+          <option value="freq">Frequency domain — CSV (Hz, dB)</option>
+          <option value="time">Time domain — WAV or CSV (t, amplitude)</option>
+        </select>
+        <input type="file" id="upl-file" accept=".csv,.txt,.wav" class="field-inp"
+          style="padding:5px" onchange="handleNoiseUpload(this)">
+        <div class="field-hint">Frequency: two columns (Hz, dB SPL) — levels used directly.
+          Time: WAV or CSV waveform — FFT → octave spectrum shape, scaled to the source SPL.</div>
+        <div class="field-hint" id="upl-status" style="color:var(--cyan)"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><span class="ic">🎙</span> Live Measurement <span class="qbtn" onclick="explain('meas')">?</span></div>
+    <div class="panel-body">
+      <div class="field">
+        <div class="field-lbl"><span>Input device (mic / DAQ / interface)</span></div>
+        <select class="field-sel" id="mic-dev"><option value="">Default microphone</option></select>
+        <div class="field-hint">Any input the browser can see: phone or laptop mic, USB measurement
+          microphones, and DAQ / audio interfaces exposed as audio inputs.</div>
+      </div>
+      <div class="field">
+        <div class="field-lbl"><span>Calibration offset</span><span class="field-val" id="v-cal">${SIM.meas.cal} dB</span></div>
+        <input type="range" min="60" max="160" step="1" value="${SIM.meas.cal}"
+          oninput="measSetCal(this.value)">
+        <div class="field-hint">Uncalibrated inputs report dB re full scale. Set this so a known
+          source reads correctly (e.g. a 94 dB calibrator), or use the default for indicative levels.</div>
+      </div>
+      <button class="btn btn-primary" id="meas-btn" style="width:100%" onclick="measToggle()">● START MEASURING</button>
+      <div id="meas-live" style="display:none;margin-top:12px">
+        <div class="metric-grid" style="margin-bottom:10px">
+          <div class="metric"><div class="k">Live level</div><div class="v" id="live-dba">—</div><div class="d">dBA (1 s)</div></div>
+          <div class="metric green"><div class="k">Leq</div><div class="v" id="live-leq">—</div><div class="d">dBA since start</div></div>
+        </div>
+        <canvas id="live-meter" style="width:100%;height:110px;background:var(--s2);border:1px solid var(--b1)"></canvas>
+        <label class="field-hint" style="display:flex;align-items:center;gap:7px;margin-top:9px;cursor:pointer">
+          <input type="checkbox" id="meas-auto" checked>
+          Auto-feed measured spectrum to the noise source (every 2 s)
+        </label>
+        <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="measApply(true)">⤴ APPLY TO SOURCE NOW</button>
+      </div>
+      <div class="field-hint" id="meas-status" style="color:var(--cyan);margin-top:8px"></div>
+    </div>
+  </div>`;
+}
+
 function railPaneSim() {
   return `
   <div class="panel">
@@ -1578,6 +1627,7 @@ function renderRail(pane) {
   if (pane === 'source') body.innerHTML = railPaneSource();
   else if (pane === 'env') { body.innerHTML = railPaneEnv(); syncEnvSelects(); }
   else if (pane === 'location') { body.innerHTML = railPaneLocation(); initMap(); }
+  else if (pane === 'data') { body.innerHTML = railPaneData(); measInitDevices(); measRestoreUI(); }
   else if (pane === 'sim') body.innerHTML = railPaneSim();
   if (pane === 'source' && SIM.source.spectrumMode === 'custom') renderSpecGrid();
 }
@@ -3074,6 +3124,8 @@ const GLOSSARY = {
     d: 'Frequency-domain CSVs (Hz, dB) are integrated directly into octave bands. Time-domain WAV/CSV recordings are Fourier-transformed to extract the spectrum shape, then scaled to your overall SPL (recordings carry no absolute calibration).' },
   osm:   { t: 'OSM site geometry', frm: 'OpenStreetMap buildings & water via the Overpass API',
     d: 'Building footprints and heights (explicit tags, or storey count × 3.2 m) plus water polygons are fetched for the exact coordinates you select. They act as hard reflecting obstacles in the solver. Zero buildings = a genuinely unbuilt site.' },
+  meas:  { t: 'Live noise measurement', frm: 'Mic/DAQ → FFT (dB re full scale) → octave bands + calibration offset',
+    d: 'Captures audio from any input device the browser can access — phone or laptop microphones, USB measurement mics, or DAQ front-ends exposed as audio inputs. The stream is Fourier-analysed into octave bands in real time. Consumer inputs are not absolutely calibrated: the calibration offset maps digital full-scale to SPL, ideally set with a 94 dB acoustic calibrator. The measured spectrum feeds directly into the simulator\'s noise source.' },
   maxspl:{ t: 'Max / Min / Avg SPL', frm: 'Statistics over all receiver points in the domain',
     d: 'Max occurs closest to the aircraft; Avg is the energy-relevant mean across the hemisphere; Min sits at the far shielded edges of the domain.' }
 };
@@ -3175,6 +3227,150 @@ function chatAnswer(q) {
     if (re.test(q)) { const g = GLOSSARY[key]; return '<b>' + g.t + '</b> — ' + g.d + (g.frm ? '<br><i style="opacity:.75">' + g.frm + '</i>' : ''); }
   }
   return "I can explain every calculation in Propiq (try 'ground effect', 'diffraction', 'dBA'), summarise EASA/FAA/ICAO rules, or report your current results ('my results'). What would you like to know?";
+}
+
+
+/* ════════════════ LIVE NOISE MEASUREMENT (mic / DAQ) ════════════════ */
+const MEAS = { ctx: null, stream: null, analyser: null, timer: null, feedTimer: null,
+  bandNow: null, leqSum: 0, leqN: 0, t0: 0 };
+
+function measSetCal(v) {
+  SIM.meas.cal = parseFloat(v);
+  const el = document.getElementById('v-cal'); if (el) el.textContent = SIM.meas.cal + ' dB';
+}
+async function measInitDevices() {
+  const sel = document.getElementById('mic-dev');
+  if (!sel || !navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+  try {
+    const devs = await navigator.mediaDevices.enumerateDevices();
+    const ins = devs.filter(d => d.kind === 'audioinput');
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">Default microphone</option>' + ins.map((d, i) =>
+      `<option value="${d.deviceId}">${(d.label || ('Input ' + (i + 1))).replace(/</g, '&lt;')}</option>`).join('');
+    sel.value = cur;
+  } catch (e) { /* labels appear after permission is granted */ }
+}
+function measRestoreUI() {
+  const btn = document.getElementById('meas-btn'), live = document.getElementById('meas-live');
+  if (SIM.meas.running) {
+    if (btn) { btn.textContent = '■ STOP MEASURING'; btn.classList.add('danger'); }
+    if (live) live.style.display = '';
+  }
+}
+function measToggle() { SIM.meas.running ? measStop() : measStart(); }
+
+async function measStart() {
+  const status = (m, err) => { const el = document.getElementById('meas-status');
+    if (el) { el.textContent = m; el.style.color = err ? 'var(--red)' : 'var(--cyan)'; } };
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    status('Audio capture is not available in this browser.', true); return;
+  }
+  const devId = (document.getElementById('mic-dev') || {}).value || '';
+  try {
+    status('Requesting microphone access…');
+    MEAS.stream = await navigator.mediaDevices.getUserMedia({
+      audio: devId ? { deviceId: { exact: devId }, echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+                   : { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    const AC = window.AudioContext || window.webkitAudioContext;
+    MEAS.ctx = new AC();
+    const src = MEAS.ctx.createMediaStreamSource(MEAS.stream);
+    MEAS.analyser = MEAS.ctx.createAnalyser();
+    MEAS.analyser.fftSize = 8192;
+    MEAS.analyser.smoothingTimeConstant = 0.5;
+    src.connect(MEAS.analyser);
+    SIM.meas.running = true;
+    MEAS.leqSum = 0; MEAS.leqN = 0; MEAS.t0 = Date.now();
+    const btn = document.getElementById('meas-btn');
+    if (btn) { btn.textContent = '■ STOP MEASURING'; btn.classList.add('danger'); }
+    const live = document.getElementById('meas-live'); if (live) live.style.display = '';
+    status('Measuring — disable phone silent mode and hold the mic toward the source.');
+    measInitDevices(); // labels now available
+    MEAS.timer = setInterval(measTick, 250);
+    MEAS.feedTimer = setInterval(() => {
+      const cb = document.getElementById('meas-auto');
+      if (cb && cb.checked) measApply(false);
+    }, 2000);
+  } catch (e) {
+    status('Microphone access failed: ' + (e.message || e.name) + '. Check browser permissions.', true);
+    SIM.meas.running = false;
+  }
+}
+function measStop() {
+  clearInterval(MEAS.timer); clearInterval(MEAS.feedTimer);
+  if (MEAS.stream) MEAS.stream.getTracks().forEach(t => t.stop());
+  if (MEAS.ctx) MEAS.ctx.close();
+  MEAS.stream = MEAS.ctx = MEAS.analyser = null;
+  SIM.meas.running = false;
+  const btn = document.getElementById('meas-btn');
+  if (btn) { btn.textContent = '● START MEASURING'; btn.classList.remove('danger'); }
+  const el = document.getElementById('meas-status');
+  if (el) el.textContent = 'Stopped. Last measured spectrum ' +
+    (MEAS.bandNow ? 'remains applied to the source.' : 'was not captured.');
+  if (MEAS.bandNow) measApply(true);
+}
+function measTick() {
+  if (!MEAS.analyser) return;
+  const n = MEAS.analyser.frequencyBinCount;
+  const data = new Float32Array(n);
+  MEAS.analyser.getFloatFrequencyData(data);        // dBFS per bin
+  const sr = MEAS.ctx.sampleRate, binHz = sr / MEAS.analyser.fftSize;
+  const cal = SIM.meas.cal;
+  const bands = ACO.BANDS.map(fc => {
+    const lo = fc / Math.SQRT2, hi = fc * Math.SQRT2;
+    let e = 0, c = 0;
+    for (let i = 1; i < n; i++) {
+      const f = i * binHz;
+      if (f >= lo && f < hi && isFinite(data[i])) { e += Math.pow(10, data[i] / 10); c++; }
+    }
+    return c ? 10 * Math.log10(e) + cal : -40;
+  });
+  MEAS.bandNow = bands;
+  const dba = ACO.aWeightedOverall(bands);
+  MEAS.leqSum += Math.pow(10, dba / 10); MEAS.leqN++;
+  const leq = 10 * Math.log10(MEAS.leqSum / MEAS.leqN);
+  const sd = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  sd('live-dba', dba.toFixed(1)); sd('live-leq', leq.toFixed(1));
+  measDraw(bands, dba);
+}
+function measDraw(bands, dba) {
+  const cv = document.getElementById('live-meter'); if (!cv) return;
+  const ctx = cv.getContext('2d');
+  if (cv.width !== cv.offsetWidth) { cv.width = cv.offsetWidth; cv.height = cv.offsetHeight; }
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+  const bw = W / bands.length;
+  bands.forEach((L, i) => {
+    const t = Math.max(0, Math.min(1, (L - 20) / 80));   // 20–100 dB scale
+    const c = splColor(t * 100, 0, 100);
+    ctx.fillStyle = `rgb(${c[0] | 0},${c[1] | 0},${c[2] | 0})`;
+    const h = t * (H - 18);
+    ctx.fillRect(i * bw + 3, H - 14 - h, bw - 6, h);
+    ctx.fillStyle = '#54708a'; ctx.font = '9px IBM Plex Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(ACO.BANDS[i] >= 1000 ? (ACO.BANDS[i] / 1000) + 'k' : ACO.BANDS[i], i * bw + bw / 2, H - 3);
+  });
+  ctx.fillStyle = '#1c2b3a'; ctx.font = '11px IBM Plex Mono'; ctx.textAlign = 'right';
+  ctx.fillText(dba.toFixed(1) + ' dBA', W - 6, 13);
+}
+/* Feed the measured octave spectrum into the simulator's noise source. */
+function measApply(announce) {
+  if (!MEAS.bandNow) return;
+  const bands = MEAS.bandNow;
+  const dba = ACO.aWeightedOverall(bands);
+  SIM.source.splOverall = Math.round(ACO.sumDB(bands) * 10) / 10;
+  SIM.source.spectrum = bands.map(v => v + 11);       // SPL → PWL
+  SIM.source.spectrumMode = 'custom';
+  const el = document.getElementById('meas-status');
+  if (el) el.textContent = '⤴ Fed to source: ' + SIM.source.splOverall.toFixed(1) +
+    ' dB overall (' + dba.toFixed(1) + ' dBA) — solver updating.';
+  scheduleAutoRun();
+  if (announce) switchRailFlash && switchRailFlash();
+}
+function switchRailFlash() {
+  const tab = document.querySelector('.rail-tab[data-pane="source"]');
+  if (!tab) return;
+  tab.style.transition = 'background .3s'; tab.style.background = 'var(--cyanG)';
+  setTimeout(() => { tab.style.background = ''; }, 900);
 }
 
 </script>
