@@ -1051,14 +1051,60 @@ const _supa = supabase.createClient(
 );
 let _currentUser = null;
 
+/* ── Gate: hide every app surface until a session is confirmed ──
+   These are hidden immediately (before paint) and only revealed by
+   showApp(), which runs solely after Supabase returns a valid session. */
+var _APP_IDS = ['hdr','globalNav','step-select','step-tool','page-glossary',
+                'page-cabin','page-noise','page-bench','page-advanced','page-liners'];
+
+(function lockApp(){
+  var css = _APP_IDS.map(function(id){ return '#'+id; }).join(',') +
+            ',.bg-wrap{display:none!important}';
+  var st = document.createElement('style');
+  st.id = '_gate-style';
+  st.textContent = css;
+  document.head.appendChild(st);
+})();
+
+function _unlockApp(){
+  var st = document.getElementById('_gate-style');
+  if(st) st.remove();
+}
+
+function _relockApp(){
+  if(document.getElementById('_gate-style')) return;
+  var css = _APP_IDS.map(function(id){ return '#'+id; }).join(',') +
+            ',.bg-wrap{display:none!important}';
+  var st = document.createElement('style');
+  st.id = '_gate-style';
+  st.textContent = css;
+  document.head.appendChild(st);
+}
+
+/* True while the page was opened from an invite / reset link.
+   In that case the user has a valid session but has NOT yet chosen
+   a password, so we must not drop them into the tool. */
+var _IS_INVITE_FLOW = /type=(invite|recovery|signup)/.test(
+      (window.location.hash || '') + (window.location.search || ''));
+
 // Init: check existing session
 (async function(){
-  const { data } = await _supa.auth.getSession();
-  if(data && data.session && data.session.user){
-    _currentUser = data.session.user;
-    showApp(data.session.user.email);
-  }
+  if(_IS_INVITE_FLOW) return;   // invite screen handles this instead
+  try{
+    const { data } = await _supa.auth.getSession();
+    if(data && data.session && data.session.user){
+      _currentUser = data.session.user;
+      showApp(data.session.user.email);
+    }
+  }catch(e){ /* no session -> login screen stays up */ }
 })();
+
+/* Keep UI honest if the session expires or is revoked in another tab */
+_supa.auth.onAuthStateChange(function(event, session){
+  if(event === 'SIGNED_OUT' || !session){
+    _currentUser = null;
+  }
+});
 
 function switchAuthTab(tab){
   ['signin','register','forgot'].forEach(t=>{
@@ -1105,52 +1151,56 @@ async function doSignIn(){
 }
 
 async function doRegister(){
-  const email=(document.getElementById('reg-email')||{}).value.trim()||'';
-  const name=(document.getElementById('reg-name')||{}).value.trim()||'';
-  const org=(document.getElementById('reg-org')||{}).value.trim()||'';
+  const email=((document.getElementById('reg-email')||{}).value||'').trim();
+  const name =((document.getElementById('reg-name') ||{}).value||'').trim();
+  const org  =((document.getElementById('reg-org')  ||{}).value||'').trim();
   const msg=document.getElementById('reg-msg');
   const btn=document.getElementById('reg-btn');
-  if(!email){
-    if(msg){msg.style.display='block';msg.style.background='rgba(255,80,80,.15)';msg.style.borderLeft='3px solid #ff5050';msg.style.color='#ff9090';msg.style.padding='10px 14px';msg.textContent='Please enter your email address.';}
-    return;
+
+  function show(text,ok){
+    if(!msg) return;
+    msg.style.display='block';
+    msg.style.padding='12px 14px';
+    msg.style.background = ok ? 'rgba(0,200,100,.10)' : 'rgba(255,80,80,.15)';
+    msg.style.borderLeft = ok ? '3px solid #00c864' : '3px solid #ff5050';
+    msg.style.color      = ok ? '#00e878' : '#ff9090';
+    msg.innerHTML = text;
   }
+
+  if(!email){ show('Please enter your email address.',false); return; }
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
-    if(msg){msg.style.display='block';msg.style.background='rgba(255,80,80,.15)';msg.style.borderLeft='3px solid #ff5050';msg.style.color='#ff9090';msg.style.padding='10px 14px';msg.textContent='Please enter a valid email address.';}
-    return;
+    show('Please enter a valid email address.',false); return;
   }
-  if(btn){btn.textContent='SENDING REQUEST…';btn.disabled=true;}
-  if(msg)msg.style.display='none';
+  if(!org){ show('Please enter your organisation.',false); return; }
+
+  if(btn){ btn.textContent='SENDING REQUEST…'; btn.disabled=true; }
+  if(msg) msg.style.display='none';
+
   try{
-    /* Generate a random temporary password — user will never see this.
-       Admin will set/send the real password via Supabase dashboard or email. */
-    const tempPass = 'SONIQ_' + Math.random().toString(36).slice(2,10).toUpperCase() + '_tmp!9';
-    const meta = {full_name:name||email, organisation:org, status:'pending_approval', requested_at:new Date().toISOString()};
-    const {data,error} = await _supa.auth.signUp({
-      email,
-      password:tempPass,
-      options:{data:meta}
+    /* Record the request in a table. We deliberately do NOT create an auth
+       user here — accounts are created by an admin after approval, so that
+       access to acoustic data is never granted automatically. */
+    const { error } = await _supa.from('access_requests').insert({
+      email: email.toLowerCase(),
+      full_name: name || null,
+      organisation: org
     });
-    if(error) throw error;
-    /* Send notification email to admin via Supabase Edge Function if available,
-       otherwise the admin can see new signups in the Supabase Auth dashboard. */
-    try{
-      await _supa.functions.invoke('notify-admin-new-user',{body:{email,name,org}});
-    }catch(fe){ /* Edge function optional — fail silently */ }
-    if(msg){
-      msg.style.display='block';msg.style.background='rgba(0,200,100,.10)';
-      msg.style.borderLeft='3px solid #00c864';msg.style.color='#00e878';msg.style.padding='12px 14px';
-      msg.innerHTML='<strong>✓ Access request submitted!</strong><br><br>We will review your request and email <strong>'+email+'</strong> with your password. This usually takes less than 24 hours.';
+
+    if(error){
+      if((error.code === '23505') || /duplicate|unique/i.test(error.message||'')){
+        show('<strong>Request already received.</strong><br><br>We already have a pending request for ' + email + '. We will be in touch shortly.', true);
+        if(btn){ btn.textContent='REQUEST RECEIVED ✓'; btn.disabled=true; }
+        return;
+      }
+      throw error;
     }
-    if(btn){btn.textContent='REQUEST SENT ✓';btn.disabled=true;}
+
+    show('<strong>✓ Access request submitted</strong><br><br>Our team will review your request and contact <strong>' + email + '</strong> with account details. This normally takes less than one working day.', true);
+    if(btn){ btn.textContent='REQUEST SENT ✓'; btn.disabled=true; }
+
   }catch(e){
-    const errMsg=e.message||'Request failed';
-    const already=errMsg.toLowerCase().includes('already');
-    if(msg){
-      msg.style.display='block';msg.style.background='rgba(255,80,80,.15)';
-      msg.style.borderLeft='3px solid #ff5050';msg.style.color='#ff9090';msg.style.padding='10px 14px';
-      msg.textContent=already?'This email already has a pending request. Check your inbox for your password.':'Error: '+errMsg;
-    }
-    if(btn){btn.textContent='REQUEST ACCESS →';btn.disabled=false;}
+    show('Error: ' + (e.message || 'Request failed. Please email info@sononai.com.'), false);
+    if(btn){ btn.textContent='REQUEST ACCESS →'; btn.disabled=false; }
   }
 }
 
@@ -1182,10 +1232,10 @@ async function doSignOut(){
     return;
   }
   // Hide app elements
-  ['hdr','globalNav','step-select','step-tool','page-glossary','page-cabin',
-   'page-noise','page-bench','page-advanced'].forEach(id=>{
+  _APP_IDS.forEach(id=>{
     const el=document.getElementById(id); if(el) el.style.display='none';
   });
+  _relockApp();
   const bw=document.querySelector('.bg-wrap'); if(bw) bw.style.display='none';
   const sb=document.getElementById('sidebarEl'); if(sb) sb.classList.remove('open');
   // Reset forms
@@ -1280,6 +1330,7 @@ async function doChangePassword(){
 
 
 function showApp(email){
+  _unlockApp();   // remove CSS gate — only reached with a valid session
   // Hide auth + landing
   const lp=document.getElementById('landing-page'); if(lp) lp.style.display='none';
   const ls=document.getElementById('login-screen'); if(ls) ls.style.display='none';
@@ -7631,1031 +7682,7 @@ document.addEventListener('keydown',function(e){
 
 
  
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SONONAI — eVTOL Acoustic Intelligence | sononai.com</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<style>
-/* ══════════════════════════════════════════════════
-   RESET & ROOT VARIABLES
-══════════════════════════════════════════════════ */
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#f2f6fa;
-  --s1:#ffffff;
-  --s2:#eaf0f7;
-  --s3:#dde6ef;
-  --b1:#c0d0e0;
-  --b2:#90aac0;
-  --b3:#6088a8;
-  --cyan:#0066bb;
-  --cyanG:rgba(0,102,187,.10);
-  --cyanB:rgba(0,102,187,.07);
-  --green:#006633;
-  --greenG:rgba(0,102,51,.10);
-  --amber:#995500;
-  --amberG:rgba(153,85,0,.10);
-  --red:#bb1133;
-  --redG:rgba(187,17,51,.10);
-  --white:#0d1f2e;
-  --muted:#3a5a78;
-  --dim:#6888a8;
-  --mono:'JetBrains Mono',monospace;
-  --disp:'Syne',sans-serif;
-  --body:'Space Grotesk',sans-serif;
-  --r:0px;
-}
-html{scroll-behavior:smooth}
-body{
-  background:var(--bg);color:var(--white);
-  font-family:var(--body);font-size:14px;line-height:1.6;
-  overflow-x:hidden;min-height:100vh;
-}
 
-/* ══ ANIMATED BG GRID */
-.bg-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.bg-grid{
-  position:absolute;inset:0;
-  background-image:
-    linear-gradient(rgba(0,200,232,.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,200,232,.04) 1px,transparent 1px);
-  background-size:50px 50px;
-  animation:none; display:none;
-}
-@keyframes gridDrift{to{background-position:50px 50px}}
-.bg-radial{
-  position:absolute;inset:0;
-  background:
-    radial-gradient(ellipse 80% 60% at 10% 50%,rgba(0,200,232,.07) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 80% at 90% 20%,rgba(0,232,152,.05) 0%,transparent 60%),
-    radial-gradient(ellipse 40% 40% at 50% 100%,rgba(0,200,232,.04) 0%,transparent 60%);
-}
-.bg-scan{
-  position:absolute;inset:0;
-  display:none;
-}
-
-/* ══════════════════════════════════════════════════
-   HEADER
-══════════════════════════════════════════════════ */
-#hdr{
-  position:relative;z-index:200;
-  background:#ffffff;
-  border-bottom:2px solid var(--b1);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 24px;height:62px;
-  box-shadow:0 2px 8px rgba(0,40,80,.08);
-}
-.hdr-brand{display:flex;align-items:center;gap:16px}
-.brand-wordmark{
-  font-family:var(--disp);font-size:24px;font-weight:900;
-  letter-spacing:6px;
-  color:var(--cyan);
-}
-.brand-tagline{
-  font-family:var(--mono);font-size:9px;letter-spacing:3px;
-  color:var(--muted);text-transform:uppercase;
-  border-left:1px solid var(--b2);padding-left:16px;
-  line-height:1.4;
-}
-.brand-tagline strong{display:block;color:var(--cyan);font-size:10px;letter-spacing:2px}
-
-.hdr-right{display:flex;align-items:center;gap:12px}
-.hdr-badge{
-  font-family:var(--mono);font-size:9px;letter-spacing:2px;
-  padding:4px 10px;border:1px solid var(--b2);color:var(--muted);
-  text-transform:uppercase;
-}
-.hdr-badge.live{
-  border-color:var(--green);color:var(--green);
-  background:var(--greenG);animation:livePulse 2s infinite;
-}
-@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,170,.4)}50%{box-shadow:0 0 0 6px rgba(0,255,170,0)}}
-.hdr-contact{
-  font-family:var(--mono);font-size:10px;letter-spacing:1px;
-  color:var(--cyan);text-decoration:none;
-  border:1px solid var(--cyan);padding:5px 14px;
-  background:var(--cyanG);
-  transition:all .25s;
-}
-.hdr-contact:hover{background:rgba(0,234,255,.22);box-shadow:0 0 16px rgba(0,234,255,.3)}
-
-/* ══ GLOBAL NAV TABS */
-.global-nav{
-  position:relative;z-index:190;
-  background:#1a2d42;
-  border-bottom:1px solid #0d1f2e;
-  display:flex;align-items:stretch;
-  height:42px;padding:0 24px;gap:0;
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-}
-.global-nav::-webkit-scrollbar{height:0}
-.gnav-tab{
-  font-family:var(--mono);font-size:10px;letter-spacing:1.5px;
-  color:rgba(220,235,248,.65);padding:0 18px;cursor:pointer;
-  border:none;background:transparent;
-  border-bottom:3px solid transparent;
-  transition:all .2s;text-transform:uppercase;
-  display:flex;align-items:center;gap:7px;white-space:nowrap;
-  flex-shrink:0;
-}
-.gnav-tab:hover{color:#ffffff;background:rgba(255,255,255,.06)}
-.gnav-tab.active{color:#ffffff;border-bottom-color:#22aaff;background:rgba(34,170,255,.08)}
-.gnav-tab .g-icon{font-size:11px}
-
-/* ══════════════════════════════════════════════════
-   STEP FLOW — AIRCRAFT SELECTION
-══════════════════════════════════════════════════ */
-#step-select{
-  position:relative;z-index:10;
-  min-height:calc(100vh - 62px);
-  display:flex;flex-direction:column;align-items:center;
-  padding:60px 40px;
-}
-.step-hero{text-align:center;margin-bottom:56px}
-.step-hero h1{
-  font-family:var(--disp);font-size:38px;font-weight:700;
-  letter-spacing:4px;color:var(--white);
-  margin-bottom:12px;
-}
-.step-hero h1 span{color:var(--cyan);text-shadow:0 0 30px rgba(0,234,255,.5)}
-.step-hero p{font-size:16px;color:var(--muted);font-weight:300;letter-spacing:1px;max-width:560px;margin:0 auto}
-
-/* AIRCRAFT CARD GRID */
-.aircraft-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
-  max-width:1160px;width:100%;
-  margin-bottom:40px;
-}
-@media(max-width:900px){.aircraft-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:580px){.aircraft-grid{grid-template-columns:1fr}}
-
-.ac-card{
-  background:var(--s2);
-  border:1px solid var(--b1);
-  cursor:pointer;
-  transition:all .3s;
-  position:relative;
-  overflow:hidden;
-}
-.ac-card::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,transparent 60%,rgba(0,234,255,.04));
-  opacity:0;transition:opacity .3s;
-}
-.ac-card:hover{border-color:var(--b3);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,234,255,.12)}
-.ac-card:hover::before{opacity:1}
-.ac-card.selected{
-  border-color:var(--cyan);
-  box-shadow:0 0 0 1px var(--cyan),0 0 40px rgba(0,234,255,.2),inset 0 0 30px rgba(0,234,255,.05);
-  transform:translateY(-4px);
-}
-.ac-card.selected::after{
-  content:'SELECTED ✓';
-  position:absolute;top:12px;right:12px;
-  font-family:var(--mono);font-size:8px;letter-spacing:2px;
-  color:var(--cyan);background:var(--cyanG);
-  border:1px solid var(--cyan);padding:2px 8px;
-}
-
-.ac-illustration{
-  width:100%;height:160px;
-  display:flex;align-items:center;justify-content:center;
-  background:var(--s1);
-  border-bottom:1px solid var(--b1);
-  position:relative;overflow:hidden;
-  padding:16px;
-}
-.ac-illustration svg{width:100%;height:100%;max-width:220px}
-
-/* rotor spin animations on hover */
-.ac-card:hover .blade-cw{animation:spinCW .8s linear infinite}
-.ac-card:hover .blade-ccw{animation:spinCCW .8s linear infinite}
-.ac-card.selected .blade-cw{animation:spinCW .5s linear infinite}
-.ac-card.selected .blade-ccw{animation:spinCCW .5s linear infinite}
-@keyframes spinCW{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@keyframes spinCCW{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
-
-.ac-info{padding:18px 20px 20px}
-.ac-type{
-  font-family:var(--mono);font-size:9px;letter-spacing:3px;
-  color:var(--cyan);margin-bottom:6px;text-transform:uppercase;
-}
-.ac-name{
-  font-family:var(--disp);font-size:17px;font-weight:600;
-  letter-spacing:2px;color:var(--white);margin-bottom:8px;
-}
-.ac-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px}
-.ac-specs{
-  display:flex;gap:8px;flex-wrap:wrap;
-}
-.ac-spec-tag{
-  font-family:var(--mono);font-size:9px;letter-spacing:1px;
-  padding:3px 8px;border:1px solid var(--b2);color:var(--muted);
-}
-
-/* Proceed button */
-.proceed-btn{
-  font-family:var(--disp);font-size:14px;font-weight:600;
-  letter-spacing:4px;padding:16px 60px;
-  background:transparent;border:1px solid var(--cyan);color:var(--cyan);
-  cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
-  text-transform:uppercase;
-}
-.proceed-btn::before{
-  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(0,234,255,.18),transparent);
-  transition:left .5s;
-}
-.proceed-btn:hover{background:var(--cyanG);box-shadow:0 0 30px rgba(0,234,255,.3)}
-.proceed-btn:hover::before{left:100%}
-.proceed-btn:disabled{opacity:.3;cursor:not-allowed;border-color:var(--b2);color:var(--muted)}
-.proceed-btn:disabled::before{display:none}
-
-/* ══════════════════════════════════════════════════
-   MAIN TOOL LAYOUT
-══════════════════════════════════════════════════ */
-#step-tool{display:none;position:relative;z-index:10}
-
-/* NAV BAR between steps */
-.tool-nav{
-  position:relative;z-index:50;
-  background:rgba(6,16,24,.95);backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--b1);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 40px;height:48px;
-}
-.tnav-crumb{
-  display:flex;align-items:center;gap:10px;
-  font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);
-}
-.tnav-crumb span{color:var(--cyan)}
-.tnav-btn{
-  font-family:var(--mono);font-size:10px;letter-spacing:2px;
-  padding:5px 16px;border:1px solid var(--b2);color:var(--muted);
-  background:transparent;cursor:pointer;transition:all .2s;
-}
-.tnav-btn:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyanG)}
-
-/* MAIN GRID */
-.tool-body{
-  display:grid;
-  grid-template-columns:360px 1fr;
-  height:calc(100vh - 110px);overflow:hidden;
-}
-
-/* ══════════════════════════════════════════════════
-   SIDEBAR
-══════════════════════════════════════════════════ */
-.sidebar{
-  background:var(--s1);
-  border-right:1px solid var(--b1);
-  overflow-y:auto;
-  position:relative;
-}
-.sidebar::-webkit-scrollbar{width:3px}
-.sidebar::-webkit-scrollbar-thumb{background:var(--b2)}
-
-.sec-hdr{
-  position:sticky;top:0;z-index:5;
-  background:var(--s1);
-  border-bottom:1px solid var(--b1);
-  padding:11px 20px;
-  display:flex;align-items:center;gap:10px;
-}
-.sec-hdr-icon{
-  font-size:14px;
-  width:26px;height:26px;
-  display:flex;align-items:center;justify-content:center;
-  border:1px solid var(--b2);color:var(--cyan);flex-shrink:0;
-}
-.sec-hdr-label{
-  font-family:var(--mono);font-size:10px;letter-spacing:3px;
-  color:var(--cyan);text-transform:uppercase;
-}
-
-/* SELECTED AIRCRAFT MINI CARD */
-.ac-mini{
-  padding:14px 20px;
-  border-bottom:1px solid var(--b1);
-  background:var(--s2);
-  display:flex;align-items:center;gap:14px;
-  cursor:pointer;
-  transition:background .2s;
-}
-.ac-mini:hover{background:var(--s3)}
-.ac-mini-svg{width:60px;height:40px;flex-shrink:0;border:1px solid var(--b2);
-  display:flex;align-items:center;justify-content:center;background:var(--s1)}
-.ac-mini-svg svg{width:54px;height:34px}
-.ac-mini-info{}
-.ac-mini-name{font-family:var(--disp);font-size:13px;letter-spacing:2px;color:var(--cyan)}
-.ac-mini-sub{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--muted)}
-.ac-mini-change{
-  margin-left:auto;font-family:var(--mono);font-size:9px;
-  letter-spacing:1px;color:var(--muted);border:1px solid var(--b2);
-  padding:2px 8px;white-space:nowrap;flex-shrink:0;
-}
-
-/* CONTROL GROUP */
-.ctrl{padding:12px 20px;border-bottom:1px solid var(--b1)}
-.ctrl-lbl{
-  font-family:var(--mono);font-size:9px;letter-spacing:2px;
-  color:var(--muted);margin-bottom:7px;text-transform:uppercase;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.ctrl-lbl .val{
-  font-size:11px;color:var(--cyan);
-  background:var(--cyanG);padding:1px 8px;
-  border:1px solid rgba(0,234,255,.25);letter-spacing:1px;
-}
-
-/* SLIDER */
-input[type=range]{
-  -webkit-appearance:none;width:100%;height:2px;
-  background:var(--b1);outline:none;cursor:pointer;display:block;margin:4px 0;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:13px;height:13px;
-  background:var(--cyan);border:2px solid var(--bg);
-  box-shadow:0 0 8px rgba(0,234,255,.7);cursor:pointer;transition:box-shadow .2s;
-}
-input[type=range]::-webkit-slider-thumb:hover{box-shadow:0 0 16px rgba(0,234,255,.9)}
-input[type=range].g::-webkit-slider-thumb{background:var(--green);box-shadow:0 0 8px rgba(0,255,170,.7)}
-input[type=range].a::-webkit-slider-thumb{background:var(--amber);box-shadow:0 0 8px rgba(255,190,0,.7)}
-input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 8px rgba(255,51,85,.7)}
-.tick-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:7px;color:var(--dim);margin-top:1px}
-
-/* NUMBER INPUT */
-.n-inp{
-  display:flex;align-items:center;gap:8px;
-}
-.n-inp input{
-  flex:1;background:var(--s2);border:1px solid var(--b2);
-  color:var(--white);font-family:var(--mono);font-size:12px;
-  padding:6px 10px;outline:none;-moz-appearance:textfield;
-  transition:border-color .2s;
-}
-.n-inp input::-webkit-inner-spin-button{-webkit-appearance:none}
-.n-inp input:focus{border-color:var(--cyan);box-shadow:0 0 8px rgba(0,234,255,.25)}
-.n-unit{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--dim);white-space:nowrap}
-
-/* TOGGLE SWITCH */
-.tog-row{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:9px;
-}
-.tog-row:last-child{margin-bottom:0}
-.tog-lbl{font-size:13px;font-weight:500;color:var(--white)}
-.tog{position:relative;width:38px;height:19px;flex-shrink:0}
-.tog input{opacity:0;width:0;height:0}
-.tog-track{position:absolute;inset:0;background:var(--b1);cursor:pointer;transition:.3s}
-.tog-track::after{content:'';position:absolute;width:13px;height:13px;left:3px;top:3px;background:var(--dim);transition:.3s}
-.tog input:checked+.tog-track{background:rgba(0,234,255,.25)}
-.tog input:checked+.tog-track::after{transform:translateX(19px);background:var(--cyan);box-shadow:0 0 8px rgba(0,234,255,.7)}
-
-/* CHOICE ROW */
-.choice-row{display:flex;gap:6px;flex-wrap:wrap}
-.choice-btn{
-  font-family:var(--mono);font-size:9px;letter-spacing:1px;
-  padding:5px 12px;border:1px solid var(--b2);color:var(--muted);
-  cursor:pointer;transition:all .2s;background:transparent;
-}
-.choice-btn:hover{border-color:var(--b3);color:var(--white)}
-.choice-btn.on{border-color:var(--cyan);color:var(--cyan);background:var(--cyanG)}
-
-/* CALC BUTTON */
-.calc-btn{
-  margin:14px 20px 20px;width:calc(100% - 40px);
-  padding:13px;font-family:var(--disp);font-size:12px;
-  font-weight:600;letter-spacing:4px;
-  background:transparent;border:1px solid var(--cyan);color:var(--cyan);
-  cursor:pointer;transition:all .3s;text-transform:uppercase;
-  position:relative;overflow:hidden;
-}
-.calc-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(0,234,255,.15),transparent);transition:left .5s}
-.calc-btn:hover{background:var(--cyanG);box-shadow:0 0 24px rgba(0,234,255,.3)}
-.calc-btn:hover::before{left:100%}
-
-/* ══════════════════════════════════════════════════
-   MAIN CONTENT
-══════════════════════════════════════════════════ */
-.content{display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;background:var(--bg);height:100%}
-
-/* AIRCRAFT VIEWER STRIP */
-.viewer-strip{
-  background:var(--s1);
-  border-bottom:1px solid var(--b1);
-  padding:18px 28px;
-  display:flex;gap:20px;align-items:center;
-}
-.viewer-box{
-  width:300px;height:152px;flex-shrink:0;
-  background:var(--s2);border:1px solid var(--b1);
-  position:relative;overflow:hidden;
-}
-.viewer-box svg{width:100%;height:100%}
-
-/* METRIC TILES */
-.metrics-row{
-  flex:1;
-  display:grid;grid-template-columns:repeat(3,1fr);
-  grid-template-rows:1fr 1fr;
-  gap:8px;
-}
-.met{
-  background:var(--s2);border:1px solid var(--b1);
-  padding:10px 12px;position:relative;
-  transition:border-color .3s;
-}
-.met::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.met.c::after{background:var(--cyan)}
-.met.g::after{background:var(--green)}
-.met.a::after{background:var(--amber)}
-.met:hover{border-color:var(--b2)}
-.met-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--muted);margin-bottom:4px}
-.met-val{font-family:var(--disp);font-size:24px;letter-spacing:1px;line-height:1;transition:color .3s}
-.met.c .met-val{color:var(--cyan);text-shadow:0 0 16px rgba(0,234,255,.4)}
-.met.g .met-val{color:var(--green);text-shadow:0 0 16px rgba(0,255,170,.4)}
-.met.a .met-val{color:var(--amber);text-shadow:0 0 16px rgba(255,190,0,.4)}
-.met-unit{font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:2px}
-
-/* COMPLIANCE */
-.chip{
-  font-family:var(--mono);font-size:9px;letter-spacing:1px;
-  padding:3px 8px;border:1px solid;display:inline-block;
-  transition:all .3s;
-}
-.chip.pass{border-color:var(--green);color:var(--green);background:var(--greenG)}
-.chip.warn{border-color:var(--amber);color:var(--amber);background:var(--amberG)}
-.chip.fail{border-color:var(--red);color:var(--red);background:var(--redG)}
-
-/* SOURCE BAR */
-.src-strip{
-  border-bottom:1px solid var(--b1);
-  padding:9px 28px;
-  background:var(--s1);
-  display:flex;align-items:center;gap:14px;
-}
-.src-bar-wrap{flex:1}
-.src-bar{display:flex;height:7px;gap:1px;margin-bottom:4px}
-.src-seg{height:100%;transition:flex .6s ease}
-.src-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.src-dot{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:8px}
-.src-dot-sq{width:7px;height:7px}
-.src-total{
-  font-family:var(--disp);font-size:13px;letter-spacing:2px;
-  color:var(--amber);white-space:nowrap;
-}
-
-/* PLOTS GRID */
-
-.plot-panel{
-  border-right:1px solid var(--b1);
-  border-bottom:1px solid var(--b1);
-  padding:14px 16px;
-  display:flex;flex-direction:column;
-  min-height:0;position:relative;
-}
-.plot-panel:nth-child(2n){border-right:none}
-.plot-panel:nth-child(3),.plot-panel:nth-child(4){border-bottom:none}
-.plot-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:8px;flex-shrink:0;
-}
-.plot-title{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase}
-.plot-sub{font-family:var(--mono);font-size:8px;color:var(--muted)}
-.plot-wrap{flex:1;position:relative;min-height:0;min-width:0;overflow:hidden}
-
-/* STATUS BAR */
-.status{
-  position:relative;z-index:50;
-  background:var(--s1);border-top:1px solid var(--b1);
-  padding:7px 28px;
-  display:flex;align-items:center;gap:20px;
-  font-family:var(--mono);font-size:9px;color:var(--dim);
-  flex-wrap:wrap;
-}
-.st-item{display:flex;align-items:center;gap:6px}
-.st-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:livePulse 2s infinite}
-.st-sep{width:1px;height:12px;background:var(--b1)}
-.st-val{color:var(--cyan)}
-.st-right{margin-left:auto;color:var(--dim)}
-
-/* ══════════════════════════════════════════════════
-   FOOTER
-══════════════════════════════════════════════════ */
-#footer{
-  position:relative;z-index:10;
-  background:var(--s1);border-top:1px solid var(--b1);
-  padding:16px 40px;
-  display:none;
-  flex-wrap:wrap;gap:10px;
-}
-.footer-brand{font-family:var(--disp);font-size:15px;letter-spacing:4px;color:var(--cyan)}
-.footer-info{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--muted);line-height:1.8}
-.footer-info a{color:var(--cyan);text-decoration:none}
-.footer-info a:hover{text-shadow:0 0 10px rgba(0,234,255,.5)}
-.footer-models{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--dim);line-height:1.8;text-align:right}
-
-/* ══════════════════════════════════════════════════
-   FLASH ANIMATION ON VALUE CHANGE
-══════════════════════════════════════════════════ */
-@keyframes valueFlash{0%{opacity:.3}50%{opacity:1}100%{opacity:1}}
-
-/* ══════════════════════════════════════════════════
-   GLOSSARY PAGE
-══════════════════════════════════════════════════ */
-#page-glossary{display:none;position:relative;z-index:10;min-height:calc(100vh - 102px);padding:48px 60px 60px}
-.glos-hero{margin-bottom:44px}
-.glos-hero h1{font-family:var(--disp);font-size:32px;letter-spacing:4px;color:var(--white);margin-bottom:8px}
-.glos-hero h1 span{color:var(--cyan);text-shadow:0 0 24px rgba(0,234,255,.5)}
-.glos-hero p{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);max-width:700px;line-height:1.9}
-
-.glos-section-title{
-  font-family:var(--disp);font-size:14px;letter-spacing:4px;color:var(--cyan);
-  margin:36px 0 18px;padding-bottom:10px;
-  border-bottom:1px solid var(--b1);
-  display:flex;align-items:center;gap:12px;
-}
-.glos-section-title::before{content:'';width:4px;height:18px;background:var(--cyan);flex-shrink:0}
-
-.glos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:16px}
-
-.gterm{
-  background:var(--s2);border:1px solid var(--b1);
-  padding:18px 22px;
-  transition:border-color .25s;
-  position:relative;
-}
-.gterm:hover{border-color:var(--b2)}
-.gterm::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--b2);transition:background .25s}
-.gterm:hover::before{background:var(--cyan)}
-
-.gterm-sym{
-  font-family:var(--mono);font-size:18px;font-weight:600;
-  color:var(--cyan);margin-bottom:4px;letter-spacing:1px;
-  display:flex;align-items:baseline;gap:10px;
-}
-.gterm-sym small{font-size:11px;color:var(--muted);font-weight:400;letter-spacing:2px}
-.gterm-name{font-weight:600;font-size:15px;color:var(--white);margin-bottom:6px}
-.gterm-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:10px}
-.gterm-formula{
-  font-family:var(--mono);font-size:11px;
-  background:var(--s1);border:1px solid var(--b1);
-  border-left:3px solid var(--amber);
-  padding:10px 14px;color:var(--amber);
-  line-height:1.9;margin-top:8px;
-}
-.gterm-formula .comment{color:var(--dim);font-size:10px}
-.gterm-unit{
-  font-family:var(--mono);font-size:9px;letter-spacing:2px;
-  color:var(--green);background:var(--greenG);
-  border:1px solid rgba(0,255,170,.2);
-  padding:2px 8px;display:inline-block;margin-top:6px;
-}
-
-/* Formula table */
-.formula-table{width:100%;border-collapse:collapse;margin-top:14px}
-.formula-table th{
-  font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--cyan);
-  border-bottom:1px solid var(--b2);padding:8px 12px;text-align:left;
-  background:var(--s1);
-}
-.formula-table td{
-  font-size:12px;color:var(--muted);padding:8px 12px;
-  border-bottom:1px solid var(--b1);vertical-align:top;
-  line-height:1.7;
-}
-.formula-table td:first-child{
-  font-family:var(--mono);font-size:11px;color:var(--amber);
-  white-space:nowrap;width:160px;
-}
-.formula-table tr:hover td{background:var(--s1);color:var(--white)}
-
-/* ══════════════════════════════════════════════════
-   CABIN TREATMENT PAGE
-══════════════════════════════════════════════════ */
-#page-cabin{display:none;position:relative;z-index:10;min-height:calc(100vh - 102px);padding:0}
-#page-noise{display:none;position:relative;z-index:10;min-height:calc(100vh - 102px);padding:24px 32px 60px;max-width:1400px;margin:0 auto}
-
-.cab-layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 102px)}
-
-/* Cabin sidebar */
-.cab-sidebar{
-  background:var(--s1);border-right:1px solid var(--b1);
-  overflow-y:auto;padding-bottom:20px;
-}
-.cab-sidebar::-webkit-scrollbar{width:3px}
-.cab-sidebar::-webkit-scrollbar-thumb{background:var(--b2)}
-
-.cab-nav-item{
-  padding:14px 20px;border-bottom:1px solid var(--b1);
-  cursor:pointer;transition:all .2s;
-  display:flex;align-items:center;gap:12px;
-  border-left:3px solid transparent;
-}
-.cab-nav-item:hover{background:var(--s2);border-left-color:var(--b2)}
-.cab-nav-item.active{background:var(--s2);border-left-color:var(--cyan)}
-.cab-nav-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0}
-.cab-nav-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;line-height:1.4}
-.cab-nav-item.active .cab-nav-label{color:var(--cyan)}
-.cab-nav-sub{font-size:11px;color:var(--dim);margin-top:1px}
-
-/* Cabin content panels */
-.cab-content{overflow-y:auto;padding:0}
-.cab-panel{display:none;padding:36px 44px 52px}
-.cab-panel.active{display:block}
-
-.cab-panel-title{
-  font-family:var(--disp);font-size:26px;letter-spacing:3px;color:var(--white);
-  margin-bottom:8px;font-weight:700;
-}
-.cab-panel-title span{color:var(--cyan)}
-.cab-panel-sub{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--muted);margin-bottom:24px;line-height:1.8}
-
-/* Treatment result box */
-.trt-result{
-  background:var(--s2);border:1px solid var(--b1);
-  padding:20px 24px;margin:20px 0;
-  border-left:3px solid var(--cyan);
-}
-.trt-result-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.trt-metric-big{text-align:center}
-.trt-metric-big .val{font-family:var(--disp);font-size:36px;letter-spacing:2px}
-.trt-metric-big .lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--muted);margin-top:2px}
-.delta-chip{
-  font-family:var(--disp);font-size:20px;letter-spacing:2px;
-  padding:6px 16px;border:1px solid;
-}
-.delta-good{border-color:var(--green);color:var(--green);background:var(--greenG)}
-.delta-med{border-color:var(--amber);color:var(--amber);background:var(--amberG)}
-.delta-bad{border-color:var(--red);color:var(--red);background:var(--redG)}
-
-/* param grid inside panels */
-.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.param-grid.three{grid-template-columns:1fr 1fr 1fr}
-.param-block{background:var(--s1);border:1px solid var(--b1);padding:12px 14px}
-.pb-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:6px}
-.pb-val{font-family:var(--mono);font-size:13px;letter-spacing:1px;color:var(--cyan)}
-
-/* Sub-section */
-.sub-sec{margin:24px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--b1)}
-.sub-sec h3{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--amber);text-transform:uppercase}
-
-/* Absorption chart wrapper */
-.abs-chart-wrap{background:var(--s1);border:1px solid var(--b1);padding:16px;margin:12px 0;height:200px;position:relative}
-
-/* Helmholtz resonator visual */
-.helm-visual{
-  display:flex;gap:20px;align-items:flex-start;
-  margin:16px 0;
-}
-.helm-svg-wrap{
-  flex-shrink:0;background:var(--s1);border:1px solid var(--b1);
-  padding:12px;
-}
-
-/* Frequency response table */
-.freq-tbl{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
-.freq-tbl th{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--muted);
-  padding:6px 10px;border-bottom:1px solid var(--b2);text-align:center;background:var(--s1)}
-.freq-tbl td{padding:6px 10px;border-bottom:1px solid var(--b1);text-align:center;color:var(--muted);
-  font-family:var(--mono);font-size:10px}
-.freq-tbl .highlight{color:var(--cyan);background:var(--cyanB)}
-.freq-tbl tr:hover td{background:var(--s1);color:var(--white)}
-
-/* Glass sizing table */
-.glass-row{
-  display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;
-  gap:0;margin-bottom:1px;
-}
-.glass-cell{
-  padding:8px 12px;font-family:var(--mono);font-size:10px;
-  border:1px solid var(--b1);text-align:center;
-}
-.glass-cell.hd{background:var(--s1);color:var(--muted);font-size:9px;letter-spacing:1px}
-.glass-cell.good{color:var(--green)}
-.glass-cell.warn{color:var(--amber)}
-.glass-cell.fail{color:var(--red)}
-
-/* Comparison panel at bottom */
-.compare-bar{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
-  margin-top:24px;
-}
-.compare-card{
-  background:var(--s2);border:1px solid var(--b1);
-  padding:14px 16px;text-align:center;
-  position:relative;overflow:hidden;
-  transition:border-color .25s;
-}
-.compare-card:hover{border-color:var(--b2)}
-.compare-card.best{border-color:var(--cyan);box-shadow:0 0 20px rgba(0,234,255,.12)}
-.compare-card.best::after{content:'BEST';position:absolute;top:6px;right:8px;
-  font-family:var(--mono);font-size:7px;letter-spacing:2px;color:var(--cyan)}
-.cc-name{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:8px}
-.cc-val{font-family:var(--disp);font-size:26px;letter-spacing:2px;color:var(--cyan)}
-.cc-unit{font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:2px}
-.cc-bar{height:4px;background:var(--b1);margin-top:10px}
-.cc-fill{height:100%;background:var(--cyan);transition:width .6s ease}
-
-/* Info callout */
-.callout{
-  background:var(--s2);border:1px solid var(--b1);
-  border-left:3px solid var(--amber);
-  padding:14px 18px;margin:14px 0;
-  font-size:13px;color:var(--muted);line-height:1.7;
-}
-.callout strong{color:var(--amber)}
-
-/* Tabs inside cabin panels */
-.sub-tabs{display:flex;gap:0;border-bottom:1px solid var(--b1);margin-bottom:20px}
-.sub-tab{
-  font-family:var(--mono);font-size:9px;letter-spacing:2px;
-  padding:8px 18px;cursor:pointer;color:var(--muted);
-  border:none;background:transparent;border-bottom:2px solid transparent;
-  transition:all .2s;
-}
-.sub-tab:hover{color:var(--white);background:rgba(0,234,255,.03)}
-.sub-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);background:var(--cyanB)}
-.flash{animation:valueFlash .3s ease}
-
-/* ══════════════════════════════════════════════════
-   SCROLLBAR
-══════════════════════════════════════════════════ */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--b2)}
-
-/* ══ MOBILE RESPONSIVE ══ */
-@media(max-width:768px){
-  #hdr{padding:0 16px;height:54px}
-  .brand-wordmark{font-size:18px;letter-spacing:3px}
-  .brand-tagline{display:none}
-  .hdr-badge{display:none}
-  .gnav-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;gap:0;padding:0 8px}
-  .gnav-tab{padding:0 12px;font-size:8px;letter-spacing:1px;white-space:nowrap;min-width:auto}
-  .tool-layout{grid-template-columns:1fr!important}
-  .sidebar{width:100%!important;border-right:none!important;border-bottom:1px solid var(--b1)}
-  .cab-layout{grid-template-columns:1fr!important}
-  .cab-sidebar{display:none}
-  .cab-panel{padding:16px 14px 32px!important}
-  .cab-panel-title{font-size:20px!important}
-  [style*="grid-template-columns:240px"],[style*="grid-template-columns:220px"]{display:block!important}
-  [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
-  [style*="grid-template-columns:2.4fr"]{grid-template-columns:1fr 1fr!important}
-  .glos-grid{grid-template-columns:1fr!important}
-  .trt-result-row{flex-direction:column;align-items:flex-start!important}
-  .ac-grid{grid-template-columns:1fr 1fr!important}
-  /* show all aircraft cards on mobile */
-  canvas{max-height:200px!important}
-  .abs-chart-wrap{height:180px!important}
-  .compare-bar{grid-template-columns:1fr 1fr!important}
-  select{font-size:16px!important}
-  input[type=range]{width:100%}
-  .param-grid{grid-template-columns:1fr 1fr!important}
-  .glos-hero{padding:24px 16px!important}
-  .glos-hero h1{font-size:22px!important}
-  #page-glossary{padding:16px!important}
-  .formula-table{font-size:10px!important}
-  .hdr-right .hdr-badge:nth-child(n+2){display:none}
-}
-@media(max-width:480px){
-  .brand-wordmark{font-size:14px;letter-spacing:2px}
-  .gnav-tab{padding:0 6px;font-size:6.5px;letter-spacing:0.5px}
-  .ac-grid{grid-template-columns:1fr!important}
-  .compare-bar{grid-template-columns:1fr!important}
-  .cab-panel{padding:10px 8px 24px!important}
-  .tool-layout{gap:8px!important}
-  .ctrl{padding:8px 10px!important}
-  h2{font-size:18px!important}
-  .cab-panel-title{font-size:18px!important}
-  #page-noise{padding:12px 10px 40px!important}
-  .noise-grid{grid-template-columns:1fr!important}
-  #wrap-aircraft,#wrap-spl{height:280px!important}
-}
-/* iOS touch targets */
-input[type=range]{min-height:28px;-webkit-appearance:none;cursor:pointer}
-select{-webkit-appearance:none;cursor:pointer}
-button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-input{-webkit-appearance:none;border-radius:0}
-/* Prevent zoom on input focus iOS */
-input[type=text],input[type=number],input[type=password],select{font-size:16px!important}
-@media(max-width:768px){
-  input[type=text],input[type=number],input[type=password],select{font-size:16px!important}
-}
-
-
-/* ═══════════════════════════════════════════════
-   MOBILE RESPONSIVE + DRAG/RESIZE SYSTEM
-═══════════════════════════════════════════════ */
-
-/* Touch-friendly base */
-@media(max-width:1024px){
-  .tool-body{grid-template-columns:1fr}
-  .sidebar{
-    position:fixed;left:0;top:0;bottom:0;z-index:500;
-    width:300px;transform:translateX(-100%);
-    transition:transform .3s cubic-bezier(.4,0,.2,1);
-    box-shadow:4px 0 24px rgba(0,0,0,.5);
-  }
-  .sidebar.open{transform:translateX(0)}
-  .content{min-height:100vh}
-  .cab-layout{grid-template-columns:1fr}
-  .cab-sidebar{
-    position:fixed;left:0;top:0;bottom:0;z-index:500;
-    width:280px;transform:translateX(-100%);
-    transition:transform .3s cubic-bezier(.4,0,.2,1);
-    box-shadow:4px 0 24px rgba(0,0,0,.5);
-  }
-  .cab-sidebar.open{transform:translateX(0)}
-}
-
-/* Sidebar overlay backdrop */
-.sidebar-backdrop{
-  display:none;position:fixed;inset:0;z-index:499;
-  background:rgba(0,0,0,.5);backdrop-filter:blur(2px);
-}
-.sidebar-backdrop.show{display:block}
-
-/* Hamburger toggle (mobile) */
-.sidebar-toggle{
-  display:none;
-  position:fixed;bottom:20px;left:16px;z-index:600;
-  width:44px;height:44px;border-radius:50%;
-  background:var(--cyan);border:none;color:#fff;
-  font-size:18px;cursor:pointer;
-  box-shadow:0 4px 16px rgba(0,102,187,.5);
-  align-items:center;justify-content:center;
-}
-@media(max-width:1024px){ .sidebar-toggle{display:flex} }
-
-/* Nav scrollable on small screens */
-@media(max-width:900px){
-  .gnav-bar{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-  .gnav-bar::-webkit-scrollbar{display:none}
-  .gnav-tab{white-space:nowrap;flex-shrink:0;padding:0 10px;font-size:9px}
-}
-
-/* Plots grid — responsive mosaic */
-.plots{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  grid-template-rows:1fr 1fr;
-  flex:1;
-  gap:0;
-  min-height:280px;
-}
-@media(max-width:1024px){
-  .plots{grid-template-columns:1fr}
-}
-
-/* ── Draggable / resizable plot panel ── */
-.plot-panel{
-  border-right:1px solid var(--b1);
-  border-bottom:1px solid var(--b1);
-  padding:10px 14px 8px;
-  display:flex;flex-direction:column;
-  min-height:0;overflow:hidden;position:relative;
-  resize:both;
-  transition:box-shadow .2s, border-color .2s;
-}
-.plot-panel.expanded{
-  position:fixed!important;inset:60px 0 0 0!important;
-  z-index:800;width:auto!important;height:auto!important;
-  resize:none;background:var(--bg);
-  box-shadow:0 0 0 9999px rgba(0,0,0,.7);
-}
-.plot-panel.dragging{
-  opacity:.85;z-index:900;box-shadow:0 8px 32px rgba(0,0,0,.6);
-  border-color:var(--cyan);cursor:grabbing;
-}
-
-/* Plot header with controls */
-.plot-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:8px;gap:6px;cursor:grab;user-select:none;
-  -webkit-user-select:none;
-}
-.plot-hdr:active{cursor:grabbing}
-
-/* Plot control buttons */
-.plot-ctrl-bar{
-  display:flex;gap:3px;align-items:center;flex-shrink:0;
-}
-.plot-btn{
-  width:22px;height:22px;border:1px solid var(--b1);
-  background:var(--s2);color:var(--muted);
-  font-size:11px;cursor:pointer;border-radius:2px;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .15s;padding:0;
-  touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
-}
-.plot-btn:hover{background:var(--cyan);color:#fff;border-color:var(--cyan)}
-.plot-btn.active{background:var(--cyan);color:#fff}
-.plot-wrap{flex:1;position:relative;min-height:0;min-width:0}
-
-/* ── Touch-friendly sliders ── */
-@media(max-width:768px){
-  input[type=range]{
-    height:32px;cursor:pointer;
-    -webkit-appearance:none;
-  }
-  input[type=range]::-webkit-slider-thumb{
-    width:24px;height:24px;
-  }
-  .ctrl{margin-bottom:14px}
-}
-
-/* ── Status bar horizontal scroll ── */
-.status{overflow-x:auto;white-space:nowrap;scrollbar-width:none}
-.status::-webkit-scrollbar{display:none}
-
-/* ── Plots drag handle overlay ── */
-.plot-drag-handle{
-  position:absolute;top:0;left:0;right:40px;height:36px;
-  cursor:grab;z-index:2;
-}
-.plot-drag-handle:active{cursor:grabbing}
-
-/* ── Fullscreen button pulse on mobile ── */
-@media(max-width:768px){
-  .plot-btn.fullscreen-btn{
-    width:28px;height:28px;font-size:14px;
-  }
-}
-
-/* ── Resize handle corner indicator ── */
-.plot-panel::after{
-  content:'◢';position:absolute;bottom:2px;right:4px;
-  font-size:10px;color:rgba(255,255,255,.15);pointer-events:none;
-}
-.plot-panel:hover::after{color:rgba(34,170,255,.4)}
-
-/* ── Grid layout overlay for drag drop ── */
-.plots.drag-active .plot-panel:not(.dragging){
-  outline:2px dashed rgba(34,170,255,.2);
-}
-
-/* ── Mobile bottom nav hint ── */
-.mobile-nav-hint{
-  display:none;
-  position:fixed;bottom:0;left:0;right:0;
-  background:var(--s1);border-top:1px solid var(--b1);
-  padding:8px 16px;z-index:400;
-  font-family:var(--mono);font-size:9px;color:var(--muted);
-  text-align:center;
-}
-@media(max-width:480px){.mobile-nav-hint{display:block}}
-
-/* ── Pinch zoom container ── */
-.content{touch-action:pan-y}
-
-/* ── Compact mode toggle ── */
-.plots.compact .plot-panel{min-height:100px}
-.plots.compact .plot-panel .plot-wrap canvas{height:80px!important}
-
-
-@keyframes gradShift{0%{background-position:0% 0}100%{background-position:200% 0}}
-@keyframes waveFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@media(min-width:640px){
-  #login-anim-panel{display:block!important}
-  #login-screen>div:last-child{max-width:420px!important}
-}
-
-
-/* ── Login screen animations ── */
-@keyframes spinRotor{to{transform:rotate(360deg)}}
-@keyframes ripple1{
-  0%  {r:24;opacity:0.3;stroke-width:2}
-  70% {r:50;opacity:0.1;stroke-width:0.5}
-  100%{r:55;opacity:0;stroke-width:0}
-}
-@keyframes ripple2{
-  0%  {r:24;opacity:0.2;stroke-width:1.5}
-  70% {r:46;opacity:0.05;stroke-width:0.5}
-  100%{r:50;opacity:0;stroke-width:0}
-}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)}}
-@keyframes stripeFlow{0%{background-position:0%}100%{background-position:300%}}
-@keyframes btnShift{0%,100%{background-position:0%} 50%{background-position:100%}}
-@media(min-width:640px){
-  #login-anim-panel{display:block!important}
-  #login-screen>div:last-child{max-width:420px}
-}
-
-</style>
-</head>
-<body>
 
 
 
@@ -8668,156 +7695,6 @@ input[type=text],input[type=number],input[type=password],select{font-size:16px!i
 function showSononaiApp(){
   document.getElementById('landing-page').style.display='none';
   document.getElementById('login-screen').style.display='flex';
-}
-</script>
-<script>
-// ── SUPABASE AUTH ──
-const _supa = supabase.createClient(
-  'https://wiphtdgqtsuuspuomqab.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpcGh0ZGdxdHN1dXNwdW9tcWFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0Mzk3MzYsImV4cCI6MjA4OTAxNTczNn0.eCpGhjr9eqx5-Wc8gX7CjSp7EgFJxfB2WLz4n7KDeME'
-);
-let _currentUser = null;
-
-// Init: check existing session
-(async function(){
-  const { data } = await _supa.auth.getSession();
-  if(data && data.session && data.session.user){
-    _currentUser = data.session.user;
-    showApp(data.session.user.email);
-  }
-})();
-
-function switchAuthTab(tab){
-  ['signin','register','forgot'].forEach(t=>{
-    const f=document.getElementById('form-'+t); 
-    if(f) f.style.display = t===tab ? 'block' : 'none';
-    const tb=document.getElementById('tab-'+t);
-    if(tb){
-      tb.style.color = t===tab ? '#22d4f0' : 'rgba(255,255,255,.35)';
-      tb.style.borderBottomColor = t===tab ? '#22d4f0' : 'transparent';
-    }
-  });
-}
-
-function showForgot(){
-  ['signin','register'].forEach(t=>{
-    const f=document.getElementById('form-'+t); 
-    if(f) f.style.display='none';
-    const tb=document.getElementById('tab-'+t);
-    if(tb){tb.style.color='rgba(255,255,255,.35)';tb.style.borderBottomColor='transparent';}
-  });
-  const ff=document.getElementById('form-forgot'); if(ff) ff.style.display='block';
-}
-
-async function doSignIn(){
-  const email=(document.getElementById('si-email')||{}).value||'';
-  const pass=(document.getElementById('si-pass')||{}).value||'';
-  const msg=document.getElementById('si-msg');
-  const btn=document.getElementById('si-btn');
-  if(!email||!pass){
-    if(msg){msg.style.display='block';msg.style.background='rgba(255,80,80,.15)';msg.style.borderLeftColor='#ff5050';msg.style.color='#ff9090';msg.textContent='Please enter email and password.';}
-    return;
-  }
-  if(btn){btn.textContent='SIGNING IN…';btn.disabled=true;}
-  if(msg){msg.style.display='none';}
-  try{
-    const {data,error} = await _supa.auth.signInWithPassword({email,password:pass});
-    if(error) throw error;
-    _currentUser = data.user;
-    showApp(data.user.email);
-  } catch(e){
-    if(msg){msg.style.display='block';msg.style.background='rgba(255,80,80,.15)';msg.style.borderLeft='3px solid #ff5050';msg.style.color='#ff9090';msg.style.padding='10px 14px';msg.textContent='Error: '+(e.message||'Sign in failed');}
-    if(btn){btn.textContent='SIGN IN →';btn.disabled=false;}
-  }
-}
-
-async function doRegister(){
-  const email=(document.getElementById('reg-email')||{}).value||'';
-  const pass=(document.getElementById('reg-pass')||{}).value||'';
-  const msg=document.getElementById('reg-msg');
-  const btn=document.getElementById('reg-btn');
-  if(!email||!pass){
-    if(msg){msg.style.display='block';msg.style.background='rgba(255,80,80,.15)';msg.style.color='#ff9090';msg.style.padding='10px 14px';msg.textContent='Please fill in all fields.';}
-    return;
-  }
-  if(pass.length<8){
-    if(msg){msg.style.display='block';msg.style.background='rgba(255,80,80,.15)';msg.style.color='#ff9090';msg.style.padding='10px 14px';msg.textContent='Password must be at least 8 characters.';}
-    return;
-  }
-  if(btn){btn.textContent='CREATING…';btn.disabled=true;}
-  try{
-    const {data,error} = await _supa.auth.signUp({email,password:pass});
-    if(error) throw error;
-    if(msg){msg.style.display='block';msg.style.background='rgba(0,200,100,.12)';msg.style.border='none';msg.style.borderLeft='3px solid #00c864';msg.style.color='#00e878';msg.style.padding='10px 14px';msg.textContent='✓ Account created! Check your email to confirm.';}
-    if(btn){btn.textContent='REQUEST ACCESS →';btn.disabled=false;}
-  } catch(e){
-    if(msg){msg.style.display='block';msg.style.background='rgba(255,80,80,.15)';msg.style.color='#ff9090';msg.style.padding='10px 14px';msg.textContent='Error: '+(e.message||'Registration failed');}
-    if(btn){btn.textContent='REQUEST ACCESS →';btn.disabled=false;}
-  }
-}
-
-async function doForgot(){
-  const email=(document.getElementById('fp-email')||{}).value||'';
-  const msg=document.getElementById('fp-msg');
-  if(!email){
-    if(msg){msg.style.display='block';msg.style.color='#ff9090';msg.textContent='Please enter your email address.';}
-    return;
-  }
-  try{
-    const redirectTo = window.location.hostname.includes('sononai.com')
-      ? 'https://www.sononai.com/app/' : window.location.href;
-    await _supa.auth.resetPasswordForEmail(email, {redirectTo});
-    if(msg){msg.style.display='block';msg.style.color='#22d4f0';msg.textContent='✓ Reset link sent — check your inbox.';}
-  } catch(e){
-    if(msg){msg.style.display='block';msg.style.color='#ff9090';msg.textContent='Error: '+(e.message||'Failed to send reset link');}
-  }
-}
-
-// Keep doForgotPassword as alias
-function doForgotPassword(){ doForgot(); }
-
-async function doSignOut(){
-  try{ await _supa.auth.signOut(); } catch(e){}
-  _currentUser = null;
-  if(window.location.hostname.includes('sononai.com')){
-    window.location.href = '/';
-    return;
-  }
-  // Hide all app elements
-  const appIds=['hdr','globalNav','step-select','step-tool',
-    'page-glossary','page-cabin','page-noise','page-bench','page-norah','page-advanced'];
-  appIds.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
-  const bw=document.querySelector('.bg-wrap'); if(bw) bw.style.display='none';
-  const sb=document.getElementById('sidebarEl'); if(sb) sb.classList.remove('open');
-  // Reset form fields
-  const siE=document.getElementById('si-email'); if(siE) siE.value='';
-  const siP=document.getElementById('si-pass'); if(siP) siP.value='';
-  const siM=document.getElementById('si-msg'); if(siM) siM.style.display='none';
-  switchAuthTab('signin');
-  // Show login screen (not landing page) — the login IS the entry point
-  const ls=document.getElementById('login-screen');
-  if(ls){ ls.style.display='flex'; ls.style.visibility='visible'; }
-  // Also hide landing page
-  const lp=document.getElementById('landing-page');
-  if(lp) lp.style.display='none';
-  // Restart login animation
-  setTimeout(function(){
-    var initFn=window._loginAnimInit;
-    if(typeof initFn==='function') initFn();
-  }, 100);
-}
-
-function showApp(email){
-  // Hide auth screens and landing
-  const lp=document.getElementById('landing-page'); if(lp) lp.style.display='none';
-  const ls=document.getElementById('login-screen'); if(ls) ls.style.display='none';
-  // Show app chrome
-  const bw=document.querySelector('.bg-wrap'); if(bw) bw.style.display='block';
-  const hdr=document.getElementById('hdr'); if(hdr) hdr.style.display='flex';
-  const nav=document.getElementById('globalNav'); if(nav) nav.style.display='flex';
-  const ss=document.getElementById('step-select'); if(ss) ss.style.display='flex';
-  // Set user email in header
-  const uel=document.getElementById('hdr-user-email'); if(uel) uel.textContent=email;
 }
 </script>
 
@@ -10134,5 +9011,255 @@ setTimeout(function(){
 
 })();
 </script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   PROJECT PERSISTENCE — saves test cases to Supabase.
+   Every row is stamped with the user's org_id by a database
+   trigger, and Row Level Security ensures a user can only ever
+   read rows belonging to their own organisation.
+═══════════════════════════════════════════════════════════ */
+
+var _PARAM_IDS = ['sD','sRPM','sB','sChord','sPitch','sDL','nRotors','sAUW',
+                  'sVcr','sAlt','sRobs','sScab','sTL'];
+var _TOGGLE_IDS = ['togAw','togGnd','togDop','togThird'];
+
+function collectParams(){
+  var p = {};
+  _PARAM_IDS.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) p[id] = el.value;
+  });
+  _TOGGLE_IDS.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) p[id] = !!el.checked;
+  });
+  if(typeof currentAc !== 'undefined') p._aircraft = currentAc;
+  return p;
+}
+
+function applyParams(p){
+  if(!p) return;
+  Object.keys(p).forEach(function(id){
+    if(id.charAt(0) === '_') return;
+    var el = document.getElementById(id);
+    if(!el) return;
+    if(el.type === 'checkbox') el.checked = !!p[id];
+    else el.value = p[id];
+    el.dispatchEvent(new Event('input',{bubbles:true}));
+    el.dispatchEvent(new Event('change',{bubbles:true}));
+  });
+  if(typeof runCalc === 'function') runCalc();
+}
+
+function _summaryMetrics(){
+  var out = {};
+  ['mBPF','mVtip','mMach','mSPLff','mSPLcab','mEPNL'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el && el.textContent && el.textContent !== '—') out[id] = el.textContent.trim();
+  });
+  return out;
+}
+
+async function saveCase(){
+  if(!_currentUser){ alert('Please sign in first.'); return; }
+  var name = prompt('Name this test case:', 'Case ' + new Date().toLocaleString());
+  if(!name) return;
+  try{
+    var payload = {
+      name: name,
+      aircraft: (typeof currentAc !== 'undefined') ? String(currentAc) : null,
+      params: collectParams(),
+      metrics: _summaryMetrics()
+    };
+    var res = await _supa.from('test_cases').insert(payload).select().single();
+    if(res.error) throw res.error;
+    alert('Saved "' + name + '".');
+    if(typeof refreshCaseList === 'function') refreshCaseList();
+  }catch(e){
+    alert('Could not save: ' + (e.message || 'unknown error'));
+  }
+}
+
+async function listCases(){
+  if(!_currentUser) return [];
+  var res = await _supa.from('test_cases')
+    .select('id,name,aircraft,metrics,created_at,created_by')
+    .order('created_at',{ascending:false})
+    .limit(100);
+  if(res.error){ console.error(res.error); return []; }
+  return res.data || [];
+}
+
+async function loadCase(id){
+  try{
+    var res = await _supa.from('test_cases').select('*').eq('id',id).single();
+    if(res.error) throw res.error;
+    applyParams(res.data.params);
+    alert('Loaded "' + res.data.name + '".');
+  }catch(e){
+    alert('Could not load: ' + (e.message || 'unknown error'));
+  }
+}
+
+async function deleteCase(id){
+  if(!confirm('Delete this saved case? This cannot be undone.')) return;
+  try{
+    var res = await _supa.from('test_cases').delete().eq('id',id);
+    if(res.error) throw res.error;
+    if(typeof refreshCaseList === 'function') refreshCaseList();
+  }catch(e){
+    alert('Could not delete: ' + (e.message || 'unknown error'));
+  }
+}
+
+window.saveCase   = saveCase;
+window.listCases  = listCases;
+window.loadCase   = loadCase;
+window.deleteCase = deleteCase;
+</script>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     INVITE / PASSWORD-RESET SCREEN
+     Shown when the user arrives from an invite or reset email.
+═══════════════════════════════════════════════════════════ -->
+<div id="invite-screen" style="display:none;position:fixed;inset:0;z-index:10000;
+     background:#0d1f2e;align-items:center;justify-content:center;padding:24px">
+  <div style="width:100%;max-width:420px;background:#12283c;border:1px solid #2a4560;padding:36px 32px">
+
+    <div style="font-family:var(--disp,sans-serif);font-size:22px;font-weight:800;
+                letter-spacing:5px;color:#22aaff;margin-bottom:6px">SONONAI</div>
+    <div id="inv-title" style="font-family:var(--mono,monospace);font-size:11px;letter-spacing:2px;
+                color:#8fb0cc;text-transform:uppercase;margin-bottom:24px">Set your password</div>
+
+    <div id="inv-email" style="font-family:var(--mono,monospace);font-size:11px;
+                color:#cfe2f5;margin-bottom:20px"></div>
+
+    <label style="display:block;font-family:var(--mono,monospace);font-size:9px;letter-spacing:2px;
+                  color:#8fb0cc;text-transform:uppercase;margin-bottom:6px">New password</label>
+    <input type="password" id="inv-p1" placeholder="Minimum 10 characters" autocomplete="new-password"
+           style="width:100%;padding:11px 12px;background:#0d1f2e;border:1px solid #2a4560;
+                  color:#eaf4ff;font-family:var(--mono,monospace);font-size:13px;margin-bottom:14px">
+
+    <label style="display:block;font-family:var(--mono,monospace);font-size:9px;letter-spacing:2px;
+                  color:#8fb0cc;text-transform:uppercase;margin-bottom:6px">Confirm password</label>
+    <input type="password" id="inv-p2" placeholder="Repeat password" autocomplete="new-password"
+           onkeydown="if(event.key==='Enter')doInviteSetPassword()"
+           style="width:100%;padding:11px 12px;background:#0d1f2e;border:1px solid #2a4560;
+                  color:#eaf4ff;font-family:var(--mono,monospace);font-size:13px;margin-bottom:18px">
+
+    <button id="inv-btn" onclick="doInviteSetPassword()"
+            style="width:100%;padding:12px;background:#0066bb;border:none;color:#fff;
+                   font-family:var(--mono,monospace);font-size:12px;letter-spacing:2px;
+                   cursor:pointer;text-transform:uppercase">Set password &rarr;</button>
+
+    <div id="inv-msg" style="display:none;margin-top:14px;font-family:var(--mono,monospace);
+                font-size:11px;line-height:1.5;padding:10px 12px"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   INVITE / RECOVERY LINK HANDLING
+   Supabase appends tokens to the URL as a fragment, e.g.
+     #access_token=...&type=invite
+   supabase-js consumes them automatically, but the page must
+   still show a password form — otherwise the user just lands
+   on the homepage, already signed in, with no way to finish.
+═══════════════════════════════════════════════════════════ */
+(function(){
+  var hash = window.location.hash || '';
+  var qs   = window.location.search || '';
+
+  // Supabase reports link problems in the fragment too
+  if(hash.indexOf('error') !== -1){
+    var ep = new URLSearchParams(hash.replace(/^#/,''));
+    var desc = ep.get('error_description') || 'This link is no longer valid.';
+    setTimeout(function(){
+      alert(decodeURIComponent(desc.replace(/\+/g,' ')) +
+            '\n\nInvite and reset links expire. Please request a new one.');
+    }, 300);
+    history.replaceState(null,'',window.location.pathname);
+    return;
+  }
+
+  var isInvite = /type=(invite|recovery|signup)/.test(hash) ||
+                 /type=(invite|recovery|signup)/.test(qs);
+  if(!isInvite) return;
+
+  // Reveal the form once supabase-js has established the session
+  function open(){
+    var scr = document.getElementById('invite-screen');
+    if(scr) scr.style.display = 'flex';
+    var ls = document.getElementById('login-screen');
+    if(ls) ls.style.display = 'none';
+    var lp = document.getElementById('landing-page');
+    if(lp) lp.style.display = 'none';
+
+    _supa.auth.getUser().then(function(r){
+      var el = document.getElementById('inv-email');
+      if(el && r && r.data && r.data.user) el.textContent = r.data.user.email;
+      var t = document.getElementById('inv-title');
+      if(t && /type=recovery/.test(hash)) t.textContent = 'Choose a new password';
+    }).catch(function(){});
+
+    setTimeout(function(){
+      var i = document.getElementById('inv-p1'); if(i) i.focus();
+    }, 120);
+  }
+
+  if(document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(open, 250); });
+  else
+    setTimeout(open, 250);
+})();
+
+async function doInviteSetPassword(){
+  var p1  = (document.getElementById('inv-p1')||{}).value || '';
+  var p2  = (document.getElementById('inv-p2')||{}).value || '';
+  var msg = document.getElementById('inv-msg');
+  var btn = document.getElementById('inv-btn');
+
+  function show(text, ok){
+    if(!msg) return;
+    msg.style.display   = 'block';
+    msg.style.background = ok ? 'rgba(0,200,100,.12)' : 'rgba(255,80,80,.15)';
+    msg.style.borderLeft = ok ? '3px solid #00c864' : '3px solid #ff5050';
+    msg.style.color      = ok ? '#00e878' : '#ff9090';
+    msg.textContent = text;
+  }
+
+  if(p1.length < 10){ show('Password must be at least 10 characters.', false); return; }
+  if(p1 !== p2){ show('The two passwords do not match.', false); return; }
+
+  if(btn){ btn.textContent = 'SAVING…'; btn.disabled = true; }
+
+  try{
+    var res = await _supa.auth.updateUser({ password: p1 });
+    if(res.error) throw res.error;
+
+    // Clear tokens from the address bar so the link cannot be reused
+    history.replaceState(null, '', window.location.pathname);
+
+    show('Password set. Loading the application…', true);
+
+    var u = res.data && res.data.user;
+    setTimeout(function(){
+      var scr = document.getElementById('invite-screen');
+      if(scr) scr.style.display = 'none';
+      _currentUser = u;
+      if(u) showApp(u.email);
+    }, 700);
+
+  }catch(e){
+    show('Could not set password: ' + (e.message || 'unknown error'), false);
+    if(btn){ btn.textContent = 'SET PASSWORD →'; btn.disabled = false; }
+  }
+}
+
+window.doInviteSetPassword = doInviteSetPassword;
+</script>
+
 </body>
 </html>
