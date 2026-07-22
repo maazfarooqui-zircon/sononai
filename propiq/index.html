@@ -466,9 +466,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
       <div style="margin-top:16px;padding:10px 12px;background:rgba(34,212,240,.04);
         border-left:2px solid rgba(34,212,240,.4);font-family:var(--mono);font-size:10px;
         color:var(--muted);line-height:1.7">
-        No account yet? Use the <b style="color:var(--cyan)">REGISTER</b> tab above, or
-        <a onclick="demoLogin()" style="color:var(--cyan);cursor:pointer;text-decoration:underline">continue as guest</a>
-        to start simulating right away.
+        No account yet? Use the <b style="color:var(--cyan)">REQUEST ACCESS</b> tab above.
+        Accounts are approved individually — we will email you once your access is ready.
       </div>
     </div>
 
@@ -710,9 +709,43 @@ try {
   );
 } catch (e) { _supa = null; }
 
+/* ── Gate: hide the app until a real session is confirmed ──
+   Previously #app merely sat behind the login screen, so hiding
+   the overlay in DevTools exposed the whole simulator. */
+var _APP_IDS = ['app', 'chat-fab'];
+
+(function lockApp() {
+  var st = document.createElement('style');
+  st.id = '_gate-style';
+  st.textContent = _APP_IDS.map(function (id) { return '#' + id; }).join(',') +
+                   '{display:none!important}';
+  document.head.appendChild(st);
+})();
+
+function _unlockApp() {
+  var st = document.getElementById('_gate-style');
+  if (st) st.remove();
+}
+
+function _relockApp() {
+  if (document.getElementById('_gate-style')) return;
+  var st = document.createElement('style');
+  st.id = '_gate-style';
+  st.textContent = _APP_IDS.map(function (id) { return '#' + id; }).join(',') +
+                   '{display:none!important}';
+  document.head.appendChild(st);
+}
+
+/* True when the page was opened from an invite / password-reset link.
+   Such a user holds a valid session but has not chosen a password yet,
+   so they must not be dropped straight into the simulator. */
+var _IS_INVITE_FLOW = /type=(invite|recovery|signup)/.test(
+      (window.location.hash || '') + (window.location.search || ''));
+
 /* Init: check existing session */
 (async function () {
   if (!_supa) return;
+  if (_IS_INVITE_FLOW) return;   // invite screen handles this
   try {
     const { data } = await _supa.auth.getSession();
     if (data && data.session && data.session.user) {
@@ -768,39 +801,63 @@ async function doSignIn() {
   const btn = document.getElementById('si-btn');
   if (!email || !pass) { _msg(msg, 'Please enter email and password.', false); return; }
   btn.textContent = 'SIGNING IN…'; btn.disabled = true; if (msg) msg.style.display = 'none';
-  if (!_supa) { _msg(msg, 'Auth service unavailable — you can continue as guest below.', false); btn.textContent = 'SIGN IN →'; btn.disabled = false; return; }
+  if (!_supa) { _msg(msg, 'Authentication service unavailable. Please try again shortly.', false); btn.textContent = 'SIGN IN →'; btn.disabled = false; return; }
   try {
     const { data, error } = await _supa.auth.signInWithPassword({ email, password: pass });
     if (error) throw error;
     _currentUser = data.user;
     showApp(_currentUser);
   } catch (e) {
-    _msg(msg, 'Error: ' + (e.message || 'Sign in failed') + '<br><span style="opacity:.7">Tip: you can continue as guest below.</span>', false);
+    _msg(msg, 'Error: ' + (e.message || 'Sign in failed'), false);
     btn.textContent = 'SIGN IN →'; btn.disabled = false;
   }
 }
 
 async function doRegister() {
-  const email = (document.getElementById('reg-email') || {}).value.trim() || '';
-  const name = (document.getElementById('reg-name') || {}).value.trim() || '';
-  const org = (document.getElementById('reg-org') || {}).value.trim() || '';
+  const email = ((document.getElementById('reg-email') || {}).value || '').trim();
+  const name  = ((document.getElementById('reg-name')  || {}).value || '').trim();
+  const org   = ((document.getElementById('reg-org')   || {}).value || '').trim();
   const msg = document.getElementById('reg-msg');
   const btn = document.getElementById('reg-btn');
-  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { _msg(msg, 'Please enter a valid email address.', false); return; }
+
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    _msg(msg, 'Please enter a valid email address.', false); return;
+  }
   if (!name) { _msg(msg, 'Please choose a username.', false); return; }
-  btn.textContent = 'SENDING REQUEST…'; btn.disabled = true; if (msg) msg.style.display = 'none';
-  if (!_supa) { _msg(msg, 'Auth unavailable — you can continue as guest below.', false); btn.textContent = 'REQUEST ACCESS →'; btn.disabled = false; return; }
+  if (!org)  { _msg(msg, 'Please enter your organisation.', false); return; }
+
+  btn.textContent = 'SENDING REQUEST…'; btn.disabled = true;
+  if (msg) msg.style.display = 'none';
+
+  if (!_supa) {
+    _msg(msg, 'Authentication service unavailable. Please try again shortly.', false);
+    btn.textContent = 'REQUEST ACCESS →'; btn.disabled = false; return;
+  }
+
   try {
-    const tempPass = 'AERO_' + Math.random().toString(36).slice(2, 10).toUpperCase() + '_tmp!9';
-    const meta = { username: name, organisation: org, status: 'pending_approval', requested_at: new Date().toISOString() };
-    const { error } = await _supa.auth.signUp({ email, password: tempPass, options: { data: meta } });
-    if (error) throw error;
-    _msg(msg, '<strong>✓ Access request submitted!</strong><br><br>We will review and email <strong>' + email + '</strong> with your password (under 24h).', true);
+    /* Record the request only — no account is created here. Accounts are
+       provisioned by an administrator after review, so simulator access is
+       never granted automatically. */
+    const { error } = await _supa.from('access_requests').insert({
+      email: email.toLowerCase(),
+      full_name: name,
+      organisation: org,
+      product: 'propiq'
+    });
+
+    if (error) {
+      if (error.code === '23505' || /duplicate|unique/i.test(error.message || '')) {
+        _msg(msg, '<strong>Request already received.</strong><br><br>We already have a pending request for ' + email + '.', true);
+        btn.textContent = 'REQUEST RECEIVED ✓'; return;
+      }
+      throw error;
+    }
+
+    _msg(msg, '<strong>✓ Access request submitted</strong><br><br>Our team will review it and contact <strong>' + email + '</strong> with account details.', true);
     btn.textContent = 'REQUEST SENT ✓';
+
   } catch (e) {
-    const errMsg = e.message || 'Request failed';
-    const already = errMsg.toLowerCase().includes('already');
-    _msg(msg, already ? 'This email already has a pending request.' : 'Error: ' + errMsg, false);
+    _msg(msg, 'Error: ' + (e.message || 'Request failed. Please email info@sononai.com.'), false);
     btn.textContent = 'REQUEST ACCESS →'; btn.disabled = false;
   }
 }
@@ -818,14 +875,14 @@ async function doForgot() {
   }
 }
 
-/* Demo / guest login — no backend required */
+/* Guest/demo login has been REMOVED.
+   It previously set a fake user object and called showApp() with no
+   authentication whatsoever, so anyone with the URL had the full
+   simulator. Retained as a no-op so any leftover reference fails
+   safely rather than throwing. */
 function demoLogin() {
-  _demoMode = true;
-  _currentUser = {
-    email: 'guest@propiq.local',
-    user_metadata: { username: 'guest', organisation: 'Demo Session' }
-  };
-  showApp(_currentUser);
+  console.warn('Guest access is disabled. Please sign in.');
+  return false;
 }
 
 async function doSignOut() {
@@ -833,6 +890,7 @@ async function doSignOut() {
   _currentUser = null; _demoMode = false;
   closeSettings();
   document.getElementById('app').style.display = 'none';
+  _relockApp();
   document.getElementById('login-screen').style.display = 'flex';
   ['si-email', 'si-pass', 'reg-email', 'fp-email'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
   ['si-msg', 'reg-msg'].forEach(id => { const e = document.getElementById(id); if (e) e.style.display = 'none'; });
@@ -883,6 +941,7 @@ async function doChangePassword() {
 
 /* Reveal the app, wire up the username everywhere */
 function showApp(user) {
+  _unlockApp();   // only reached with a verified session
   document.getElementById('login-screen').style.display = 'none';
   { const fab = document.getElementById('chat-fab'); if (fab) fab.style.display = 'block'; }
   document.getElementById('app').style.display = 'flex';
@@ -3374,5 +3433,131 @@ function switchRailFlash() {
 }
 
 </script>
+
+<!-- ═══ INVITE / PASSWORD-RESET SCREEN ═══ -->
+<div id="invite-screen" style="display:none;position:fixed;inset:0;z-index:10000;
+     background:#08131d;align-items:center;justify-content:center;padding:24px">
+  <div style="width:100%;max-width:420px;background:#0e1f2c;border:1px solid #1d3a4d;padding:36px 32px">
+    <div style="font-family:var(--disp,sans-serif);font-size:22px;font-weight:800;
+                letter-spacing:5px;color:#22d4f0;margin-bottom:6px">PROPIQ</div>
+    <div id="inv-title" style="font-family:var(--mono,monospace);font-size:11px;letter-spacing:2px;
+                color:#7fa3bb;text-transform:uppercase;margin-bottom:24px">Set your password</div>
+    <div id="inv-email" style="font-family:var(--mono,monospace);font-size:11px;
+                color:#cfe6f5;margin-bottom:20px"></div>
+
+    <label style="display:block;font-family:var(--mono,monospace);font-size:9px;letter-spacing:2px;
+                  color:#7fa3bb;text-transform:uppercase;margin-bottom:6px">New password</label>
+    <input type="password" id="inv-p1" placeholder="Minimum 10 characters" autocomplete="new-password"
+           style="width:100%;padding:11px 12px;background:#08131d;border:1px solid #1d3a4d;
+                  color:#eaf4ff;font-family:var(--mono,monospace);font-size:13px;margin-bottom:14px">
+
+    <label style="display:block;font-family:var(--mono,monospace);font-size:9px;letter-spacing:2px;
+                  color:#7fa3bb;text-transform:uppercase;margin-bottom:6px">Confirm password</label>
+    <input type="password" id="inv-p2" placeholder="Repeat password" autocomplete="new-password"
+           onkeydown="if(event.key==='Enter')doInviteSetPassword()"
+           style="width:100%;padding:11px 12px;background:#08131d;border:1px solid #1d3a4d;
+                  color:#eaf4ff;font-family:var(--mono,monospace);font-size:13px;margin-bottom:18px">
+
+    <button id="inv-btn" onclick="doInviteSetPassword()"
+            style="width:100%;padding:12px;background:#0784a8;border:none;color:#fff;
+                   font-family:var(--mono,monospace);font-size:12px;letter-spacing:2px;
+                   cursor:pointer;text-transform:uppercase">Set password &rarr;</button>
+
+    <div id="inv-msg" style="display:none;margin-top:14px;font-family:var(--mono,monospace);
+                font-size:11px;line-height:1.5;padding:10px 12px"></div>
+  </div>
+</div>
+
+<script>
+/* Invite / recovery link handling — Supabase puts tokens in the URL
+   fragment; supabase-js consumes them but the page must still offer a
+   password form, otherwise the user lands on the app already signed in
+   with no way to finish setting up. */
+(function () {
+  var hash = window.location.hash || '';
+  var qs   = window.location.search || '';
+
+  if (hash.indexOf('error') !== -1) {
+    var ep = new URLSearchParams(hash.replace(/^#/, ''));
+    var desc = ep.get('error_description') || 'This link is no longer valid.';
+    setTimeout(function () {
+      alert(decodeURIComponent(desc.replace(/\+/g, ' ')) +
+            '\n\nInvite and reset links expire. Please request a new one.');
+    }, 300);
+    history.replaceState(null, '', window.location.pathname);
+    return;
+  }
+
+  if (!/type=(invite|recovery|signup)/.test(hash + qs)) return;
+
+  function open() {
+    var scr = document.getElementById('invite-screen');
+    if (scr) scr.style.display = 'flex';
+    var ls = document.getElementById('login-screen');
+    if (ls) ls.style.display = 'none';
+
+    if (_supa) {
+      _supa.auth.getUser().then(function (r) {
+        var el = document.getElementById('inv-email');
+        if (el && r && r.data && r.data.user) el.textContent = r.data.user.email;
+        var t = document.getElementById('inv-title');
+        if (t && /type=recovery/.test(hash)) t.textContent = 'Choose a new password';
+      }).catch(function () {});
+    }
+    setTimeout(function () {
+      var i = document.getElementById('inv-p1'); if (i) i.focus();
+    }, 120);
+  }
+
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', function () { setTimeout(open, 250); });
+  else
+    setTimeout(open, 250);
+})();
+
+async function doInviteSetPassword() {
+  var p1  = (document.getElementById('inv-p1') || {}).value || '';
+  var p2  = (document.getElementById('inv-p2') || {}).value || '';
+  var msg = document.getElementById('inv-msg');
+  var btn = document.getElementById('inv-btn');
+
+  function show(text, ok) {
+    if (!msg) return;
+    msg.style.display    = 'block';
+    msg.style.background = ok ? 'rgba(0,232,120,.12)' : 'rgba(255,90,106,.15)';
+    msg.style.borderLeft = ok ? '3px solid #00e878' : '3px solid #ff5a6a';
+    msg.style.color      = ok ? '#00e878' : '#ff9090';
+    msg.textContent = text;
+  }
+
+  if (p1.length < 10) { show('Password must be at least 10 characters.', false); return; }
+  if (p1 !== p2) { show('The two passwords do not match.', false); return; }
+  if (!_supa) { show('Authentication service unavailable.', false); return; }
+
+  if (btn) { btn.textContent = 'SAVING…'; btn.disabled = true; }
+
+  try {
+    var res = await _supa.auth.updateUser({ password: p1 });
+    if (res.error) throw res.error;
+
+    history.replaceState(null, '', window.location.pathname);
+    show('Password set. Loading the simulator…', true);
+
+    var u = res.data && res.data.user;
+    setTimeout(function () {
+      var scr = document.getElementById('invite-screen');
+      if (scr) scr.style.display = 'none';
+      _currentUser = u;
+      if (u) showApp(u);
+    }, 700);
+
+  } catch (e) {
+    show('Could not set password: ' + (e.message || 'unknown error'), false);
+    if (btn) { btn.textContent = 'SET PASSWORD →'; btn.disabled = false; }
+  }
+}
+window.doInviteSetPassword = doInviteSetPassword;
+</script>
+
 </body>
 </html>
