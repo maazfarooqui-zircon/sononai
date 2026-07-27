@@ -1083,8 +1083,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
       <label class="auth-lbl">Email</label>
       <input class="auth-inp" type="email" id="reg-email" placeholder="your@email.com" autocomplete="email"
         onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.08)'">
-      <label class="auth-lbl">Password <span style="font-family:var(--body);font-size:10px;color:#3a5870;text-transform:none;letter-spacing:0">(min 8 chars)</span></label>
-      <input class="auth-inp auth-inp last" type="password" id="reg-pass" placeholder="Min 8 characters" autocomplete="new-password"
+      <label class="auth-lbl">Organisation</label>
+      <input class="auth-inp auth-inp last" type="text" id="reg-org" placeholder="Your company" autocomplete="organization"
         onfocus="this.style.borderColor='#22d4f0'" onblur="this.style.borderColor='rgba(255,255,255,.08)'"
         onkeydown="if(event.key==='Enter')doRegister()">
       <button class="auth-btn" id="reg-btn" onclick="doRegister()">REQUEST ACCESS →</button>
@@ -1124,9 +1124,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14
     <div class="brand-tagline"><strong>Acoustic Certification</strong>ARP 4754A · ICAO Annex 16 · FAA Part 36 · EASA SC VTOL</div>
   </div>
   <div class="hdr-right">
-    <div class="hdr-badge">SAE ARP 4166</div>
-    <div class="hdr-badge">ICAO Annex 16</div>
-    <div class="hdr-badge live">● LIVE</div>
+    <select id="proj-picker" onchange="onProjectChange(this.value)"
+      style="background:var(--s3,#10202e);color:#cfe6f5;border:1px solid var(--b1,#1e3a4e);
+             font-family:var(--mono,monospace);font-size:10px;padding:5px 8px;max-width:220px"></select>
+    <button class="hdr-badge" onclick="newProjectPrompt()" title="New certification project"
+      style="cursor:pointer;border:1px solid var(--b1,#1e3a4e)">+ NEW</button>
+    <span id="save-ind" style="font-family:var(--mono,monospace);font-size:9px;letter-spacing:1px;
+      color:var(--muted,#7fa3bb);min-width:52px;text-align:right"></span>
     <span class="hdr-user-email" id="hdr-user-email"></span>
     <button class="hdr-signout" onclick="doSignOut()">SIGN OUT</button>
   </div>
@@ -1439,33 +1443,58 @@ async function doSignIn() {
   var btn = document.getElementById('si-btn'); btn.disabled=true; btn.textContent='Signing in…';
   var res = await _supa.auth.signInWithPassword({email:email, password:pass});
   if(res.error) { showAuthMsg('si-msg',res.error.message,'err'); btn.disabled=false; btn.textContent='SIGN IN →'; }
-  else { _currentUser=res.data.user; USER_ID=res.data.user.id; showApp(res.data.user.email); }
+  else { _currentUser=res.data.user; USER_ID=res.data.user.id; window._cqSession=res.data.session; showApp(res.data.user.email); }
 }
 async function doRegister() {
   var name  = document.getElementById('reg-name').value.trim();
   var email = document.getElementById('reg-email').value.trim();
-  var pass  = document.getElementById('reg-pass').value;
-  if(!name||!email||!pass) { showAuthMsg('reg-msg','Please fill all fields.','err'); return; }
-  if(pass.length<8) { showAuthMsg('reg-msg','Password must be at least 8 characters.','err'); return; }
+  var org   = (document.getElementById('reg-org')||{}).value ? document.getElementById('reg-org').value.trim() : '';
+  if(!name||!email) { showAuthMsg('reg-msg','Please enter your name and email.','err'); return; }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { showAuthMsg('reg-msg','Please enter a valid email address.','err'); return; }
   var btn = document.getElementById('reg-btn'); btn.disabled=true; btn.textContent='Submitting…';
-  var res = await _supa.auth.signUp({email:email, password:pass, options:{data:{full_name:name}}});
-  if(res.error) { showAuthMsg('reg-msg',res.error.message,'err'); btn.disabled=false; btn.textContent='REQUEST ACCESS →'; }
-  else if(res.data.session) { _currentUser=res.data.user; USER_ID=res.data.user.id; showApp(res.data.user.email); }
-  else showAuthMsg('reg-msg','Registration submitted! Check your email to confirm access.','ok');
+  /* Record the request only. No account is created here — certification
+     access is provisioned by an administrator after review, so nobody can
+     self-register into a compliance tool. */
+  var res = await _supa.from('access_requests').insert({
+    email: email.toLowerCase(), full_name: name,
+    organisation: org || 'Not specified', product: 'certiq'
+  });
+  if(res.error) {
+    if(res.error.code==='23505' || /duplicate|unique/i.test(res.error.message||'')) {
+      showAuthMsg('reg-msg','We already have a pending request for '+email+'.','ok');
+      btn.textContent='REQUEST RECEIVED ✓';
+    } else {
+      showAuthMsg('reg-msg',res.error.message,'err'); btn.disabled=false; btn.textContent='REQUEST ACCESS →';
+    }
+  } else {
+    showAuthMsg('reg-msg','Access request submitted. Our team will review it and email '+email+' with account details.','ok');
+    btn.textContent='REQUEST SENT ✓';
+  }
 }
 async function doForgotPassword() {
   var email = document.getElementById('fp-email').value.trim();
   if(!email) { showAuthMsg('fp-msg','Please enter your email.','err'); return; }
   var btn = document.getElementById('fp-btn'); btn.disabled=true; btn.textContent='Sending…';
-  var res = await _supa.auth.resetPasswordForEmail(email, {redirectTo: window.location.href});
+  var res = await _supa.auth.resetPasswordForEmail(email, {redirectTo: 'https://www.sononai.com/certiq'});
   if(res.error) { showAuthMsg('fp-msg',res.error.message,'err'); btn.disabled=false; btn.textContent='SEND RESET LINK →'; }
   else showAuthMsg('fp-msg','Reset link sent! Check your email.','ok');
 }
-function showApp(email) {
+async function showApp(email) {
+  _unlockApp();   // only reached with a verified session
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('pg-app').style.display = 'block';
   document.getElementById('hdr-user-email').textContent = email || '';
-  loadState(); buildOctInputs(); renderStandards(); renderICAO();
+  buildOctInputs(); renderStandards(); renderICAO();
+  // Data now comes from Supabase (shared across the organisation),
+  // not from this browser. One-time import of any old local data runs
+  // first, then we load the project list and open one.
+  try {
+    await migrateLocalIfNeeded();
+    await loadProjectList();
+  } catch (e) {
+    console.error('CertIQ data load failed:', e);
+    _projBanner('Could not reach the database. Your changes will not be saved until this is resolved.', true);
+  }
   updateStats(); renderDash(); calcMargin(); renderRMS();
 }
 async function doSignOut() {
@@ -1473,24 +1502,228 @@ async function doSignOut() {
   _currentUser=null; USER_ID=null;
   document.getElementById('login-screen').classList.remove('hidden');
   document.getElementById('pg-app').style.display='none';
+  _relockApp();
   document.getElementById('si-email').value='';
   document.getElementById('si-pass').value='';
   document.getElementById('si-msg').style.display='none';
   switchAuthTab('signin');
 }
+/* ── Gate: hide the app until a real session is confirmed.
+   Previously #pg-app just sat behind the overlay, so unhiding the
+   login screen in DevTools exposed the whole certification tool. */
+var _APP_IDS = ['pg-app'];
+(function lockApp(){
+  var st=document.createElement('style'); st.id='_gate-style';
+  st.textContent='#pg-app{display:none!important}';
+  document.head.appendChild(st);
+})();
+function _unlockApp(){ var st=document.getElementById('_gate-style'); if(st) st.remove(); }
+function _relockApp(){
+  if(document.getElementById('_gate-style')) return;
+  var st=document.createElement('style'); st.id='_gate-style';
+  st.textContent='#pg-app{display:none!important}';
+  document.head.appendChild(st);
+}
+
+/* True when arriving from an invite / reset link — valid session but no
+   password chosen yet, so do not drop them into the tool. */
+_supa.auth.onAuthStateChange(function(_e, session){ window._cqSession = session; });
+
+var _IS_INVITE_FLOW = /type=(invite|recovery|signup)/.test(
+      (window.location.hash||'') + (window.location.search||''));
+
 (async function() {
+  if(_IS_INVITE_FLOW) return;
   var res = await _supa.auth.getSession();
-  if(res.data && res.data.session) { _currentUser=res.data.session.user; USER_ID=res.data.session.user.id; showApp(res.data.session.user.email); }
+  if(res.data && res.data.session) { _currentUser=res.data.session.user; USER_ID=res.data.session.user.id; window._cqSession=res.data.session; showApp(res.data.session.user.email); }
 })();
 
 // ══════════════════════════════════════════════
-// STATE (per Supabase user UUID)
+// STATE — now backed by Supabase (public.certiq_projects),
+// shared across the organisation. Named projects; one is
+// "current" at a time. statusMap / evidenceMap / roadmapDone
+// keep their names so the rest of the app is unchanged.
 // ══════════════════════════════════════════════
 var statusMap={}, evidenceMap={}, roadmapDone={}, domFilter='all';
-function _sk(k){ return 'cq_'+(USER_ID||'anon')+'_'+k; }
-function saveState(){ try{ localStorage.setItem(_sk('st'),JSON.stringify(statusMap)); localStorage.setItem(_sk('ev'),JSON.stringify(evidenceMap)); localStorage.setItem(_sk('rm'),JSON.stringify(roadmapDone)); }catch(e){} }
-function loadState(){ try{ var s=localStorage.getItem(_sk('st')),e=localStorage.getItem(_sk('ev')),r=localStorage.getItem(_sk('rm')); if(s)statusMap=JSON.parse(s); if(e)evidenceMap=JSON.parse(e); if(r)roadmapDone=JSON.parse(r); }catch(e){} }
+var _projects = [];          // [{id,name,aircraft,...}]
+var _currentProjectId = null;
+var _saveTimer = null;
+var _saving = false;
+
 function getSt(id){ return statusMap[id]||'OPEN'; }
+
+/* saveState() is called all over the app after every edit. We keep the
+   name, but debounce and push to Supabase instead of localStorage.
+   A short debounce collapses rapid edits into one network write. */
+function saveState(){
+  if(!_currentProjectId) return;         // nothing open yet
+  if(_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(_flushState, 600);
+  _saveIndicator('saving');
+}
+
+async function _flushState(){
+  if(!_currentProjectId || _saving) return;
+  _saving = true;
+  try{
+    var res = await _supa.from('certiq_projects')
+      .update({ status_map:statusMap, evidence_map:evidenceMap, roadmap_done:roadmapDone })
+      .eq('id', _currentProjectId);
+    if(res.error) throw res.error;
+    _saveIndicator('saved');
+  }catch(e){
+    console.error('CertIQ save failed:', e);
+    _saveIndicator('error');
+  }finally{
+    _saving = false;
+  }
+}
+
+/* Flush if the user closes the tab mid-edit. sendBeacon can't set the
+   auth headers Supabase needs, so use fetch with keepalive and the
+   current access token. Best-effort — the debounced save usually wins. */
+window.addEventListener('beforeunload', function(){
+  if(!(_saveTimer && _currentProjectId)) return;
+  try{
+    var tok = (_supa && _supa.auth && _supa.auth.getSession) ? null : null;
+    var sess = window._cqSession;   // cached below on sign-in
+    if(!sess) return;
+    fetch('https://wiphtdgqtsuuspuomqab.supabase.co/rest/v1/certiq_projects?id=eq.'+_currentProjectId, {
+      method:'PATCH', keepalive:true,
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpcGh0ZGdxdHN1dXNwdW9tcWFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0Mzk3MzYsImV4cCI6MjA4OTAxNTczNn0.eCpGhjr9eqx5-Wc8gX7CjSp7EgFJxfB2WLz4n7KDeME',
+        'Authorization':'Bearer '+sess.access_token
+      },
+      body: JSON.stringify({ status_map:statusMap, evidence_map:evidenceMap, roadmap_done:roadmapDone })
+    }).catch(function(){});
+  }catch(e){}
+});
+
+/* Load the org's project list; open the most recent, or create a first one. */
+async function loadProjectList(){
+  var res = await _supa.from('certiq_projects')
+    .select('id,name,aircraft,updated_at')
+    .order('updated_at',{ascending:false});
+  if(res.error) throw res.error;
+  _projects = res.data || [];
+
+  if(_projects.length === 0){
+    await createProject('Default certification project', '', {silent:true});
+  } else {
+    await openProject(_projects[0].id);
+  }
+  renderProjectPicker();
+}
+
+async function openProject(id){
+  var res = await _supa.from('certiq_projects').select('*').eq('id',id).single();
+  if(res.error){ console.error(res.error); return; }
+  _currentProjectId = res.data.id;
+  statusMap    = res.data.status_map   || {};
+  evidenceMap  = res.data.evidence_map || {};
+  roadmapDone  = res.data.roadmap_done || {};
+  renderProjectPicker();
+  updateStats(); renderDash(); calcMargin(); renderRMS();
+  if(typeof renderRoadmap==='function') renderRoadmap();
+}
+
+async function createProject(name, aircraft, opts){
+  opts = opts || {};
+  var res = await _supa.from('certiq_projects')
+    .insert({ name:name, aircraft:aircraft||null,
+              status_map:opts.status||{}, evidence_map:opts.evidence||{}, roadmap_done:opts.roadmap||{} })
+    .select().single();
+  if(res.error){ alert('Could not create project: '+res.error.message); return null; }
+  // refresh list
+  var lst = await _supa.from('certiq_projects').select('id,name,aircraft,updated_at').order('updated_at',{ascending:false});
+  _projects = (lst.data||[]);
+  if(!opts.silent) renderProjectPicker();
+  await openProject(res.data.id);
+  return res.data.id;
+}
+
+function newProjectPrompt(){
+  var name = prompt('Name this certification project (e.g. "eVTOL X1 — ICAO Annex 16"):');
+  if(!name) return;
+  var ac = prompt('Aircraft / programme (optional):') || '';
+  createProject(name.trim(), ac.trim());
+}
+
+function renderProjectPicker(){
+  var sel = document.getElementById('proj-picker');
+  if(!sel) return;
+  sel.innerHTML = _projects.map(function(p){
+    var label = p.name + (p.aircraft ? ' — '+p.aircraft : '');
+    return '<option value="'+p.id+'"'+(p.id===_currentProjectId?' selected':'')+'>'+
+           label.replace(/</g,'&lt;')+'</option>';
+  }).join('');
+}
+
+function onProjectChange(id){
+  if(id && id !== _currentProjectId) openProject(id);
+}
+
+function _saveIndicator(state){
+  var el = document.getElementById('save-ind'); if(!el) return;
+  if(state==='saving'){ el.textContent='saving…'; el.style.color='#e0a030'; }
+  else if(state==='saved'){ el.textContent='✓ saved'; el.style.color='#00c864';
+    setTimeout(function(){ if(el.textContent==='✓ saved') el.textContent=''; }, 1800); }
+  else if(state==='error'){ el.textContent='⚠ not saved'; el.style.color='#ff5a6a'; }
+}
+
+function _projBanner(text, isError){
+  var id='proj-banner', ex=document.getElementById(id);
+  if(ex) ex.remove();
+  var b=document.createElement('div'); b.id=id;
+  b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9500;padding:10px 16px;'+
+    'font-family:monospace;font-size:12px;text-align:center;color:#fff;background:'+
+    (isError?'#8a2030':'#0066bb');
+  b.textContent=text;
+  var x=document.createElement('span');
+  x.textContent=' ✕'; x.style.cssText='cursor:pointer;float:right;font-weight:700';
+  x.onclick=function(){ b.remove(); };
+  b.appendChild(x);
+  document.body.appendChild(b);
+  if(!isError) setTimeout(function(){ if(b.parentNode) b.remove(); }, 8000);
+}
+
+/* One-time migration of this user's old localStorage into a project. */
+async function migrateLocalIfNeeded(){
+  // already migrated on this account?
+  try{
+    var chk = await _supa.from('certiq_migrations').select('user_id').eq('user_id', USER_ID).maybeSingle();
+    if(chk.data) return;
+  }catch(e){ /* table missing or offline — skip quietly */ return; }
+
+  // gather any old local data for this user (and legacy 'anon')
+  function grab(uid){
+    try{
+      var s=localStorage.getItem('cq_'+uid+'_st'),
+          e=localStorage.getItem('cq_'+uid+'_ev'),
+          r=localStorage.getItem('cq_'+uid+'_rm');
+      if(!s && !e && !r) return null;
+      return { status:s?JSON.parse(s):{}, evidence:e?JSON.parse(e):{}, roadmap:r?JSON.parse(r):{} };
+    }catch(_){ return null; }
+  }
+  var local = grab(USER_ID) || grab('anon');
+
+  if(local && (Object.keys(local.status).length || Object.keys(local.evidence).length || Object.keys(local.roadmap).length)){
+    await createProject('Imported from this browser', '', {
+      silent:true, status:local.status, evidence:local.evidence, roadmap:local.roadmap
+    });
+    _projBanner('Your previous local certification data has been imported into a shared project.', false);
+  }
+
+  // mark done so this never re-runs (and clear the old local keys)
+  try{ await _supa.from('certiq_migrations').insert({ user_id: USER_ID }); }catch(e){}
+  try{
+    ['st','ev','rm'].forEach(function(k){
+      localStorage.removeItem('cq_'+USER_ID+'_'+k);
+      localStorage.removeItem('cq_anon_'+k);
+    });
+  }catch(e){}
+}
 
 // ══════════════════════════════════════════════
 // RMS DATA
@@ -2583,5 +2816,96 @@ function doSendChat(text) {
   }, 180);
 }
 </script>
+
+<!-- ═══ INVITE / PASSWORD-RESET SCREEN ═══ -->
+<div id="invite-screen" style="display:none;position:fixed;inset:0;z-index:10000;
+     background:#0a1622;align-items:center;justify-content:center;padding:24px">
+  <div style="width:100%;max-width:420px;background:#10202e;border:1px solid #1e3a4e;padding:36px 32px">
+    <div style="font-size:22px;font-weight:800;letter-spacing:5px;color:#22aaff;margin-bottom:6px">CERTIQ</div>
+    <div id="inv-title" style="font-family:monospace;font-size:11px;letter-spacing:2px;
+                color:#7fa3bb;text-transform:uppercase;margin-bottom:24px">Set your password</div>
+    <div id="inv-email" style="font-family:monospace;font-size:11px;color:#cfe6f5;margin-bottom:20px"></div>
+
+    <label style="display:block;font-family:monospace;font-size:9px;letter-spacing:2px;
+                  color:#7fa3bb;text-transform:uppercase;margin-bottom:6px">New password</label>
+    <input type="password" id="inv-p1" placeholder="Minimum 10 characters" autocomplete="new-password"
+           style="width:100%;padding:11px 12px;background:#0a1622;border:1px solid #1e3a4e;
+                  color:#eaf4ff;font-family:monospace;font-size:13px;margin-bottom:14px;box-sizing:border-box">
+
+    <label style="display:block;font-family:monospace;font-size:9px;letter-spacing:2px;
+                  color:#7fa3bb;text-transform:uppercase;margin-bottom:6px">Confirm password</label>
+    <input type="password" id="inv-p2" placeholder="Repeat password" autocomplete="new-password"
+           onkeydown="if(event.key==='Enter')doInviteSetPassword()"
+           style="width:100%;padding:11px 12px;background:#0a1622;border:1px solid #1e3a4e;
+                  color:#eaf4ff;font-family:monospace;font-size:13px;margin-bottom:18px;box-sizing:border-box">
+
+    <button id="inv-btn" onclick="doInviteSetPassword()"
+            style="width:100%;padding:12px;background:#0066bb;border:none;color:#fff;
+                   font-family:monospace;font-size:12px;letter-spacing:2px;cursor:pointer;text-transform:uppercase">Set password &rarr;</button>
+
+    <div id="inv-msg" style="display:none;margin-top:14px;font-family:monospace;
+                font-size:11px;line-height:1.5;padding:10px 12px"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var hash = window.location.hash || '', qs = window.location.search || '';
+  if (hash.indexOf('error') !== -1) {
+    var ep = new URLSearchParams(hash.replace(/^#/, ''));
+    var desc = ep.get('error_description') || 'This link is no longer valid.';
+    setTimeout(function(){ alert(decodeURIComponent(desc.replace(/\+/g,' ')) +
+      '\n\nInvite and reset links expire. Please request a new one.'); }, 300);
+    history.replaceState(null,'',window.location.pathname); return;
+  }
+  if (!/type=(invite|recovery|signup)/.test(hash + qs)) return;
+  function open(){
+    var scr=document.getElementById('invite-screen'); if(scr) scr.style.display='flex';
+    var ls=document.getElementById('login-screen'); if(ls) ls.classList.add('hidden');
+    _supa.auth.getUser().then(function(r){
+      var el=document.getElementById('inv-email');
+      if(el && r && r.data && r.data.user) el.textContent=r.data.user.email;
+      var t=document.getElementById('inv-title');
+      if(t && /type=recovery/.test(hash)) t.textContent='Choose a new password';
+    }).catch(function(){});
+    setTimeout(function(){ var i=document.getElementById('inv-p1'); if(i) i.focus(); }, 120);
+  }
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(open,250); });
+  else setTimeout(open,250);
+})();
+
+async function doInviteSetPassword(){
+  var p1=(document.getElementById('inv-p1')||{}).value||'';
+  var p2=(document.getElementById('inv-p2')||{}).value||'';
+  var msg=document.getElementById('inv-msg'), btn=document.getElementById('inv-btn');
+  function show(text,ok){
+    if(!msg) return;
+    msg.style.display='block';
+    msg.style.background=ok?'rgba(0,200,100,.12)':'rgba(255,80,80,.15)';
+    msg.style.borderLeft=ok?'3px solid #00c864':'3px solid #ff5050';
+    msg.style.color=ok?'#00e878':'#ff9090'; msg.textContent=text;
+  }
+  if(p1.length<10){ show('Password must be at least 10 characters.',false); return; }
+  if(p1!==p2){ show('The two passwords do not match.',false); return; }
+  if(btn){ btn.textContent='SAVING…'; btn.disabled=true; }
+  try{
+    var res=await _supa.auth.updateUser({password:p1});
+    if(res.error) throw res.error;
+    history.replaceState(null,'',window.location.pathname);
+    show('Password set. Loading Certiq…',true);
+    var u=res.data && res.data.user;
+    setTimeout(function(){
+      var scr=document.getElementById('invite-screen'); if(scr) scr.style.display='none';
+      _currentUser=u; if(u){ USER_ID=u.id; showApp(u.email); }
+    },700);
+  }catch(e){
+    show('Could not set password: '+(e.message||'unknown error'),false);
+    if(btn){ btn.textContent='SET PASSWORD →'; btn.disabled=false; }
+  }
+}
+window.doInviteSetPassword=doInviteSetPassword;
+</script>
+
 </body>
 </html>
