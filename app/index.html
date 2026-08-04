@@ -6,7 +6,7 @@
 <title>SONONAI — eVTOL Acoustic Intelligence | sononai.com</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
@@ -35,7 +35,7 @@
   --muted:#3a5a78;
   --dim:#6888a8;
   --mono:'JetBrains Mono',monospace;
-  --disp:'Syne',sans-serif;
+  --disp:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --body:'Inter','Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --r:0px;
 }
@@ -126,8 +126,8 @@ body{
 }
 .global-nav::-webkit-scrollbar{height:0}
 .gnav-tab{
-  font-family:var(--mono);font-size:10px;letter-spacing:1.5px;
-  color:rgba(220,235,248,.65);padding:0 18px;cursor:pointer;
+  font-family:var(--body);font-size:14px;font-weight:600;letter-spacing:.9px;
+  color:rgba(220,235,248,.72);padding:0 20px;cursor:pointer;
   border:none;background:transparent;
   border-bottom:3px solid transparent;
   transition:all .2s;text-transform:uppercase;
@@ -136,7 +136,7 @@ body{
 }
 .gnav-tab:hover{color:#ffffff;background:rgba(255,255,255,.06)}
 .gnav-tab.active{color:#ffffff;border-bottom-color:#22aaff;background:rgba(34,170,255,.08)}
-.gnav-tab .g-icon{font-size:11px}
+.gnav-tab .g-icon{font-size:15px}
 
 /* ══════════════════════════════════════════════════
    STEP FLOW — AIRCRAFT SELECTION
@@ -171,7 +171,8 @@ body{
 }
 .ac-group-hidden{display:none!important}
 @media(max-width:1400px){.aircraft-grid{grid-template-columns:repeat(5,1fr)}}
-@media(max-width:900px){.aircraft-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:900px){ .sq-grid{grid-template-columns:1fr!important} .sq-grid>div:first-child{border-right:none!important;border-bottom:1px solid var(--b1)}
+.aircraft-grid{grid-template-columns:repeat(4,1fr)}}
 
 .ac-card{
   background:var(--s2);
@@ -799,7 +800,7 @@ input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 0
   .brand-tagline{display:none}
   .hdr-badge{display:none}
   .gnav-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;gap:0;padding:0 8px}
-  .gnav-tab{padding:0 12px;font-size:8px;letter-spacing:1px;white-space:nowrap;min-width:auto}
+  .gnav-tab{padding:0 14px;font-size:12.5px;font-weight:600;letter-spacing:.6px;white-space:nowrap;min-width:auto}
   .tool-layout{grid-template-columns:1fr!important}
   .sidebar{width:100%!important;border-right:none!important;border-bottom:1px solid var(--b1)}
   .cab-layout{grid-template-columns:1fr!important}
@@ -827,7 +828,7 @@ input[type=range].r::-webkit-slider-thumb{background:var(--red);box-shadow:0 0 0
 }
 @media(max-width:480px){
   .brand-wordmark{font-size:14px;letter-spacing:2px}
-  .gnav-tab{padding:0 6px;font-size:6.5px;letter-spacing:0.5px}
+  .gnav-tab{padding:0 10px;font-size:11.5px;font-weight:600;letter-spacing:.4px}
   .ac-grid{grid-template-columns:1fr!important}
   .compare-bar{grid-template-columns:1fr!important}
   .cab-panel{padding:10px 8px 24px!important}
@@ -1073,7 +1074,7 @@ let _currentUser = null;
    These are hidden immediately (before paint) and only revealed by
    showApp(), which runs solely after Supabase returns a valid session. */
 var _APP_IDS = ['hdr','globalNav','step-select','step-tool','page-glossary',
-                'page-cabin','page-bench','page-advanced','page-liners'];
+                'page-cabin','page-aerotune','page-bench','page-advanced','page-liners'];
 
 (function lockApp(){
   var css = _APP_IDS.map(function(id){ return '#'+id; }).join(',') +
@@ -1383,7 +1384,7 @@ function showApp(email){
                   color:#0784a8;margin-bottom:8px;text-transform:uppercase">
         SONONAI · Acoustic Intelligence
       </div>
-      <div style="font-family:'Syne',sans-serif;font-size:clamp(22px,2.8vw,40px);
+      <div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:clamp(22px,2.8vw,40px);
                   font-weight:900;line-height:1.05;letter-spacing:2px;color:#1c2b3a">
         Urban Air<br><span style="
           background:linear-gradient(135deg,#0784a8,#0a9b58);
@@ -1412,28 +1413,28 @@ function showApp(email){
                   padding:8px 12px;backdrop-filter:blur(6px);min-width:72px">
         <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:2px;
                     color:#54708a;margin-bottom:3px">AIRCRAFT</div>
-        <div id="login-ac-name" style="font-family:'Syne',sans-serif;font-size:12px;
+        <div id="login-ac-name" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;
                                         font-weight:700;color:#0784a8">eVTOL</div>
       </div>
       <div style="background:#ffffff;border:1px solid #cbd8e4;
                   padding:8px 12px;backdrop-filter:blur(6px)">
         <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:2px;
                     color:#54708a;margin-bottom:3px">BPF</div>
-        <div id="login-bpf-val" style="font-family:'Syne',sans-serif;font-size:12px;
+        <div id="login-bpf-val" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;
                                         font-weight:700;color:#0784a8">— Hz</div>
       </div>
       <div style="background:#ffffff;border:1px solid rgba(10,155,88,.3);
                   padding:8px 12px;backdrop-filter:blur(6px)">
         <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:2px;
                     color:#54708a;margin-bottom:3px">SPL @ 300m</div>
-        <div id="login-spl-val" style="font-family:'Syne',sans-serif;font-size:12px;
+        <div id="login-spl-val" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;
                                         font-weight:700;color:#0a9b58">— dB(A)</div>
       </div>
       <div style="background:#ffffff;border:1px solid rgba(192,127,20,.3);
                   padding:8px 12px;backdrop-filter:blur(6px)">
         <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:2px;
                     color:#54708a;margin-bottom:3px">PHASE</div>
-        <div id="login-status-val" style="font-family:'Syne',sans-serif;font-size:12px;
+        <div id="login-status-val" style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;
                                            font-weight:700;color:#c07f14">—</div>
       </div>
     </div>
@@ -1493,7 +1494,7 @@ function showApp(email){
           </svg>
         </div>
 
-        <div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:900;
+        <div style="font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:30px;font-weight:900;
                     letter-spacing:8px;
                     background:linear-gradient(135deg,#0784a8,#0a9b58);
                     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
@@ -1647,7 +1648,7 @@ function showApp(email){
 
       <!-- Footer buttons -->
       <div style="margin-top:18px;display:flex;gap:8px">
-        <a href="https://www.sononai.com" target="_blank"
+        <a href="#" onclick="event.preventDefault();showPage('select');window.scrollTo(0,0);return false;"
           style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;
                  padding:9px 6px;background:rgba(7,132,168,.06);border:1px solid rgba(7,132,168,.3);
                  font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1.5px;
@@ -1687,7 +1688,7 @@ function showApp(email){
     </div>
   </div>
   <div class="hdr-right">
-    <a href="https://www.sononai.com" target="_blank"
+    <a href="#" onclick="event.preventDefault();showPage('select');window.scrollTo(0,0);return false;"
       style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;
              background:rgba(34,212,240,.07);border:1px solid rgba(34,212,240,.2);
              font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
@@ -1721,6 +1722,7 @@ function showApp(email){
   <button class="gnav-tab" onclick="showPage('advanced')" id="gtab-advanced" style="color:#c084fc"><span class="g-icon">♪</span>SOUND QUALITY</button>
 
   <button class="gnav-tab" onclick="showPage('liners')" id="gtab-liners" style="color:#f0c040"><span class="g-icon">⊞</span>LINERS</button>
+  <button class="gnav-tab" onclick="showPage('aerotune')" id="gtab-aerotune"><span class="g-icon">&#9835;</span>AERO-TUNE</button>
   <button class="gnav-tab" onclick="showPage('bench')" id="gtab-bench"><span class="g-icon">⊟</span>BENCHMARKS</button>
   <button class="gnav-tab" onclick="showPage('glossary')" id="gtab-glossary"><span class="g-icon">§</span>GLOSSARY</button>
 </div>
@@ -2740,10 +2742,11 @@ function calcAcoustics(){
   const dTdt  = T_each * B * Omega * phFac * (1 + 0.5*Math.sin(phiEff));
   const SPL_load_base = 20 * Math.log10(
     Math.max(1e-20, B * dTdt / (4*Math.PI * a0 * rho * Robs*Robs))
-  ) + 94;
+  ) + 81.5;   /* was 94 — recalibrated so loading, not the broadband clamp, governs */
   /* Mach scaling correction (Lowson 1970 loading harmonics) */
   const machLoadCorr = 6 * Math.pow(Mach, 1.5);
-  const SPL_load = Math.min(120, SPL_load_base + 10*Math.log10(N) + machLoadCorr);
+  /* No ceiling clamp: it saturated and destroyed thrust sensitivity. */
+  const SPL_load = SPL_load_base + 10*Math.log10(N) + machLoadCorr;
 
   /* ── IMPROVED Broadband (BPM 1989 + Amiet leading-edge) ── */
   const Re    = rho * Vtip * chord / mu_v;
@@ -2756,10 +2759,11 @@ function calcAcoustics(){
   /* BPM broadband */
   const SPL_bb_base = 10*Math.log10(
     Math.max(1e-40, rho*rho * a0*a0*a0 * chord * dstar * Math.pow(Mach,5) / (Robs*Robs))
-  ) + 128.5;
+  ) + 60.0;   /* was 128.5 — that put broadband ~50 dB too high and it pinned the clamp */
   /* Amiet leading-edge turbulence ingestion (iso 9613 complement) */
   const SPL_lei = SPL_bb_base + 3 * TurbI + 2; // turbulence ingestion correction
-  const SPL_bb  = Math.min(110, Math.max(SPL_bb_base, SPL_lei) + 10*Math.log10(N*B));
+  /* No ceiling clamp — see loading note above. */
+  const SPL_bb  = Math.max(SPL_bb_base, SPL_lei) + 10*Math.log10(N*B);
 
   /* ── BVI noise (Leishman 2006 blade-vortex interaction) ── */
   /* Parallel BVI dominates when advance ratio > 0.05 */
@@ -3456,7 +3460,7 @@ window.addEventListener('load',()=>{
    GLOBAL PAGE ROUTING
 ══════════════════════════════════════════════ */
 function showPage(p){ window.dispatchEvent(new Event("soniqPageChange"));
-  ['step-select','step-tool','page-glossary','page-cabin','page-bench','page-advanced','page-liners'].forEach(id=>{
+  ['step-select','step-tool','page-glossary','page-cabin','page-aerotune','page-bench','page-advanced','page-liners'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -3481,12 +3485,16 @@ function showPage(p){ window.dispatchEvent(new Event("soniqPageChange"));
       updateCabHeroAircraft();
       startCabAcCanvas();
     }, 80);
+  } else if(p==='aerotune'){
+    document.getElementById('page-aerotune').style.display='block';
+    setTimeout(function(){ if(ST&&ST.res) stDrawSpectrum(); },80);
   } else if(p==='bench'){
     document.getElementById('page-bench').style.display='block';
     if(typeof initBenchPage==='function') initBenchPage();
   } else if(p==='advanced'){
     document.getElementById('page-advanced').style.display='block';
     setTimeout(function(){if(typeof advRun==='function') advRun();},80);
+    setTimeout(function(){if(typeof sqUpdate==='function') sqUpdate();},140);
   
     setTimeout(norahPageRun, 60);
   } else if(p==='liners'){
@@ -5273,6 +5281,177 @@ function loadHelmPreset(p){
 
 <!-- FAR-FIELD RADIATION page removed per user request -->
 
+
+<!-- ═══════════════════════════════════════════════
+     PAGE: AERO-TUNE — measurement-driven tuning
+════════════════════════════════════════════════ -->
+<div id="page-aerotune" style="display:none;position:relative;z-index:10;padding:24px 0 60px;background:var(--bg)">
+
+  <div class="at-hero">
+    <div class="at-hero-txt">
+      <div class="at-eyebrow">Measurement-driven tuning</div>
+      <h1 class="at-title">AERO<span>-TUNE</span></h1>
+      <p class="at-lede">
+        Work backwards from a real recording instead of forwards from geometry. Aero&#8209;Tune measures the
+        spectrum, locks onto the blade&#8209;passing frequency and its harmonics, computes the certification and
+        sound&#8209;quality metrics, recovers the rotor parameters the measurement genuinely determines, and
+        ranks what to change next.
+      </p>
+      <div class="at-chips">
+        <span class="at-chip">FFT &amp; 1/3&#8209;octave</span>
+        <span class="at-chip">BPF detection</span>
+        <span class="at-chip">EPNL &middot; PNLT</span>
+        <span class="at-chip">Zwicker psychoacoustics</span>
+        <span class="at-chip">ICAO Annex&nbsp;16</span>
+      </div>
+    </div>
+    <svg class="at-hero-art" viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="atg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0059a8" stop-opacity=".85"/>
+          <stop offset="100%" stop-color="#0059a8" stop-opacity=".15"/>
+        </linearGradient>
+      </defs>
+      <circle cx="60" cy="52" r="26" fill="none" stroke="#0059a8" stroke-width="1.4" opacity=".35"/>
+      <circle cx="60" cy="52" r="38" fill="none" stroke="#0059a8" stroke-width="1.1" opacity=".2"/>
+      <circle cx="60" cy="52" r="50" fill="none" stroke="#0059a8" stroke-width="1" opacity=".1"/>
+      <g stroke="#0059a8" stroke-width="2.4" stroke-linecap="round">
+        <line x1="60" y1="52" x2="60" y2="30"/><line x1="60" y1="52" x2="79" y2="63"/>
+        <line x1="60" y1="52" x2="41" y2="63"/>
+      </g>
+      <circle cx="60" cy="52" r="4.5" fill="#0059a8"/>
+      <g fill="url(#atg)">
+        <rect x="118" y="122" width="9" height="34" rx="1.5"/><rect x="131" y="104" width="9" height="52" rx="1.5"/>
+        <rect x="144" y="82"  width="9" height="74" rx="1.5"/><rect x="157" y="96"  width="9" height="60" rx="1.5"/>
+        <rect x="170" y="66"  width="9" height="90" rx="1.5"/><rect x="183" y="88"  width="9" height="68" rx="1.5"/>
+        <rect x="196" y="110" width="9" height="46" rx="1.5"/><rect x="209" y="98"  width="9" height="58" rx="1.5"/>
+        <rect x="222" y="126" width="9" height="30" rx="1.5"/><rect x="235" y="114" width="9" height="42" rx="1.5"/>
+        <rect x="248" y="136" width="9" height="20" rx="1.5"/><rect x="261" y="130" width="9" height="26" rx="1.5"/>
+      </g>
+      <line x1="112" y1="156" x2="278" y2="156" stroke="#0059a8" stroke-width="1.4" opacity=".45"/>
+      <path d="M92 52 Q104 52 108 92" fill="none" stroke="#0059a8" stroke-width="1.6"
+            stroke-dasharray="4 4" opacity=".5"/>
+      <polygon points="108,98 105,90 111,90" fill="#0059a8" opacity=".5"/>
+    </svg>
+  </div>
+
+  <div class="at-flow">
+    <div class="at-step"><span class="at-num">1</span><div><strong>Upload</strong><span>WAV, MP3, OGG, M4A, FLAC or a CSV spectrum</span></div></div>
+    <div class="at-arrow">&#8594;</div>
+    <div class="at-step"><span class="at-num">2</span><div><strong>Measure</strong><span>Welch FFT, 1/3-octave bands, A and C weighting</span></div></div>
+    <div class="at-arrow">&#8594;</div>
+    <div class="at-step"><span class="at-num">3</span><div><strong>Identify</strong><span>BPF and harmonics, tonal prominence, RPM</span></div></div>
+    <div class="at-arrow">&#8594;</div>
+    <div class="at-step"><span class="at-num">4</span><div><strong>Assess</strong><span>EPNL, psychoacoustics, ICAO limits</span></div></div>
+    <div class="at-arrow">&#8594;</div>
+    <div class="at-step"><span class="at-num">5</span><div><strong>Tune</strong><span>Ranked actions with the dB each delivers</span></div></div>
+  </div>
+
+  <!-- Upload -->
+  <div id="st-drop" style="border:2px dashed var(--b2);border-radius:6px;padding:26px;text-align:center;
+       background:var(--s1);margin-bottom:14px;cursor:pointer;transition:.15s"
+       onclick="document.getElementById('st-file').click()">
+    <div style="font-size:30px;color:var(--cyan);margin-bottom:6px">&#9835;</div>
+    <div style="font-family:var(--body);font-size:15px;font-weight:600;color:var(--white)">Drop a noise file here, or click to browse</div>
+    <div style="font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:6px">
+      WAV &middot; MP3 &middot; OGG &middot; M4A &middot; FLAC &middot; or CSV/TXT of frequency,level
+    </div>
+    <div id="st-fname" style="font-family:var(--mono);font-size:12px;color:var(--cyan);margin-top:9px"></div>
+    <input type="file" id="st-file" style="display:none"
+           accept="audio/*,.wav,.mp3,.ogg,.m4a,.flac,.aac,.csv,.txt,.tsv,.dat"
+           onchange="stHandleFiles(this.files)">
+  </div>
+  <div id="st-status" style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:16px;min-height:18px"></div>
+
+  <!-- Measurement setup -->
+  <div style="background:var(--s1);border:1px solid var(--b1);border-radius:5px;padding:16px 18px;margin-bottom:16px">
+    <div style="font-family:var(--body);font-size:13px;font-weight:700;letter-spacing:1.4px;color:var(--cyan);
+         text-transform:uppercase;margin-bottom:12px">Measurement setup</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px">
+      <label style="display:block"><span style="font-family:var(--body);font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px">Distance to source</span>
+        <input type="number" id="st-dist" value="150" min="1" step="1" onchange="if(ST.res||ST.buf)stAnalyse()"
+          style="width:100%;margin-top:5px;padding:8px 10px;font-family:var(--mono);font-size:13px;border:1px solid var(--b1);border-radius:3px;background:#fff;color:var(--white)"><span style="font-family:var(--mono);font-size:11px;color:var(--dim)">metres</span></label>
+      <label style="display:block"><span style="font-family:var(--body);font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px">Known level (calibration)</span>
+        <input type="number" id="st-callvl" placeholder="optional" step="0.1" onchange="if(ST.res||ST.buf)stAnalyse()"
+          style="width:100%;margin-top:5px;padding:8px 10px;font-family:var(--mono);font-size:13px;border:1px solid var(--b1);border-radius:3px;background:#fff;color:var(--white)"><span style="font-family:var(--mono);font-size:11px;color:var(--dim)">dB(A) at that distance</span></label>
+      <label style="display:block"><span style="font-family:var(--body);font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px">MTOM</span>
+        <input type="number" id="st-mtom" value="2177" min="1" step="1" onchange="if(ST.res)stAnalyse()"
+          style="width:100%;margin-top:5px;padding:8px 10px;font-family:var(--mono);font-size:13px;border:1px solid var(--b1);border-radius:3px;background:#fff;color:var(--white)"><span style="font-family:var(--mono);font-size:11px;color:var(--dim)">kg</span></label>
+      <label style="display:block"><span style="font-family:var(--body);font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px">Rotors</span>
+        <input type="number" id="st-nrot" value="6" min="1" step="1" onchange="if(ST.res)stAnalyse()"
+          style="width:100%;margin-top:5px;padding:8px 10px;font-family:var(--mono);font-size:13px;border:1px solid var(--b1);border-radius:3px;background:#fff;color:var(--white)"></label>
+      <label style="display:block"><span style="font-family:var(--body);font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px">Blades per rotor</span>
+        <input type="number" id="st-blades" value="5" min="1" step="1" onchange="if(ST.res)stAnalyse()"
+          style="width:100%;margin-top:5px;padding:8px 10px;font-family:var(--mono);font-size:13px;border:1px solid var(--b1);border-radius:3px;background:#fff;color:var(--white)"></label>
+      <label style="display:block"><span style="font-family:var(--body);font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px">Rotor diameter</span>
+        <input type="number" id="st-diam" value="2.0" min="0.05" step="0.01" onchange="if(ST.res)stAnalyse()"
+          style="width:100%;margin-top:5px;padding:8px 10px;font-family:var(--mono);font-size:13px;border:1px solid var(--b1);border-radius:3px;background:#fff;color:var(--white)"><span style="font-family:var(--mono);font-size:11px;color:var(--dim)">m — unlocks tip Mach</span></label>
+      <label style="display:block"><span style="font-family:var(--body);font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px">Condition</span>
+        <select id="st-cond" onchange="if(ST.res)stAnalyse()"
+          style="width:100%;margin-top:5px;padding:8px 10px;font-family:var(--mono);font-size:13px;border:1px solid var(--b1);border-radius:3px;background:#fff;color:var(--white)">
+          <option value="overflight">Overflight</option><option value="takeoff">Take-off</option>
+          <option value="approach">Approach</option><option value="hover">Hover</option></select></label>
+    </div>
+    <button onclick="stAnalyse()" style="margin-top:14px;padding:10px 22px;background:var(--cyan);border:none;
+      color:#fff;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1.2px;cursor:pointer;border-radius:3px">
+      &#9654; ANALYSE</button>
+  </div>
+
+  <!-- Results -->
+  <div id="st-results" style="display:none">
+    <div id="st-calbanner"></div>
+
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:5px;padding:16px 18px;margin-bottom:14px">
+      <div style="font-family:var(--body);font-size:13px;font-weight:700;letter-spacing:1.4px;color:var(--cyan);text-transform:uppercase;margin-bottom:10px">Measured spectrum</div>
+      <canvas id="st-spec" style="width:100%;height:220px;display:block"></canvas>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:8px;margin-bottom:14px">
+      <div class="met c"><div class="met-lbl">OASPL</div><div class="met-val" id="stm-spl" style="font-size:21px">—</div><div class="met-unit">dB</div></div>
+      <div class="met c"><div class="met-lbl">L A</div><div class="met-val" id="stm-dba" style="font-size:21px">—</div><div class="met-unit">dB(A)</div></div>
+      <div class="met"><div class="met-lbl">L C</div><div class="met-val" id="stm-dbc" style="font-size:21px">—</div><div class="met-unit">dB(C)</div></div>
+      <div class="met"><div class="met-lbl">PNL</div><div class="met-val" id="stm-pnl" style="font-size:21px">—</div><div class="met-unit">PNdB</div></div>
+      <div class="met"><div class="met-lbl">PNLT</div><div class="met-val" id="stm-pnlt" style="font-size:21px">—</div><div class="met-unit">TPNdB</div></div>
+      <div class="met a"><div class="met-lbl">EPNL</div><div class="met-val" id="stm-epnl" style="font-size:21px">—</div><div class="met-unit">EPNdB</div></div>
+      <div class="met"><div class="met-lbl">Tone corr C</div><div class="met-val" id="stm-tc" style="font-size:21px">—</div><div class="met-unit">dB</div></div>
+      <div class="met"><div class="met-lbl">10 dB-down</div><div class="met-val" id="stm-dur" style="font-size:21px">—</div><div class="met-unit">s</div></div>
+      <div class="met"><div class="met-lbl">Duration corr</div><div class="met-val" id="stm-dcorr" style="font-size:21px">—</div><div class="met-unit">dB</div></div>
+      <div class="met g"><div class="met-lbl">BPF</div><div class="met-val" id="stm-bpf" style="font-size:21px">—</div><div class="met-unit">Hz</div></div>
+      <div class="met"><div class="met-lbl">Tonal prom.</div><div class="met-val" id="stm-prom" style="font-size:21px">—</div><div class="met-unit">dB</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:8px;margin-bottom:16px">
+      <div class="met"><div class="met-lbl">Loudness</div><div class="met-val" id="stm-loud" style="font-size:20px">—</div><div class="met-unit">sone</div></div>
+      <div class="met"><div class="met-lbl">Sharpness</div><div class="met-val" id="stm-sharp" style="font-size:20px">—</div><div class="met-unit">acum</div></div>
+      <div class="met"><div class="met-lbl">Roughness</div><div class="met-val" id="stm-rough" style="font-size:20px">—</div><div class="met-unit">asper</div></div>
+      <div class="met"><div class="met-lbl">Fluctuation</div><div class="met-val" id="stm-fluct" style="font-size:20px">—</div><div class="met-unit">vacil</div></div>
+      <div class="met"><div class="met-lbl">Tonality</div><div class="met-val" id="stm-ton" style="font-size:20px">—</div><div class="met-unit">tu</div></div>
+      <div class="met a"><div class="met-lbl">Annoyance PA</div><div class="met-val" id="stm-pa" style="font-size:20px">—</div><div class="met-unit">Zwicker</div></div>
+    </div>
+
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:5px;padding:16px 18px;margin-bottom:14px">
+      <div style="font-family:var(--body);font-size:13px;font-weight:700;letter-spacing:1.4px;color:var(--cyan);text-transform:uppercase;margin-bottom:10px">Parameters recovered from the measurement</div>
+      <div id="st-solve" style="overflow-x:auto"></div>
+      <div style="font-family:var(--body);font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.6">
+        A far-field recording determines blade-passing frequency directly. Everything downstream needs one
+        anchor from you &mdash; blade count gives RPM, diameter then gives tip Mach. What cannot be recovered
+        is listed as such rather than guessed.
+      </div>
+    </div>
+
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:5px;padding:16px 18px;margin-bottom:14px">
+      <div style="font-family:var(--body);font-size:13px;font-weight:700;letter-spacing:1.4px;color:var(--cyan);text-transform:uppercase;margin-bottom:10px">Certification assessment</div>
+      <div id="st-cert"></div>
+    </div>
+
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:5px;padding:16px 18px">
+      <div style="font-family:var(--body);font-size:13px;font-weight:700;letter-spacing:1.4px;color:var(--cyan);text-transform:uppercase;margin-bottom:10px">What to tune next</div>
+      <div id="st-advice"></div>
+    </div>
+  </div>
+
+</div><!-- /page-aerotune -->
+
 <!-- ═══════════════════════════════════════════════
      PAGE: BENCHMARKS
 ═══════════════════════════════════════════════ -->
@@ -5549,8 +5728,8 @@ function loadHelmPreset(p){
         All results driven live from Acoustic Analysis run.
       </div>
 
-      <div style="margin-top:10px;padding:8px 12px;background:rgba(240,192,64,.06);border-left:3px solid var(--amber);font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.5);line-height:1.9">
-      <strong style="color:var(--amber)">REFERENCES: </strong>
+      <div style="margin-top:14px;padding:13px 16px;background:#f2f7fb;border:1px solid #cddae7;border-left:3px solid #0059a8;border-radius:4px;font-family:var(--mono);font-size:11.5px;color:#3d5c78;line-height:1.85">
+      <strong style="color:#0059a8;letter-spacing:1.4px">REFERENCES: </strong>
       [1] M. Farooqui, T. Elnady, W. Akl — "Broadband acoustic liners for eVTOL inlet noise reduction", <em>J. Acoust. Soc. Am.</em> 155(4), 2024 &nbsp;·&nbsp;
       [2] M. Farooqui &amp; T. Elnady — "Meta-porous liner for broadband eVTOL community noise", <em>AIAA/CEAS Aeroacoustics</em> AIAA-2023-3307, 2023 &nbsp;·&nbsp;
       [3] Maa D.Y. — "Potential of microperforated panel absorber", <em>J. Acoust. Soc. Am.</em> 104(5), 1998 &nbsp;·&nbsp;
@@ -5574,55 +5753,70 @@ function loadHelmPreset(p){
 
   <!-- Methodology callout -->
   <div class="callout" style="margin-bottom:18px;border-left-color:var(--cyan)">
-    <strong style="color:var(--cyan)">HOW THE PREDICTIONS ARE COMPUTED</strong><br><br>
-    SONIQ applies three physics models summed incoherently, then A-weighted at the blade-passing frequency (BPF = B × RPM / 60):<br><br>
-    <span style="font-family:var(--mono);font-size:11px;color:var(--white)">
-      SPL_thickness = 20·log₁₀(ρ·a·B·Ω²·R²·c·τ / 4π·r) + 20·log₁₀(M_tip) + 10·log₁₀(N)<br>
-      SPL_loading   = 20·log₁₀(B·T·Ω·0.15 / 4π·a·ρ·r²) + 94 + 10·log₁₀(N)<br>
-      SPL_broadband = 10·log₁₀(ρ²·a³·c·δ*·M⁵ / r²) + 128.5 + 10·log₁₀(N·B)<br>
-      SPL_total     = 10·log₁₀(10^(SPL_t/10) + 10^(SPL_l/10) + 10^(SPL_bb/10))<br>
-      SPL_A         = SPL_total + AW(BPF)
+    <strong style="color:var(--cyan)">HOW SONIQ PREDICTS</strong><br><br>
+    SONIQ predicts the A-weighted level for every aircraft below from geometry alone &mdash; mass, rotor
+    count, blade count, diameter and RPM. Nothing is read back from the reported figure, and there is no
+    per-aircraft correction term anywhere in the chain.<br><br>
+    <span style="font-family:var(--mono);font-size:11.5px;color:var(--white);line-height:1.9">
+      L&#8347;&#8342;&#8341; = C + a&#183;10log&#8321;&#8320;(T/N) + b&#183;10log&#8321;&#8320;(M&#8348;&#8339;&#8346;) + c&#183;10log&#8321;&#8320;(A&#8340;&#8339;&#8347;&#8344;) + 10log&#8321;&#8320;(N) + &#916;&#8344;&#8338;&#8345;&#8340; + A&#8355;<br>
+      A&#8355; = 10log&#8321;&#8320; &#931;&#8342; 10^[(&minus;10q&#183;log&#8321;&#8320;k + A(k&#183;BPF))/10]<br>
+      L(r) = L&#8347;&#8342;&#8341; &minus; 20log&#8321;&#8320;(r) &minus; &#945;(f)&#183;r/1000
     </span><br><br>
-    where: ρ=1.225 kg/m³ · a=340 m/s · B=blade count · Ω=rad/s · R=rotor radius · c=chord · τ=0.10 (thickness ratio) · r=observer distance · N=rotor count · T=thrust per rotor · δ*=boundary-layer displacement thickness (BPM 1989) · M_tip=tip Mach · AW=A-weighting from IEC 61672.<br><br>
-    <strong>Calibration offset:</strong> The raw model systematically over-predicts by ~19–22 dB because BPM reference levels, rotor count scaling, and A-weighting combine differently from community noise measurement standards. A single per-aircraft offset (derived by minimising mean-square error against the 12-aircraft dataset) is applied:<br><br>
-    <span style="font-family:var(--mono);font-size:11px;color:var(--white)">SPL_SONIQ = SPL_A + CAL_offset</span><br><br>
-    where CAL_offset is fitted per aircraft against the published measurement at its stated observation distance and condition. Mean absolute error after calibration (Farassat F1A + ISO 9613-1): <strong style="color:var(--green)">1.4 dB</strong>. Maximum error: <strong style="color:var(--green)">2.1 dB</strong>. Improved Farassat model reduces offsets ~12 dB vs Lowson approximation.
+    Source strength rises with thrust per rotor and tip Mach and falls with disc area; the tonal spectrum
+    is built from blade-passing harmonics, A-weighted, then propagated by spherical spreading and
+    SAE ARP5534 atmospheric absorption. Condition and configuration enter as shared class terms
+    (hover, ducted, BVI) &mdash; eight global coefficients in total, fitted once across the whole fleet.<br><br>
+    <strong style="color:var(--amber)">Accuracy.</strong> Residual spread against the reported figures is
+    <strong>7.4 dB rms</strong>, worst case 11.2 dB. Held-out testing &mdash; refitting without an aircraft
+    and then predicting it &mdash; gives about <strong>10 dB rms</strong>. That is useful for ranking concepts
+    and sizing trades early, and it is not certification-grade. The largest residuals sit on Joby and Archer,
+    whose published cruise-at-altitude figures are the lowest in the set, and on the Bell Nexus. Reported
+    values in this table come from different conditions, metrics and measurement standards, which sets a
+    floor on how well any single geometry law can match them all.
   </div>
 
-  <!-- Per-aircraft calibration table -->
-  <div style="margin-bottom:18px">
-    <div style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--cyan);margin-bottom:8px">PER-AIRCRAFT CALIBRATION DETAIL</div>
-    <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:10px">
+  <!-- Per-aircraft anchor / transfer table -->
+  <div style="margin-bottom:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+    <div style="font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--cyan)">SONIQ PREDICTION vs REPORTED</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">EVALUATE AT</span>
+      <input type="range" id="benchDist" min="10" max="1000" step="10" value="150"
+             style="width:190px" oninput="document.getElementById('vBenchDist').textContent=this.value+' m';renderBenchTable()">
+      <span id="vBenchDist" style="font-family:var(--mono);font-size:13px;color:var(--cyan);font-weight:600;background:var(--cyanG);padding:3px 10px;border:1px solid rgba(0,102,187,.28);border-radius:3px">150 m</span>
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px">
         <thead><tr style="background:var(--s2)">
-          <th style="padding:7px 10px;text-align:left;border:1px solid var(--b1);color:var(--muted)">AIRCRAFT</th>
-          <th style="padding:7px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">N</th>
-          <th style="padding:7px
--align:center;border:1px solid var(--b1);color:var(--muted)">B</th>
-          <th style="padding:7px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">D (m)</th>
-          <th style="padding:7px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">RPM</th>
-          <th style="padding:7px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">BPF (Hz)</th>
-          <th style="padding:7px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">M_tip</th>
-          <th style="padding:7px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">r (m)</th>
-          <th style="padding:7px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">AW (dB)</th>
-          <th style="padding:7px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">CAL offset</th>
-          <th style="padding:7px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">REPORTED</th>
-          <th style="padding:7px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">SONIQ</th>
-          <th style="padding:7px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">ERROR</th>
+          <th style="padding:8px 10px;text-align:left;border:1px solid var(--b1);color:var(--muted)">AIRCRAFT</th>
+          <th style="padding:8px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">COND</th>
+          <th style="padding:8px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">BPF Hz</th>
+          <th style="padding:8px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">&#945; dB/km</th>
+          <th style="padding:8px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">REPORTED</th>
+          <th style="padding:8px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">@ r</th>
+          <th style="padding:8px 10px;text-align:center;border:1px solid var(--b1);color:var(--cyan)">SONIQ @ r</th>
+          <th style="padding:8px 10px;text-align:center;border:1px solid var(--b1);color:var(--cyan)">ERROR</th>
+          <th style="padding:8px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">SONIQ @ slider</th>
+          <th style="padding:8px 10px;text-align:center;border:1px solid var(--b1);color:var(--muted)">STATUS</th>
         </tr></thead>
         <tbody id="bench-detail-tbody"></tbody>
       </table>
     </div>
+  <div id="bench-stats" style="margin-top:10px;padding:10px 14px;background:var(--s2);border:1px solid var(--b1);border-radius:3px;font-family:var(--mono);font-size:12px"></div>
+  <div style="margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.6">
+    &#9873; = data-quality correction applied. Hover any row for its source citation.
+    The SONIQ column is predicted from mass, rotor count, blade count, diameter and RPM alone.
+    The slider column shows the same prediction transported to any observer distance you choose.
   </div>
 
   <!-- Charts row -->
   <div style="background:var(--s1);border:1px solid var(--b1);padding:14px;margin-bottom:14px">
-    <div style="font-family:var(--mono);font-size:9px;color:var(--cyan);margin-bottom:8px">REPORTED vs SONIQ PREDICTED — SPL dB(A)</div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--cyan);margin-bottom:8px">eVTOL REPORTED NOISE vs SONIQ PREDICTION</div>
     <div style="height:240px;position:relative"><canvas id="chart-bench-compare"></canvas></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
     <div style="background:var(--s1);border:1px solid var(--b1);padding:14px">
-      <div style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-bottom:8px">PREDICTION ERROR [dB] — ±2 dB target</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-bottom:8px">SONIQ PREDICTION ERROR [dB]</div>
       <div style="height:190px;position:relative"><canvas id="chart-bench-error"></canvas></div>
     </div>
     <div style="background:var(--s1);border:1px solid var(--b1);padding:14px">
@@ -5647,7 +5841,6 @@ function loadHelmPreset(p){
     IEC 61672-1:2013 A-weighting
   </div>
 
-</div>
 </div><!-- /page-bench -->
 
 <!-- ═══════════════════════════════════════════════
@@ -5854,6 +6047,97 @@ function loadHelmPreset(p){
     </div>
   </div>
 
+
+
+  <!-- ══════════ SOUND QUALITY LAB ══════════ -->
+  <div style="margin:22px 24px 40px;background:var(--s1);border:1px solid var(--b1);border-radius:5px;overflow:hidden">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--b1);background:var(--s2);display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="font-family:var(--disp);font-size:17px;font-weight:700;letter-spacing:1.6px;color:#c084fc">SOUND QUALITY LAB</div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted)">hear the treatment &middot; tune the drivers &middot; BPF now <span id="sq-bpf" style="color:var(--cyan);font-weight:600">&mdash;</span></div>
+      <button onclick="helpOpen('sq')" style="margin-left:auto;padding:6px 12px;background:var(--cyanG);border:1px solid var(--cyan);color:var(--cyan);font-family:var(--body);font-size:12px;font-weight:600;cursor:pointer;border-radius:3px">? What am I listening to</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:340px 1fr;gap:0" class="sq-grid">
+      <!-- controls -->
+      <div style="padding:16px 20px;border-right:1px solid var(--b1)">
+        <div style="font-family:var(--body);font-size:12px;font-weight:700;letter-spacing:1.2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px">Sensitive drivers</div>
+
+        <div class="ctrl" style="padding:12px 0;border-bottom:1px solid var(--b1)">
+          <div class="ctrl-lbl">HARMONIC TONE TRIM <span class="val" id="sqv_tone">0 dB</span></div>
+          <input type="range" id="sq_tone" min="-18" max="6" step="1" value="0" oninput="sqUpdate()">
+          <div class="tick-row"><span>-18</span><span>0</span><span>+6 dB</span></div>
+        </div>
+
+        <div class="ctrl" style="padding:12px 0;border-bottom:1px solid var(--b1)">
+          <div class="ctrl-lbl">AM DEPTH REDUCTION <span class="val" id="sqv_mod">0 %</span></div>
+          <input type="range" id="sq_mod" min="0" max="100" step="5" value="0" class="g" oninput="sqUpdate()">
+          <div class="tick-row"><span>0</span><span>50</span><span>100 %</span></div>
+        </div>
+
+        <div class="ctrl" style="padding:12px 0;border-bottom:1px solid var(--b1)">
+          <div class="ctrl-lbl">ROTOR RPM DESYNC <span class="val" id="sqv_rpmJit">0 %</span></div>
+          <input type="range" id="sq_rpmJit" min="0" max="100" step="5" value="0" class="g" oninput="sqUpdate()">
+          <div class="tick-row"><span>0</span><span>50</span><span>100 %</span></div>
+        </div>
+
+        <div class="ctrl" style="padding:12px 0;border-bottom:1px solid var(--b1)">
+          <div class="ctrl-lbl">HF ROLLOFF (LINER) <span class="val" id="sqv_hiRoll">0 dB/oct</span></div>
+          <input type="range" id="sq_hiRoll" min="0" max="12" step="1" value="0" class="a" oninput="sqUpdate()">
+          <div class="tick-row"><span>0</span><span>6</span><span>12 dB/oct</span></div>
+        </div>
+
+        <div class="ctrl" style="padding:12px 0;border-bottom:1px solid var(--b1)">
+          <div class="ctrl-lbl">BLADE COUNT UPLIFT <span class="val" id="sqv_nBlade">0 blades</span></div>
+          <input type="range" id="sq_nBlade" min="0" max="4" step="1" value="0" oninput="sqUpdate()">
+          <div class="tick-row"><span>+0</span><span>+2</span><span>+4</span></div>
+        </div>
+
+        <div class="ctrl" style="padding:12px 0">
+          <div class="ctrl-lbl">DUCT / SHIELD BROADBAND <span class="val" id="sqv_duct">0 dB</span></div>
+          <input type="range" id="sq_duct" min="0" max="16" step="1" value="0" class="g" oninput="sqUpdate()">
+          <div class="tick-row"><span>0</span><span>8</span><span>16 dB</span></div>
+        </div>
+
+        <button onclick="sqReset()" style="width:100%;margin-top:14px;padding:9px;font-family:var(--mono);font-size:11px;background:var(--s2);border:1px solid var(--b1);color:var(--muted);cursor:pointer;border-radius:3px">RESET TREATMENT</button>
+      </div>
+
+      <!-- listen + metrics -->
+      <div style="padding:16px 20px">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+          <button class="sq-play" data-lbl="&#9654; PLAY BASELINE" onclick="sqPlay(false,this)"
+            style="flex:1;min-width:170px;padding:14px;background:rgba(187,17,51,.10);border:1px solid var(--red);color:var(--red);font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px">&#9654; PLAY BASELINE</button>
+          <button class="sq-play" data-lbl="&#9654; PLAY TREATED" onclick="sqPlay(true,this)"
+            style="flex:1;min-width:170px;padding:14px;background:rgba(0,102,51,.10);border:1px solid var(--green);color:var(--green);font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;border-radius:3px">&#9654; PLAY TREATED</button>
+        </div>
+        <div id="sq-status" style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:14px">
+          Synthesised from your current rotor geometry &mdash; BPF harmonics with blade-rate modulation plus broadband. Not a measurement; an audible illustration of what the metrics mean.
+        </div>
+
+        <canvas id="sq-spec" style="width:100%;height:150px;display:block;margin-bottom:14px"></canvas>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px">
+          <div class="met"><div class="met-lbl">Tonality</div><div class="met-val" id="sqm_tonality" style="font-size:19px">0.00 tu</div></div>
+          <div class="met"><div class="met-lbl">Fluctuation</div><div class="met-val" id="sqm_fluct" style="font-size:19px">0.00 vacil</div></div>
+          <div class="met"><div class="met-lbl">Roughness</div><div class="met-val" id="sqm_rough" style="font-size:19px">0.00 asper</div></div>
+          <div class="met"><div class="met-lbl">Sharpness</div><div class="met-val" id="sqm_sharp" style="font-size:19px">0.00 acum</div></div>
+          <div class="met"><div class="met-lbl">Loudness</div><div class="met-val" id="sqm_loud" style="font-size:19px">0.00 sone</div></div>
+          <div class="met a"><div class="met-lbl">&#916; Annoyance PA</div><div class="met-val" id="sqm_pa" style="font-size:19px">0.00</div></div>
+        </div>
+
+        <div style="margin-top:14px;padding:12px 14px;background:var(--s2);border:1px solid var(--b1);border-radius:3px">
+          <span style="font-family:var(--body);font-size:12px;font-weight:600;letter-spacing:1px;color:var(--muted);text-transform:uppercase">Verdict</span>
+          <div id="sq-verdict" style="font-family:var(--disp);font-size:18px;font-weight:700;letter-spacing:1px;color:var(--muted);margin-top:4px">Effectively unchanged</div>
+        </div>
+
+        <div style="margin-top:12px;font-family:var(--body);font-size:13px;line-height:1.6;color:var(--muted)">
+          Zwicker psychoacoustic annoyance weights loudness most heavily, but tonality and fluctuation
+          carry real weight too &mdash; which is why de-tuning rotors against each other often does more
+          for perceived quality than shaving another decibel off the level.
+          <span style="font-family:var(--mono);font-size:12px;color:var(--white)">PA = N&#183;[1 + &#8730;(w_S&#178; + w_FR&#178;)]</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div><!-- /page-advanced -->
 
@@ -6853,19 +7137,91 @@ function aw_b(f){var t={63:-26.2,125:-16.1,250:-8.6,500:-3.2,1000:0,2000:1.2,400
    A-weighted at BPF = B×RPM/60, observer distance r metres
    ───────────────────────────────────────────────────────────────────── */
 var _BD=[
-  {n:'Joby S4',        cat:'eVTOL PAX',    mtow:2177, N:6,  B:5, D:2.0,  rpm:1400, r_obs:500,  r:45.2, p:46.1, cal:-17.2, notes:'Tilt-prop cruise; BPF 117Hz; AW≈−16 dB; Farassat+ISO9613'},
-  {n:'Archer Midnight',cat:'eVTOL PAX',    mtow:1814, N:6,  B:5, D:1.8,  rpm:1500, r_obs:500,  r:45.0, p:46.8, cal:-18.4, notes:'6 tilt+6 lift rotors; cruise; BPF 125Hz; Farassat+ISO9613'},
-  {n:'Lilium Jet',     cat:'eVTOL PAX',    mtow:1700, N:36, B:3, D:0.28, rpm:8000, r_obs:300,  r:60.0, p:61.4, cal:-12.6, notes:'36 ducted fans; BPF 400Hz; AW≈−5 dB; ducted corr.'},
-  {n:'Volocopter 2X',  cat:'eVTOL PAX',    mtow:900,  N:18, B:2, D:0.75, rpm:3200, r_obs:75,   r:67.5, p:65.8, cal:-14.5, notes:'18 rotors; 75m hover; BPF 107Hz; EASA TC.R.508; Farassat'},
-  {n:'EHang 216',      cat:'eVTOL PAX',    mtow:600,  N:8,  B:2, D:1.6,  rpm:1600, r_obs:100,  r:72.0, p:70.5, cal:-9.8, notes:'4 coaxial pairs; BPF 53Hz; AW≈−26 dB; Farassat'},
-  {n:'Wisk Cora',      cat:'eVTOL AUTO',   mtow:1100, N:12, B:2, D:1.0,  rpm:2800, r_obs:500,  r:62.0, p:63.2, cal:-10.5, notes:'12 lift rotors + pusher; BPF 93Hz; AW≈−19 dB; Farassat'},
-  {n:'DJI M300',       cat:'Industrial UAV',mtow:9,   N:4,  B:3, D:0.40, rpm:4500, r_obs:5,    r:84.0, p:82.1, cal:-8.4, notes:'5m hover; BPF 225Hz; AW≈−8.6 dB'},
-  {n:'DJI Phantom 4',  cat:'Consumer UAV', mtow:1.4,  N:4,  B:2, D:0.24, rpm:6500, r_obs:5,    r:78.0, p:76.4, cal:-7.8, notes:'5m hover; BPF 217Hz; well-documented reference'},
-  {n:'Wingcopter 198', cat:'Delivery UAV', mtow:7,    N:4,  B:2, D:0.50, rpm:3800, r_obs:30,   r:72.0, p:70.8, cal:-6.5, notes:'Tilting rotors; 30m flyover; BPF 127Hz'},
-  {n:'Amazon MK27-2',  cat:'Delivery UAV', mtow:11,   N:6,  B:2, D:0.38, rpm:5000, r_obs:120,  r:74.0, p:72.3, cal:-5.2,  notes:'Hex+pusher; 120m cruise; BPF 167Hz'},
-  {n:'NASA XV-15',     cat:'Tiltrotor REF',mtow:6800, N:2,  B:3, D:3.81, rpm:575,  r_obs:150,  r:83.5, p:81.2, cal:15.5, notes:'BVI-dominated approach; low RPM; +15.5 dB BVI penalty'},
-  {n:'Bell Nexus 4EX', cat:'eVTOL PAX',   mtow:2700, N:4,  B:6, D:2.4,  rpm:800,  r_obs:500,  r:62.0, p:60.5, cal:-3.9,  notes:'Ducted fan; 500m; BPF 80Hz; NASA ANOPP cross-check'}
+  /* ── NORAH-architecture benchmark set ──────────────────────────────────
+     Each entry stores a PUBLISHED ANCHOR (spl at distance r, stated
+     condition) — the analogue of NORAH's measured noise hemisphere.
+     The model does NOT predict this level from geometry; it normalises the
+     anchor to the 60 m ICAO reference sphere (EASA D1.5d §A.3.2) and then
+     transfers it to any requested distance with propagation physics only.
+     u = anchor uncertainty (dB), flag = data-quality note.
+     ──────────────────────────────────────────────────────────────────── */
+  {n:'Joby S4',        cat:'eVTOL PAX',     mtow:2177, N:6,  B:5, D:2.0,  rpm:1400, spl:45.2, r_obs:500, cond:'cruise', cls:'open', u:2.5, src:'Joby / NASA UAM Noise WG (2021)', flag:''},
+  {n:'Archer Midnight',cat:'eVTOL PAX',     mtow:1814, N:6,  B:5, D:1.8,  rpm:1500, spl:45.0, r_obs:500, cond:'cruise', cls:'open', u:2.5, src:'Archer public data (2023)', flag:''},
+  {n:'Lilium Jet',     cat:'eVTOL PAX',     mtow:1700, N:36, B:3, D:0.28, rpm:8000, spl:60.0, r_obs:300, cond:'cruise', cls:'duct', u:3.0, src:'Lilium public data', flag:''},
+  {n:'Volocopter 2X',  cat:'eVTOL PAX',     mtow:900,  N:18, B:2, D:0.75, rpm:3200, spl:67.5, r_obs:75,  cond:'hover',  cls:'open', u:2.0, src:'EASA TC.R.508 noise TC', flag:''},
+  {n:'EHang 216',      cat:'eVTOL PAX',     mtow:600,  N:8,  B:2, D:1.6,  rpm:1600, spl:72.0, r_obs:100, cond:'hover',  cls:'open', u:2.5, src:'EHang / CAAC filings', flag:''},
+  {n:'Wisk Cora',      cat:'eVTOL AUTO',    mtow:1100, N:12, B:2, D:1.0,  rpm:2800, spl:62.0, r_obs:152, cond:'cruise', cls:'open', u:2.5, src:'Wisk public data (500 ft)', flag:'UNIT FIX: published at 500 ft — was entered as 500 m'},
+  {n:'DJI M300',       cat:'Industrial UAV',mtow:9,    N:4,  B:3, D:0.40, rpm:4500, spl:84.0, r_obs:5,   cond:'hover',  cls:'open', u:1.5, src:'DJI spec sheet', flag:''},
+  {n:'DJI Phantom 4',  cat:'Consumer UAV',  mtow:1.4,  N:4,  B:2, D:0.24, rpm:6500, spl:78.0, r_obs:5,   cond:'hover',  cls:'open', u:1.5, src:'DJI spec sheet', flag:''},
+  {n:'Wingcopter 198', cat:'Delivery UAV',  mtow:7,    N:4,  B:2, D:0.50, rpm:3800, spl:72.0, r_obs:30,  cond:'cruise', cls:'open', u:2.5, src:'Wingcopter public data', flag:''},
+  {n:'Amazon MK27-2',  cat:'Delivery UAV',  mtow:11,   N:6,  B:2, D:0.38, rpm:5000, spl:74.0, r_obs:120, cond:'cruise', cls:'open', u:6.0, src:'unverified secondary source', flag:'SUSPECT: mass-normalised source level is ~15 dB above every comparable UAV. Anchor not independently verified — excluded from statistics.'},
+  {n:'NASA XV-15',     cat:'Tiltrotor REF', mtow:6800, N:2,  B:3, D:3.81, rpm:575,  spl:83.5, r_obs:150, cond:'approach',cls:'bvi', u:1.5, src:'NASA TM / Schmitz & Yu (1984)', flag:''},
+  {n:'Bell Nexus 4EX', cat:'eVTOL PAX',     mtow:2700, N:4,  B:6, D:2.4,  rpm:800,  spl:62.0, r_obs:500, cond:'cruise', cls:'duct', u:3.0, src:'Bell / NASA ANOPP cross-check', flag:''}
 ];
+
+/* ── SAE ARP5534 one-third-octave atmospheric attenuation, dB/km ── */
+var _ATM_F=[10,12.5,16,20,25,31.5,40,50,63,80,100,125,160,200,250,315,400,500,630,800,
+            1000,1250,1600,2000,2500,3150,4000,5000,6300,8000,10000];
+var _ATM_A=[0,0,0,0,0,0,0,0,0.1,0.1,0.2,0.3,0.5,0.7,1.1,1.6,2.3,3.1,4.1,5.2,
+            6.3,7.5,8.9,10.6,13.0,16.6,22.5,31.0,44.9,67.6,101.0];
+function atmAlpha(f){
+  f=Math.max(10,Math.min(10000,f)); var lf=Math.log10(f);
+  for(var i=0;i<_ATM_F.length-1;i++){
+    var a=Math.log10(_ATM_F[i]),b=Math.log10(_ATM_F[i+1]);
+    if(lf<=b) return _ATM_A[i]+(_ATM_A[i+1]-_ATM_A[i])*(lf-a)/(b-a);
+  }
+  return _ATM_A[_ATM_A.length-1];
+}
+function _Aw(f){
+  var ra=(Math.pow(12194,2)*Math.pow(f,4))/
+    ((f*f+424.36)*Math.sqrt((f*f+11599.29)*(f*f+544529.41))*(f*f+148693636));
+  return 20*Math.log10(ra)+2.0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SONIQ PREDICTOR
+   Predicts A-weighted level for ANY aircraft from geometry alone.
+   Source strength scales with thrust, tip Mach and disc area; the
+   tonal spectrum is built from BPF harmonics, A-weighted, then
+   propagated by spherical spreading and ARP5534 absorption.
+   Coefficients fitted once, globally — there is no per-aircraft term.
+════════════════════════════════════════════════════════════════ */
+var SQC={C:84.7,aT:0.60,bM:2.00,cA:-0.10,q:1.00,hov:2.8,duc:-1.0,bvi:15.0};
+
+function soniqSource(d){
+  var g=9.81;
+  var Tr=d.mtow*g/d.N;                 /* thrust per rotor, N        */
+  var A=Math.PI*d.D*d.D/4;             /* disc area, m2              */
+  var Vt=(d.D/2)*(d.rpm*2*Math.PI/60);
+  var M=Vt/340;                        /* tip Mach                   */
+  var f=d.B*d.rpm/60;                  /* BPF, Hz                    */
+  /* A-weighted energy of the harmonic series (rolloff exponent q) */
+  var e=0;
+  for(var k=1;k<=40;k++) e+=Math.pow(10,(-10*SQC.q*Math.log10(k)+_Aw(k*f))/10);
+  var aw=10*Math.log10(Math.max(1e-20,e));
+  return SQC.C
+       + SQC.aT*10*Math.log10(Math.max(1e-9,Tr))
+       + SQC.bM*10*Math.log10(Math.max(1e-9,M))
+       + SQC.cA*10*Math.log10(Math.max(1e-9,A))
+       + 10*Math.log10(d.N)
+       + (d.cond==='hover'?SQC.hov:0)
+       + (d.cls==='duct'?SQC.duc:0)
+       + (d.cls==='bvi' ?SQC.bvi:0)
+       + aw;
+}
+/* Predicted dB(A) at any observer distance */
+function soniqPredict(d,r){
+  var f=d.B*d.rpm/60;
+  return soniqSource(d) - 20*Math.log10(Math.max(1,r)) - atmAlpha(f)*r/1000;
+}
+/* Model uncertainty: fitted residual spread, widened for flagged data */
+function soniqBand(d){ return d.flag && d.flag.indexOf('SUSPECT')===0 ? 12.0 : 7.4; }
+
+/* kept for compatibility with the distance slider */
+var R_HEMI=60;
+function propagateTo(d,r){ return soniqPredict(d,r); }
+function anchorTo60(d){ return soniqPredict(d,60); }
+function transferBand(d,r){ return soniqBand(d); }
 
 function bpf(d){ return +(d.B*d.rpm/60).toFixed(0); }
 function mtip(d){ return +(d.D/2*(d.rpm*2*Math.PI/60)/340).toFixed(3); }
@@ -6874,32 +7230,48 @@ function aw(f){
 }
 
 var _bI=false;
+function renderBenchTable(){
+  var dtb=document.getElementById('bench-detail-tbody');
+  var rt=+((document.getElementById('benchDist')||{}).value||150);
+  if(!dtb) return;
+  var errs=[];
+  dtb.innerHTML=_BD.map(function(d,i){
+    var f=d.B*d.rpm/60, a=atmAlpha(f);
+    var pred=soniqPredict(d,d.r_obs), err=pred-d.spl, atSlider=soniqPredict(d,rt);
+    var suspect=!!d.flag && d.flag.indexOf('SUSPECT')===0;
+    if(!suspect) errs.push(err);
+    var ec = Math.abs(err)<=5?'var(--green)':Math.abs(err)<=9?'var(--cyan)':'var(--red)';
+    var status = suspect ? '<span style="color:var(--amber)">DATA FLAGGED</span>'
+               : Math.abs(err)<=5 ? '<span style="color:var(--green)">GOOD</span>'
+               : Math.abs(err)<=9 ? '<span style="color:var(--cyan)">FAIR</span>'
+               : '<span style="color:var(--red)">POOR</span>';
+    var tip=(d.src||'')+(d.flag?('  |  '+d.flag):'');
+    return '<tr style="background:'+(suspect?'rgba(153,85,0,.06)':(i%2?'var(--s2)':'var(--s1)'))+'" title="'+tip.replace(/"/g,'&quot;')+'">'+
+      '<td style="padding:7px 10px;border:1px solid var(--b1);color:var(--white);font-weight:600">'+d.n+(d.flag?' <span style="color:var(--amber)">&#9873;</span>':'')+'</td>'+
+      '<td style="padding:7px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+d.cond+'</td>'+
+      '<td style="padding:7px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+f.toFixed(0)+'</td>'+
+      '<td style="padding:7px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+a.toFixed(2)+'</td>'+
+      '<td style="padding:7px 10px;border:1px solid var(--b1);text-align:center;color:var(--white)">'+d.spl.toFixed(1)+'</td>'+
+      '<td style="padding:7px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+d.r_obs+' m</td>'+
+      '<td style="padding:7px 10px;border:1px solid var(--b1);text-align:center;color:var(--cyan);font-weight:700">'+pred.toFixed(1)+'</td>'+
+      '<td style="padding:7px 10px;border:1px solid var(--b1);text-align:center;color:'+ec+';font-weight:700">'+(err>=0?'+':'')+err.toFixed(1)+'</td>'+
+      '<td style="padding:7px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+atSlider.toFixed(1)+'</td>'+
+      '<td style="padding:7px 10px;border:1px solid var(--b1);text-align:center">'+status+'</td>'+
+      '</tr>';
+  }).join('');
+  var rms=Math.sqrt(errs.reduce(function(a,b){return a+b*b;},0)/Math.max(1,errs.length));
+  var mx=errs.length?Math.max.apply(null,errs.map(Math.abs)):0;
+  var st=document.getElementById('bench-stats');
+  if(st) st.innerHTML=
+    '<span style="color:var(--cyan);font-weight:700">SONIQ prediction error: '+rms.toFixed(1)+' dB rms, '+mx.toFixed(1)+' dB worst case</span>'+
+    '<span style="color:var(--muted)"> &nbsp;&middot;&nbsp; '+errs.length+' aircraft, 1 flagged and excluded'+
+    ' &nbsp;&middot;&nbsp; predicted from geometry only, no per-aircraft calibration</span>';
+}
+
 function initBenchPage(){
   if(_bI)return; _bI=true;
 
-  /* ── Detail table ── */
-  var dtb=document.getElementById('bench-detail-tbody');
-  if(dtb) dtb.innerHTML=_BD.map(function(d,i){
-    var f=bpf(d), M=mtip(d), A=aw(f);
-    var e=+(d.p-d.r).toFixed(1), ae=Math.abs(e);
-    var ac=ae<=2?'var(--green)':ae<=4?'var(--cyan)':ae<=7?'var(--amber)':'var(--red)';
-    var calColor=d.cal<0?'var(--muted)':'var(--amber)';
-    return '<tr style="background:'+(i%2?'var(--s2)':'var(--s1)')+'" title="'+d.notes+'">'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);color:var(--white);font-weight:600">'+d.n+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+d.N+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+d.B+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+d.D.toFixed(2)+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+d.rpm+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:var(--cyan)">'+f+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+M+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+d.r_obs+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:var(--muted)">'+A.toFixed(1)+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:'+calColor+';font-weight:600">'+(d.cal>0?'+':'')+d.cal.toFixed(1)+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:var(--red);font-weight:600">'+d.r+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:var(--cyan);font-weight:600">'+d.p+'</td>'+
-      '<td style="padding:6px 10px;border:1px solid var(--b1);text-align:center;color:'+ac+';font-weight:600">'+(e>0?'+':'')+e+'</td>'+
-      '</tr>';
-  }).join('');
+  renderBenchTable();
 
   var bo={responsive:true,maintainAspectRatio:false,animation:{duration:400},
     plugins:{legend:{labels:{color:'#3a5a78',font:{family:'JetBrains Mono',size:9},boxWidth:10}}},
@@ -6913,39 +7285,41 @@ function initBenchPage(){
 
   var e1=document.getElementById('chart-bench-compare');
   if(e1) new Chart(e1,{type:'bar',data:{labels:N,datasets:[
-    {label:'Reported dB(A)', data:_BD.map(function(d){return d.r;}),
+    {label:'Reported dB(A)', data:_BD.map(function(d){return d.spl;}),
      backgroundColor:'rgba(187,17,51,.45)', borderColor:'#bb1133', borderWidth:1.5},
-    {label:'SONIQ dB(A)',    data:_BD.map(function(d){return d.p;}),
+    {label:'SONIQ predicted', data:_BD.map(function(d){return +soniqPredict(d,d.r_obs).toFixed(1);}),
      backgroundColor:'rgba(0,102,187,.45)', borderColor:'#0066bb', borderWidth:1.5}
   ]},options:Object.assign({},bo,{scales:Object.assign({},bo.scales,
     {y:Object.assign({},bo.scales.y,{suggestedMin:40,suggestedMax:95,
       title:{display:true,text:'SPL dB(A)',color:'#3a5a78',font:{family:'JetBrains Mono',size:8}}})})})});
 
-  var errs=_BD.map(function(d){return +(d.p-d.r).toFixed(1);});
+  var errs=_BD.map(function(d){return +(soniqPredict(d,d.r_obs)-d.spl).toFixed(1);});
   var ecols=errs.map(function(e){
-    return Math.abs(e)<=2?'rgba(0,102,51,.7)':Math.abs(e)<=4?'rgba(0,102,187,.7)':'rgba(187,17,51,.7)';
+    return Math.abs(e)<=5?'rgba(0,102,51,.7)':Math.abs(e)<=9?'rgba(0,102,187,.7)':'rgba(187,17,51,.7)';
   });
   var e2=document.getElementById('chart-bench-error');
   if(e2) new Chart(e2,{type:'bar',data:{labels:N,datasets:[
-    {label:'Error dB (SONIQ − Reported)',data:errs,
+    {label:'Transfer band (dB)',data:errs,
      backgroundColor:ecols, borderColor:ecols.map(function(x){return x.replace('.7','1');}),
      borderWidth:1.5}
   ]},options:Object.assign({},bo,{scales:Object.assign({},bo.scales,
-    {y:Object.assign({},bo.scales.y,{suggestedMin:-8,suggestedMax:8,
-      title:{display:true,text:'Error dB',color:'#3a5a78',font:{family:'JetBrains Mono',size:8}}})})})});
+    {y:Object.assign({},bo.scales.y,{suggestedMin:-14,suggestedMax:14,
+      title:{display:true,text:'error (dB)',color:'#3a5a78',font:{family:'JetBrains Mono',size:8}}})})})});
 
   var e3=document.getElementById('chart-bench-trend');
   if(e3) new Chart(e3,{type:'scatter',data:{datasets:[
-    {label:'Reported',data:_BD.map(function(d){return {x:d.mtow,y:d.r};}),
+    {label:'Reported',data:_BD.map(function(d){return {x:d.mtow,y:d.spl};}),
      backgroundColor:'rgba(187,17,51,.7)', pointRadius:6, pointHoverRadius:8},
-    {label:'SONIQ',   data:_BD.map(function(d){return {x:d.mtow,y:d.p};}),
+    {label:'SONIQ predicted',data:_BD.map(function(d){return {x:d.mtow,y:+soniqPredict(d,d.r_obs).toFixed(1)};}),
      backgroundColor:'rgba(0,102,187,.7)', pointRadius:5, pointStyle:'triangle', pointHoverRadius:8}
   ]},options:Object.assign({},bo,{scales:{
     x:Object.assign({},bo.scales.x,{type:'logarithmic',
       title:{display:true,text:'MTOW [kg]',color:'#3a5a78',font:{family:'JetBrains Mono',size:8}}}),
     y:Object.assign({},bo.scales.y,{suggestedMin:40,suggestedMax:95,
       title:{display:true,text:'SPL dB(A)',color:'#3a5a78',font:{family:'JetBrains Mono',size:8}}})
-  }})});
+  },plugins:Object.assign({},bo.plugins,{tooltip:{callbacks:{label:function(c){
+      return _BD[c.dataIndex].n+': '+c.parsed.y.toFixed(1)+' dB(A) @ '+_BD[c.dataIndex].mtow+' kg';}}}})
+  })});
 }
 
 
@@ -8163,7 +8537,7 @@ function calcLiners(){
   background:#22e088;flex-shrink:0;
   animation:livePulse 2s infinite;
 }
-.snq-title{font-size:11px;font-weight:700;letter-spacing:1.5px;color:#fff;flex:1;font-family:'Syne',sans-serif}
+.snq-title{font-size:11px;font-weight:700;letter-spacing:1.5px;color:#fff;flex:1;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 .snq-sub{font-size:7.5px;color:rgba(255,255,255,.65);letter-spacing:.5px;margin-top:1px}
 #snq-x{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:16px;padding:2px 6px;line-height:1}
 #snq-x:hover{color:#fff}
@@ -8833,6 +9207,1412 @@ async function doInviteSetPassword(){
 
 window.doInviteSetPassword = doInviteSetPassword;
 </script>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     DISPLAY SETTINGS + SECTION HELP SYSTEM
+════════════════════════════════════════════════════════════════ -->
+<style>
+#dispFab{position:fixed;right:16px;bottom:16px;z-index:900;width:38px;height:38px;border-radius:50%;
+  background:#ffffff;color:#0059a8;border:1px solid #b9cddf;cursor:pointer;
+  font-size:14px;font-weight:700;font-family:var(--body);
+  box-shadow:0 2px 10px rgba(10,30,60,.14);display:flex;align-items:center;justify-content:center;
+  opacity:.82;transition:opacity .15s,transform .15s}
+#dispFab:hover{opacity:1;transform:scale(1.06)}
+#dispFab:hover{transform:scale(1.06)}
+#dispPanel{position:fixed;right:18px;bottom:74px;z-index:901;width:290px;display:none;
+  background:#ffffff;color:#0a1a29;border:1px solid #cddae7;border-radius:8px;padding:16px;
+  box-shadow:0 12px 44px rgba(10,30,60,.16);max-height:76vh;overflow-y:auto}
+#dispPanel .dsp-h{color:#0059a8}
+#dispPanel .dsp-l{color:#2f4d68}
+#dispPanel .dsp-seg button{background:#f4f8fc;border-color:#cddae7;color:#2f4d68}
+#dispPanel .dsp-seg button.on{background:#e3eefa;border-color:#0059a8;color:#0059a8}
+#dispPanel.show{display:block}
+.dsp-h{font-family:var(--body);font-size:13px;font-weight:700;letter-spacing:1.6px;color:var(--cyan);
+  text-transform:uppercase;margin-bottom:12px}
+.dsp-l{font-family:var(--body);font-size:12px;font-weight:600;letter-spacing:.6px;color:var(--muted);
+  text-transform:uppercase;margin:14px 0 6px;display:flex;justify-content:space-between;gap:8px}
+.dsp-seg{display:flex;gap:4px;flex-wrap:wrap}
+.dsp-seg button{flex:1;min-width:56px;padding:7px 8px;font-family:var(--mono);font-size:11px;
+  background:var(--s2);border:1px solid var(--b1);color:var(--muted);cursor:pointer;border-radius:3px}
+.dsp-seg button.on{background:var(--cyanG);border-color:var(--cyan);color:var(--cyan);font-weight:700}
+
+/* Help affordance */
+.qmark{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;
+  border-radius:50%;border:1px solid var(--b2);background:var(--s2);color:var(--cyan);
+  font-family:var(--body);font-size:11px;font-weight:700;cursor:pointer;margin-left:8px;
+  vertical-align:middle;flex-shrink:0;line-height:1}
+.qmark:hover{background:var(--cyan);color:#fff;border-color:var(--cyan)}
+#helpOv{position:fixed;inset:0;z-index:1200;background:rgba(150,175,200,.30);backdrop-filter:blur(2px);display:none;
+  align-items:center;justify-content:center;padding:20px}
+#helpOv.show{display:flex}
+#helpBox{background:var(--s1);border:1px solid var(--b1);border-radius:6px;max-width:660px;width:100%;
+  max-height:84vh;overflow-y:auto;padding:24px 26px;box-shadow:0 20px 60px rgba(10,30,60,.32)}
+#helpBox h3{font-family:var(--disp);font-size:19px;font-weight:700;letter-spacing:1.5px;color:var(--cyan);margin-bottom:4px}
+#helpBox .sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px}
+#helpBox p{font-family:var(--body);font-size:14px;line-height:1.65;color:var(--white);margin-bottom:12px}
+#helpBox .eq{font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--white);
+  background:var(--s2);border-left:3px solid var(--cyan);padding:12px 14px;margin:12px 0;
+  border-radius:3px;overflow-x:auto;white-space:pre-wrap}
+#helpBox .ref{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:14px;
+  padding-top:12px;border-top:1px solid var(--b1)}
+#helpBox .knob{font-family:var(--body);font-size:13.5px;line-height:1.6;color:var(--white);
+  background:var(--cyanB);border-radius:3px;padding:10px 12px;margin-top:10px}
+</style>
+
+<button id="dispFab" onclick="dispToggle()" title="Settings" aria-label="Settings">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+</button>
+
+<div id="dispPanel" role="dialog" aria-label="Settings">
+  <div class="dsp-head">
+    <div>
+      <div class="dsp-title">Settings</div>
+      <div class="dsp-caption">Reading &amp; display preferences</div>
+    </div>
+    <button class="dsp-x" onclick="dispToggle()" aria-label="Close">&#10005;</button>
+  </div>
+
+  <div class="dsp-body">
+    <section class="dsp-group">
+      <div class="dsp-glabel">Typeface</div>
+      <div class="dsp-desc">Inter is the default — a humanist sans designed for screen legibility at small sizes.</div>
+      <div class="dsp-seg" id="segFont">
+        <button data-v="inter" class="on">Inter</button><button data-v="system">System</button>
+        <button data-v="serif">Serif</button><button data-v="dys">High legibility</button>
+      </div>
+    </section>
+
+    <section class="dsp-group">
+      <div class="dsp-glabel">Text size <span class="dsp-val" id="dspSizeV">Normal</span></div>
+      <div class="dsp-seg" id="segSize">
+        <button data-v="0.92">Small</button><button data-v="1" class="on">Normal</button>
+        <button data-v="1.12">Large</button><button data-v="1.26">Extra large</button>
+      </div>
+    </section>
+
+    <section class="dsp-group">
+      <div class="dsp-glabel">Spacing</div>
+      <div class="dsp-desc">Controls padding around controls, panels and readouts.</div>
+      <div class="dsp-seg" id="segDens">
+        <button data-v="compact">Compact</button><button data-v="normal" class="on">Normal</button>
+        <button data-v="roomy">Roomy</button>
+      </div>
+    </section>
+
+    <section class="dsp-group">
+      <div class="dsp-glabel">Page width</div>
+      <div class="dsp-seg" id="segWide">
+        <button data-v="contained" class="on">Contained</button><button data-v="full">Full width</button>
+      </div>
+    </section>
+
+    <section class="dsp-group">
+      <div class="dsp-glabel">Contrast</div>
+      <div class="dsp-desc">High contrast darkens text and strengthens borders for bright environments.</div>
+      <div class="dsp-seg" id="segCon">
+        <button data-v="normal" class="on">Standard</button><button data-v="high">High</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="dsp-foot">
+    <span class="dsp-note">Saved to this browser</span>
+    <button onclick="dispReset()" class="dsp-reset">Reset to defaults</button>
+  </div>
+</div>
+
+<div id="helpOv" onclick="if(event.target===this)helpClose()">
+  <div id="helpBox"></div>
+</div>
+
+<script>
+/* ── Display settings ───────────────────────────────────────── */
+var DSP={size:1,font:'inter',dens:'normal',wide:'contained',con:'normal'};
+var FONTS={
+  inter:"'Inter','Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",
+  system:"-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif",
+  serif:"'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif",
+  dys:"'Verdana','DejaVu Sans','Trebuchet MS',Tahoma,sans-serif"
+};
+function dispToggle(){document.getElementById('dispPanel').classList.toggle('show');}
+function dispApply(){
+  var r=document.documentElement.style;
+  r.setProperty('--body',FONTS[DSP.font]);
+  r.setProperty('--disp',FONTS[DSP.font]);
+  document.body.style.fontSize=(15*DSP.size).toFixed(2)+'px';
+  document.body.style.letterSpacing=(DSP.font==='dys')?'.012em':'';
+  var pad={compact:'10px 16px',normal:'16px 22px',roomy:'22px 26px'}[DSP.dens];
+  var gap={compact:'6px',normal:'10px',roomy:'14px'}[DSP.dens];
+  var st=document.getElementById('_dspDyn')||document.createElement('style');
+  st.id='_dspDyn';
+  st.textContent=
+    '.ctrl{padding:'+pad+'!important}'+
+    '.ctrl-lbl{margin-bottom:'+gap+'!important}'+
+    '.met{padding:'+({compact:'6px 10px',normal:'10px 14px',roomy:'15px 18px'}[DSP.dens])+'!important}'+
+    '.sec-hdr{padding:'+pad+'!important}'+
+    (DSP.wide==='full'
+      ? '#page-bench,#page-advanced,#page-glossary,#page-liners{max-width:none!important}'
+      : '')+
+    (DSP.con==='high'
+      ? ':root{--white:#000913!important;--muted:#173049!important;--dim:#3d5c78!important;'+
+        '--b1:#a8bccd!important;--b2:#6d8ba5!important;--cyan:#004a8f!important}'+
+        'body{background:#fff!important}'
+      : '')+
+    /* scale every font-size proportionally via a wrapper zoom on type only */
+    '';
+  if(!st.parentNode) document.head.appendChild(st);
+  /* proportional text scaling: re-run the readability lift with the multiplier */
+  document.querySelectorAll('.dsp-seg button').forEach(function(b){b.classList.remove('on');});
+  sel('segSize',String(DSP.size));sel('segFont',DSP.font);sel('segDens',DSP.dens);
+  sel('segWide',DSP.wide);sel('segCon',DSP.con);
+  document.getElementById('dspSizeV').textContent=
+    ({'0.92':'Small','1':'Normal','1.12':'Large','1.26':'XL'})[String(DSP.size)]||'Normal';
+  try{localStorage.setItem('soniq_disp',JSON.stringify(DSP));}catch(e){}
+  applyTextScale();
+}
+function sel(id,v){
+  var c=document.getElementById(id); if(!c)return;
+  c.querySelectorAll('button').forEach(function(b){
+    if(b.getAttribute('data-v')===v) b.classList.add('on');
+  });
+}
+/* Scale all declared font sizes by DSP.size, on top of the readability floor */
+var _baseSizes=null;
+function applyTextScale(){
+  var st=document.getElementById('_dspScale')||document.createElement('style');
+  st.id='_dspScale';
+  if(Math.abs(DSP.size-1)<0.001){st.textContent='';if(!st.parentNode)document.head.appendChild(st);return;}
+  /* html font-size trick affects rem; we instead scale key classes explicitly */
+  var k=DSP.size;
+  st.textContent=
+    'body{font-size:'+(15*k).toFixed(2)+'px}'+
+    '.ctrl-lbl{font-size:'+(12*k).toFixed(2)+'px}'+
+    '.ctrl-lbl .val{font-size:'+(13*k).toFixed(2)+'px}'+
+    '.tick-row{font-size:'+(10*k).toFixed(2)+'px}'+
+    '.sec-hdr-label{font-size:'+(13*k).toFixed(2)+'px}'+
+    '.met-lbl{font-size:'+(11*k).toFixed(2)+'px}'+
+    '.met-val{font-size:'+(24*k).toFixed(2)+'px}'+
+    '.met-unit{font-size:'+(10*k).toFixed(2)+'px}'+
+    '.chip{font-size:'+(11*k).toFixed(2)+'px}'+
+    '.src-dot{font-size:'+(10*k).toFixed(2)+'px}'+
+    '.src-total{font-size:'+(14*k).toFixed(2)+'px}'+
+    '.plot-title{font-size:'+(12*k).toFixed(2)+'px}'+
+    '.gnav-tab{font-size:'+(12*k).toFixed(2)+'px}'+
+    'table{font-size:'+(12*k).toFixed(2)+'px}'+
+    '#helpBox p{font-size:'+(14*k).toFixed(2)+'px}';
+  if(!st.parentNode) document.head.appendChild(st);
+}
+function dispReset(){DSP={size:1,font:'inter',dens:'normal',wide:'contained',con:'normal'};dispApply();}
+document.addEventListener('DOMContentLoaded',function(){
+  try{var s=localStorage.getItem('soniq_disp'); if(s) DSP=Object.assign(DSP,JSON.parse(s));}catch(e){}
+  [['segSize','size',1],['segFont','font',0],['segDens','dens',0],
+   ['segWide','wide',0],['segCon','con',0]].forEach(function(t){
+    var c=document.getElementById(t[0]); if(!c)return;
+    c.addEventListener('click',function(ev){
+      var b=ev.target.closest('button'); if(!b)return;
+      var v=b.getAttribute('data-v');
+      DSP[t[1]]= t[2]? parseFloat(v):v;
+      dispApply();
+    });
+  });
+  dispApply();
+  setTimeout(injectHelp,600);
+});
+
+/* ── Section help registry ──────────────────────────────────── */
+var HELP={};
+function helpOpen(k){
+  var d=HELP[k]; if(!d)return;
+  document.getElementById('helpBox').innerHTML=
+    '<h3>'+d.t+'</h3><div class="sub">'+(d.s||'')+'</div>'+
+    (d.p||'').split('\n\n').map(function(x){return '<p>'+x+'</p>';}).join('')+
+    (d.eq?'<div class="eq">'+d.eq+'</div>':'')+
+    (d.knob?'<div class="knob"><strong>What to change:</strong> '+d.knob+'</div>':'')+
+    (d.ref?'<div class="ref">'+d.ref+'</div>':'')+
+    '<button onclick="helpClose()" style="margin-top:18px;padding:9px 18px;background:var(--cyan);'+
+    'border:none;color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;'+
+    'border-radius:3px">CLOSE</button>';
+  document.getElementById('helpOv').classList.add('show');
+}
+function helpClose(){document.getElementById('helpOv').classList.remove('show');}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')helpClose();});
+function q(k){return '<span class="qmark" onclick="event.stopPropagation();helpOpen(\''+k+'\')" title="What is this?">?</span>';}
+</script>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   SECTION HELP CONTENT — every section with an equation
+════════════════════════════════════════════════════════════════ */
+HELP={
+ rotor:{t:'Rotor Geometry',s:'Sets the tonal skeleton of the whole spectrum',
+  p:'Everything tonal in this tool hangs off two numbers you set here: how fast the blade tip moves, and how often a blade passes a fixed point.\n\nTip Mach is the single most powerful lever on noise. Thickness noise — the sound of blade volume displacing air — climbs very steeply with it, which is why slowing a rotor down and growing its diameter buys more quiet than almost anything else you can do.\n\nBlade passing frequency sets where that energy lands in frequency. That matters enormously after A-weighting: the same acoustic power at 50 Hz and at 500 Hz differ by roughly 25 dB(A) in how loud a person judges them.',
+  eq:'V_tip = (D/2) · (2π·RPM/60)      [m/s]\nM_tip = V_tip / a₀,   a₀ = 340 m/s\nBPF   = B · RPM / 60             [Hz]\n\nharmonic k sits at  f_k = k · BPF',
+  knob:'Lower RPM and larger D at constant thrust is the highest-leverage quiet move. Raising blade count B at constant RPM pushes BPF up, which usually costs you dB(A) unless you drop RPM to compensate.',
+  ref:'Gutin (1936); Lowson (1970); Farassat & Succi (1983)'},
+
+ sources:{t:'Noise Source Decomposition',s:'Five mechanisms, summed on an energy basis',
+  p:'The source bar splits the total into five physical mechanisms. They are summed as energies, not decibels — which is why the loudest one dominates and the quiet ones barely register.\n\nThickness and loading are the tonal pair: both radiate at harmonics of BPF. Broadband and swirl are spread-spectrum, from turbulent boundary layers and wake mixing. BVI appears only when a blade cuts a vortex shed by the blade ahead of it, which is a descent and low-speed phenomenon.\n\nThe practical point is that only loading and BVI scale with thrust. If your machine is thickness-dominated — high tip Mach — you can change weight all day and the total will barely move.',
+  eq:'SPL_total = 10·log₁₀( Σᵢ 10^(SPLᵢ/10) )\n\nthickness  ∝ ρ·a₀·B·Ω²·R²·σ      (monopole)\nloading    ∝ B·(dT/dt)            (dipole, thrust-driven)\nbroadband  ∝ M⁵·c·δ*              (BPM 1989)\nBVI        — descent / low-advance-ratio only',
+  knob:'Watch the source bar before optimising. Attacking broadband on a thickness-dominated rotor is wasted effort.',
+  ref:'Brooks, Pope & Marcolini (BPM), NASA RP-1218 (1989); Brentner & Farassat (2003)'},
+
+ flight:{t:'Flight Condition',s:'Airspeed and path angle select the operating point',
+  p:'Rotor noise is not one number — it is a surface over airspeed and flight path angle. The EASA rotorcraft guidance is explicit that descent is where noise varies most violently, because that is where blade–vortex interaction lives.\n\nMeasured data on the R22 shows up to 10 dB of variation across the flight envelope, while rate of climb alone moves things by barely 1 dB. So climb is forgiving and descent is not.',
+  eq:'γ = acos(ΔZ / ΔS)          path angle\nV_A = √(ΔX²+ΔY²+ΔZ²) / Δt   airspeed\n\nΦ = atan( K·V_g² / g )      bank angle in a turn\nK = ΔΘ / ΔS                 track curvature',
+  knob:'If you are chasing a certification number, sweep descent angle in 3° steps. That is the interval EASA recommends precisely because the level moves so fast there.',
+  ref:'EASA NOISE SC03 D1.5d §A.3.1, eq. 16–21; Schmitz & Yu, NASA TM 84390 (1984)'},
+
+ atmos:{t:'Atmosphere & Propagation',s:'Getting from the source sphere to the observer',
+  p:'The source level is defined on a 60 m reference sphere. Everything between that sphere and the listener is propagation, and it is handled as a sum of independent attenuations.\n\nSpherical spreading is the big, boring one: 6 dB per doubling of distance, always. Atmospheric absorption is small at low frequency and brutal at high — about 0.1 dB/km at 63 Hz versus 101 dB/km at 10 kHz. That is why distant rotorcraft sound like a low throb: the air has filtered everything else out.',
+  eq:'ΔL_p = ΔL_s + ΔL_a + ΔL_g + ΔL_d      (eq. 23)\n\nΔL_s = −20·log₁₀(r / r_h),  r_h = 60 m   (eq. 24)\nΔL_a = −α(f) · (r − r_h)                 (eq. 26)\n\nα from SAE ARP5534 / Table 4, dB/km:\n  63 Hz → 0.1     1 kHz → 6.3\n  250 Hz → 1.1    4 kHz → 22.5\n  500 Hz → 3.1   10 kHz → 101.0',
+  knob:'Temperature and wind shift α and the effective path length. Humidity was removed from the controls because across 10–100% RH it moves the A-weighted result by well under 0.1 dB.',
+  ref:'ISO 9613-1/2; SAE ARP5534 (2013); EASA D1.5d §A.4'},
+
+ ground:{t:'Ground Effect',s:'Interference between the direct and reflected ray',
+  p:'A listener hears the rotor twice — once directly, once bounced off the ground. Those two arrivals interfere, reinforcing at some frequencies and cancelling at others, which puts a comb pattern on the spectrum.\n\nHow strong the effect is depends on what the ground is made of. Flow resistivity spans four orders of magnitude from snow to water, and that is the parameter the model actually uses.',
+  eq:'ΔL_g = 10·log₁₀{ 1 + (r₁/r₂)²·|Q|² + 2(r₁/r₂)·|Q|·I }\n\nQ = R_p + (1 − R_p)·F(d)      spherical reflection\nR_p = (Z_s·cos ξ − 1)/(Z_s·cos ξ + 1)\n\nZ_s = 1 + 0.0511(f/σ)^−0.754\n      + i·0.0768(f/σ)^−0.732     Delaney–Bazley\n\nσ [kPa·s/m²]:  snow 12.5 · grass 200\n               gravel 2000 · asphalt 20 000',
+  knob:'Swap the ground class before trusting any absolute number — grass versus asphalt is worth several dB at low frequency.',
+  ref:'Delaney & Bazley (1970); Chien & Soroka (1980); CNOSSOS-EU'},
+
+ cabin:{t:'Cabin Interior Noise',s:'What the occupants actually hear',
+  p:'Interior level is exterior level minus what the structure blocks. Transmission loss is frequency-dependent and generally poor exactly where rotor tonal energy lives, which is why cabins boom rather than hiss.\n\nThe metrics here are the ones the aviation and building world actually use: NC and RC curves for spectral balance, SIL for whether people can hold a conversation.',
+  eq:'L_in(f) = L_out(f) − TL(f)\n\nTL_mass = 20·log₁₀(m″·f) − 47   mass law\n\nSIL = mean of L at 500/1k/2k/4k Hz\nNC  = highest contour touched by the spectrum',
+  knob:'Mass law says every doubling of panel mass buys ~6 dB. Below the first panel resonance it does not hold, which is where liners earn their place.',
+  ref:'ISO 15665; ASHRAE 2019 NC/RC; Beranek SIL'},
+
+ liner:{t:'Acoustic Liner Design',s:'Transfer-matrix modelling of absorbers',
+  p:'A liner is a stack of layers — porous foam, micro-perforated plate, air gap — each of which can be written as a 2×2 transfer matrix. Cascade the matrices and you get the surface impedance of the whole stack, and from that the absorption coefficient.\n\nThe method is numerically exact for planar multilayer structures, so the interesting engineering is entirely in choosing layers and thicknesses, not in the maths.',
+  eq:'T_total = T₁ · T₂ · ⋯ · Tₙ\n\nZ_s = T₁₁ / T₂₁            (rigid backing)\nα(f) = 1 − |(Z_s/Z₀ − 1)/(Z_s/Z₀ + 1)|²\n\nJohnson–Champoux–Allard, 5 parameters:\n  φ porosity · σ flow resistivity\n  α∞ tortuosity · Λ, Λ′ characteristic lengths',
+  knob:'Quarter-wave behaviour ties absorption peak to layer depth: a cavity absorbs best near f = a₀/(4L). Tune depth to your BPF harmonic, not to a round number.',
+  ref:'Johnson et al. (1987); Champoux & Allard (1991); Allard & Atalla (2009)'},
+
+ bench:{t:'Benchmarks',s:'Anchored source levels, physics-only transfer',
+  p:'This page does not predict absolute level from geometry. It cannot, and neither can NORAH — the EASA method takes its source term from measured hemispheres, never from a formula.\n\nEach aircraft here carries a published anchor at a stated condition. That anchor is normalised back to the 60 m reference sphere, then transferred to whatever distance you ask for using spreading and absorption only. The ± band you see is inherited from the anchor\u2019s own uncertainty, widened per decade of extrapolation.\n\nThe previous version fitted one free offset per aircraft — twelve parameters for twelve points — which forced a small residual regardless of whether the physics was right. Leave-one-out cross-validation of a geometry-only model on this dataset gives 70 dB of error.',
+  eq:'L₀(f,x,y) = L(f,φ,θ,V,γ) + ΔL_p        (eq. 1)\n\nanchor → 60 m sphere:\n  L₆₀ = L_pub + 20·log₁₀(r_pub/60)\n              + α(f)·(r_pub − 60)/1000\n\n60 m sphere → observer:\n  L(r) = L₆₀ − 20·log₁₀(r/60)\n              − α(f)·(r − 60)/1000\n\nno-data fallback (eq. 2):\n  L = L̂_class + ΔL_EPNL,   ΔL_EPNL = 0 if unknown',
+  knob:'Drag the evaluation distance. The band widens as you move away from each anchor — that widening is the honest cost of extrapolation.',
+  ref:'EASA NOISE SC03 D1.5d §A.2.2, §A.3.2, §A.4; Tuinstra, van Oosten & Olsen, ERF-2018-50'},
+
+ sq:{t:'Sound Quality & Psychoacoustics',s:'Loudness is not annoyance',
+  p:'Two machines can measure the same in dB(A) and be judged completely differently. dB(A) is a single number from a 1930s equal-loudness curve; it knows nothing about whether a sound is tonal, rough, fluctuating, or sharp.\n\nRotorcraft are a worst case for this. They concentrate energy into a few strong harmonics and modulate them at blade-passing rate — exactly the combination the ear flags as intrusive. Tonality and fluctuation strength usually explain complaints better than the A-weighted level does.',
+  eq:'N′  Loudness    Zwicker, ISO 532-1, sone\nS   Sharpness    DIN 45692, acum\nR   Roughness     Daniel & Weber, asper\nFS  Fluctuation   Zwicker, vacil\nK   Tonality      Aures / ECMA-418-2, tu\n\nPA = N·[1 + √(w_S² + w_FR²)]      Zwicker annoyance\nw_S  from sharpness above 1.75 acum\nw_FR from roughness + fluctuation',
+  knob:'Chase tonality and fluctuation first. Shaving 2 dB(A) off a strongly tonal rotor often changes perceived annoyance less than breaking up the tone does.',
+  ref:'Zwicker & Fastl (2007); ISO 532-1; ECMA-418-2; Aures (1985); Daniel & Weber (1997)'}
+};
+
+/* ── Auto-inject ? marks into section headers ─────────────────── */
+function injectHelp(){
+  var map=[
+    ['ROTOR GEOMETRY','rotor'],['BLADE','rotor'],
+    ['SOURCE','sources'],['NOISE SOURCE','sources'],
+    ['FLIGHT','flight'],['OPERATING','flight'],
+    ['ATMOSPHER','atmos'],['ENVIRONMENT','atmos'],['PROPAGATION','atmos'],
+    ['GROUND','ground'],
+    ['CABIN','cabin'],['INTERIOR','cabin'],
+    ['LINER','liner'],['TRANSMISSION LOSS','liner'],
+    ['BENCHMARK','bench'],['ANCHOR','bench'],
+    ['PSYCHOACOUSTIC','sq'],['SOUND QUALITY','sq'],
+    ['AERO-TUNE','sontune'],['MEASUREMENT','aerotune'],['CERTIFICATION','aerotune'],
+    ['WHAT TO TUNE','aerotune'],['PARAMETERS RECOVERED','aerotune']
+  ];
+  var sels='.sec-hdr-label,.plot-title,.cab-panel-title,h2,h3';
+  document.querySelectorAll(sels).forEach(function(el){
+    if(el.querySelector('.qmark'))return;
+    var t=(el.textContent||'').toUpperCase();
+    for(var i=0;i<map.length;i++){
+      if(t.indexOf(map[i][0])>=0){
+        var s=document.createElement('span');
+        s.className='qmark';s.textContent='?';s.title='What is this?';
+        s.setAttribute('data-k',map[i][1]);
+        s.onclick=function(ev){ev.stopPropagation();helpOpen(this.getAttribute('data-k'));};
+        el.appendChild(s);
+        return;
+      }
+    }
+  });
+  /* page-level help buttons for the big pages */
+  [['page-bench','bench'],['page-advanced','sq'],['page-liners','liner'],
+   ['page-cabin','cabin'],['page-aerotune','sontune']]
+  .forEach(function(p){
+    var pg=document.getElementById(p[0]); if(!pg||pg.querySelector('.qmark-page'))return;
+    var b=document.createElement('button');
+    b.className='qmark-page';
+    b.textContent='?';
+    b.title='How this page works';
+    b.style.cssText='position:absolute;top:14px;right:16px;z-index:40;width:30px;height:30px;'+
+      'border-radius:50%;background:var(--s1);border:1px solid var(--b2);color:var(--cyan);'+
+      'font-family:var(--body);font-size:15px;font-weight:700;cursor:pointer;line-height:1;'+
+      'box-shadow:0 1px 4px rgba(10,30,60,.10)';
+    b.setAttribute('data-k',p[1]);
+    b.onclick=function(){helpOpen(this.getAttribute('data-k'));};
+    if(getComputedStyle(pg).position==='static') pg.style.position='relative';
+    pg.insertBefore(b,pg.firstChild);
+  });
+}
+/* re-inject when pages are switched in */
+(function(){
+  var _sp=window.showPage;
+  if(typeof _sp==='function'){
+    window.showPage=function(){var r=_sp.apply(this,arguments);setTimeout(injectHelp,120);return r;};
+  }
+})();
+</script>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   SOUND QUALITY LAB — audio A/B + tunable psychoacoustic drivers
+   Synthesises the rotor signature from BPF harmonics + broadband,
+   applies the user's treatment, and lets them hear the difference.
+════════════════════════════════════════════════════════════════ */
+var SQ={ tone:0, mod:0, rpmJit:0, hiRoll:0, nBlade:0, duct:0 };
+var _actx=null,_playing=null;
+
+function sqCtx(){ if(!_actx) _actx=new (window.AudioContext||window.webkitAudioContext)(); return _actx; }
+
+/* Pull live machine state from the main tool, with safe fallbacks */
+function sqParams(){
+  function v(id,d){var e=document.getElementById(id);return e?+e.value:d;}
+  var rpm=v('sRPM',1800), B=v('sB',3), D=v('sD',1.6), N=v('nRotors',4);
+  return {rpm:rpm,B:B,D:D,N:N,bpf:B*rpm/60,
+          mtip:(D/2)*(rpm*2*Math.PI/60)/340};
+}
+
+/* Render a rotor signature to an AudioBuffer.
+   treated=false -> baseline machine; treated=true -> with SQ controls applied */
+function sqRender(treated,secs){
+  var ctx=sqCtx(), sr=ctx.sampleRate, n=Math.floor(sr*(secs||3.2));
+  var buf=ctx.createBuffer(1,n,sr), d=buf.getChannelData(0);
+  var P=sqParams();
+  var bpf=Math.max(12,P.bpf);
+  /* treatment deltas */
+  var tone   = treated? SQ.tone   : 0;    /* dB applied to harmonics 1..6      */
+  var mod    = treated? SQ.mod    : 0;    /* % reduction of BPF-rate AM        */
+  var jit    = treated? SQ.rpmJit : 0;    /* % RPM desync across N rotors      */
+  var roll   = treated? SQ.hiRoll : 0;    /* dB/oct extra high-freq rolloff    */
+  var duct   = treated? SQ.duct   : 0;    /* dB broadband shielding            */
+  var nb     = treated? SQ.nBlade : 0;    /* blade-count uplift -> BPF shift   */
+
+  var bpfEff = bpf*(1+nb*0.25);
+  var baseAM = 0.55;                      /* untreated modulation depth        */
+  var amDepth= baseAM*(1-mod/100);
+  var K=24, ph=new Float32Array(K), amp=new Float32Array(K);
+  for(var k=0;k<K;k++){
+    ph[k]=Math.random()*6.283;
+    var rolloff=-9*Math.log10(k+1);                    /* harmonic decay        */
+    var hf=-roll*Math.log2(Math.max(1,(k+1)*bpfEff/500));
+    var t=(k<6)? tone:0;
+    amp[k]=Math.pow(10,(rolloff+hf+t)/20);
+  }
+  /* per-rotor detune so N rotors beat against each other */
+  var det=[];
+  for(var i=0;i<Math.max(1,Math.min(P.N,8));i++) det.push(1+(i-(P.N-1)/2)*(jit/100)*0.02);
+
+  var bbLp=0, env;
+  for(var s=0;s<n;s++){
+    var t=s/sr, x=0;
+    var am=1+amDepth*Math.sin(2*Math.PI*bpfEff*t/ (P.B||3));
+    for(var r=0;r<det.length;r++){
+      for(var k=0;k<K;k++){
+        var f=(k+1)*bpfEff*det[r];
+        if(f>sr/2.2) break;
+        x+=amp[k]*Math.sin(2*Math.PI*f*t+ph[k]+r*1.7);
+      }
+    }
+    x/=det.length;
+    /* broadband: filtered noise, ducting shields it */
+    var w=(Math.random()*2-1);
+    bbLp += (w-bbLp)*0.22;
+    var bbG=Math.pow(10,(-16-duct)/20)*(1+0.4*Math.sin(2*Math.PI*bpfEff*t));
+    x+= bbLp*bbG;
+    x*=am;
+    /* fade in/out */
+    env = Math.min(1, Math.min(s,n-s)/ (0.12*sr));
+    d[s]=Math.max(-1,Math.min(1,x*0.22*env));
+  }
+  return buf;
+}
+function sqPlay(treated,btn){
+  try{
+    var ctx=sqCtx();
+    if(ctx.state==='suspended') ctx.resume();
+    if(_playing){try{_playing.stop();}catch(e){} _playing=null;}
+    document.querySelectorAll('.sq-play').forEach(function(b){b.textContent=b.getAttribute('data-lbl');});
+    var src=ctx.createBufferSource();
+    src.buffer=sqRender(treated,3.2);
+    var g=ctx.createGain(); g.gain.value=0.9;
+    src.connect(g).connect(ctx.destination);
+    src.start(); _playing=src;
+    if(btn){btn.textContent='■ STOP';}
+    src.onended=function(){ if(btn) btn.textContent=btn.getAttribute('data-lbl'); _playing=null; };
+  }catch(e){
+    var s=document.getElementById('sq-status');
+    if(s) s.textContent='Audio unavailable in this context: '+e.message;
+  }
+}
+function sqStop(){ if(_playing){try{_playing.stop();}catch(e){} _playing=null;} }
+
+/* ── Predicted psychoacoustic deltas from the treatment ── */
+function sqMetrics(){
+  var d={};
+  d.tonality   = -(Math.abs(SQ.tone)*0.055 + SQ.nBlade*0.04);
+  d.fluct      = -(SQ.mod*0.011 + SQ.rpmJit*0.016);
+  d.rough      = -(SQ.mod*0.006 + SQ.rpmJit*0.011);
+  d.sharp      = -(SQ.hiRoll*0.035 + SQ.duct*0.012);
+  d.loud       = -(Math.abs(SQ.tone)*0.06 + SQ.duct*0.05 + SQ.hiRoll*0.03);
+  /* Zwicker-style annoyance roll-up */
+  d.pa = 1.0*d.loud + 0.55*d.tonality + 0.45*d.fluct + 0.30*d.sharp + 0.25*d.rough;
+  return d;
+}
+function sqUpdate(){
+  ['tone','mod','rpmJit','hiRoll','nBlade','duct'].forEach(function(k){
+    var e=document.getElementById('sq_'+k); if(e) SQ[k]=+e.value;
+    var v=document.getElementById('sqv_'+k);
+    if(v){
+      var u={tone:' dB',mod:' %',rpmJit:' %',hiRoll:' dB/oct',nBlade:' blades',duct:' dB'}[k];
+      v.textContent=(SQ[k]>0&&k!=='mod'&&k!=='rpmJit'&&k!=='nBlade'?'+':'')+SQ[k]+u;
+    }
+  });
+  var m=sqMetrics(), P=sqParams();
+  function set(id,val,unit,inv){
+    var e=document.getElementById(id); if(!e)return;
+    var good = inv? val>0 : val<0;
+    e.textContent=(val>0?'+':'')+val.toFixed(2)+unit;
+    e.style.color = Math.abs(val)<0.01?'var(--muted)':(good?'var(--green)':'var(--red)');
+  }
+  set('sqm_tonality',m.tonality,' tu');
+  set('sqm_fluct',   m.fluct,   ' vacil');
+  set('sqm_rough',   m.rough,   ' asper');
+  set('sqm_sharp',   m.sharp,   ' acum');
+  set('sqm_loud',    m.loud,    ' sone');
+  set('sqm_pa',      m.pa,      '');
+  var b=document.getElementById('sq-bpf');
+  if(b) b.textContent=(P.bpf*(1+SQ.nBlade*0.25)).toFixed(0)+' Hz';
+  var v=document.getElementById('sq-verdict');
+  if(v){
+    var pa=m.pa;
+    v.textContent = pa<-1.2?'Substantially less annoying':
+                    pa<-0.5?'Audibly less annoying':
+                    pa<-0.1?'Marginally better':
+                    pa>0.1 ?'Worse than baseline':'Effectively unchanged';
+    v.style.color = pa<-0.5?'var(--green)':pa>0.1?'var(--red)':'var(--amber)';
+  }
+  sqDrawSpec();
+}
+
+/* ── Spectrum comparison canvas ── */
+function sqDrawSpec(){
+  var c=document.getElementById('sq-spec'); if(!c)return;
+  var w=c.width=c.clientWidth*2, hgt=c.height=300;
+  var g=c.getContext('2d'); g.clearRect(0,0,w,hgt);
+  var P=sqParams(), bpf=Math.max(12,P.bpf);
+  var css=getComputedStyle(document.documentElement);
+  var cyan=css.getPropertyValue('--cyan')||'#0066bb';
+  var pad=44;
+  /* axes */
+  g.strokeStyle='rgba(0,40,80,.18)';g.lineWidth=2;
+  g.beginPath();g.moveTo(pad,8);g.lineTo(pad,hgt-26);g.lineTo(w-8,hgt-26);g.stroke();
+  g.font='20px monospace';g.fillStyle='#5a7a96';
+  g.fillText('dB',6,20); g.fillText('frequency (harmonics of BPF)',w/2-160,hgt-4);
+  function bar(k,val,col,off,wid){
+    var x=pad+ (k/24)*(w-pad-16) + off;
+    var hh=Math.max(0,(val+60)/60)*(hgt-46);
+    g.fillStyle=col; g.fillRect(x,hgt-26-hh,wid,hh);
+  }
+  for(var k=0;k<24;k++){
+    var base=-9*Math.log10(k+1)*2;
+    var tre = base + ((k<6)?SQ.tone:0)
+              - SQ.hiRoll*Math.log2(Math.max(1,(k+1)*bpf/500))
+              - (k>7?SQ.duct*0.5:0);
+    bar(k,base,'rgba(187,17,51,.45)',0,9);
+    bar(k,tre ,cyan.trim()||'#0066bb',10,9);
+  }
+  g.fillStyle='rgba(187,17,51,.75)';g.fillRect(w-260,14,16,16);
+  g.fillStyle='#5a7a96';g.font='19px monospace';g.fillText('baseline',w-236,28);
+  g.fillStyle=cyan.trim()||'#0066bb';g.fillRect(w-140,14,16,16);
+  g.fillStyle='#5a7a96';g.fillText('treated',w-116,28);
+}
+function sqReset(){
+  SQ={tone:0,mod:0,rpmJit:0,hiRoll:0,nBlade:0,duct:0};
+  ['tone','mod','rpmJit','hiRoll','nBlade','duct'].forEach(function(k){
+    var e=document.getElementById('sq_'+k); if(e) e.value=0;
+  });
+  sqUpdate();
+}
+</script>
+
+
+<style>
+/* ══════════════════════════════════════════════════════════════
+   ZOOM & REFLOW — every page adapts to browser zoom / narrow width
+════════════════════════════════════════════════════════════════ */
+html,body{max-width:100vw;overflow-x:hidden}
+
+/* Page shells: fluid padding + width, never fixed */
+#page-aerotune,#page-aerotune,#page-bench,#page-advanced,#page-glossary,#page-liners,#page-cabin{
+  max-width:min(1300px, 96vw);
+  padding-left:clamp(10px, 2.4vw, 32px);
+  padding-right:clamp(10px, 2.4vw, 32px);
+  box-sizing:border-box;
+}
+
+/* Any explicit two-column grid collapses as space runs out */
+@media (max-width:1150px){
+  .noise-grid,.sq-grid,.cab-layout,.liner-grid{grid-template-columns:1fr!important}
+  .sq-grid>div:first-child{border-right:none!important;border-bottom:1px solid var(--b1)}
+}
+/* Inline grid-template-columns declared in style="" attributes */
+@media (max-width:1150px){
+  [style*="grid-template-columns:270px"],[style*="grid-template-columns:280px"],
+  [style*="grid-template-columns:340px"],[style*="grid-template-columns:360px"],
+  [style*="grid-template-columns: 270px"],[style*="grid-template-columns: 340px"]{
+    grid-template-columns:1fr!important;
+  }
+}
+@media (max-width:820px){
+  [style*="grid-template-columns:repeat(3"],[style*="grid-template-columns:repeat(4"],
+  [style*="grid-template-columns: repeat(3"],[style*="grid-template-columns: repeat(4"]{
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;
+  }
+}
+
+/* Media and canvases never overflow their box at any zoom */
+img,svg,canvas,video,table{max-width:100%}
+canvas{height:auto!important}
+
+/* Wide tables scroll inside their own box rather than stretching the page */
+.tbl-scroll,[style*="overflow-x:auto"]{max-width:100%;-webkit-overflow-scrolling:touch}
+table{display:block;overflow-x:auto;white-space:nowrap}
+table thead,table tbody{display:table;width:100%;table-layout:auto}
+
+/* Headers wrap instead of pushing the layout wider */
+#hdr,.global-nav{flex-wrap:wrap;height:auto;min-height:0;row-gap:6px}
+.global-nav{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.gnav-tab{flex:0 0 auto}
+
+/* Tool body: sidebar reflows above content when zoomed in hard */
+@media (max-width:1024px){
+  .tool-body{grid-template-columns:1fr!important;height:auto!important;overflow:visible!important}
+  .sidebar{max-height:none;border-right:none;border-bottom:1px solid var(--b1)}
+  .content{height:auto!important}
+}
+
+/* Fixed-position affordances stay reachable when zoomed */
+@media (max-width:520px){
+  #dispFab{right:10px;bottom:10px;width:34px;height:34px;font-size:13px}
+  #dispPanel{right:8px;left:8px;width:auto;bottom:52px}
+  #helpBox{padding:18px 16px}
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var nav=document.getElementById('globalNav');
+  if(nav && !document.getElementById('gnav-disp')){
+    var b=document.createElement('button');
+    b.id='gnav-disp'; b.className='gnav-tab';
+    b.innerHTML='<span class="g-icon">Aa</span>DISPLAY';
+    b.title='Font, size, density and layout options';
+    b.style.marginLeft='auto';
+    b.onclick=function(e){e.stopPropagation();dispToggle();};
+    nav.appendChild(b);
+  }
+  /* click-away closes the display panel */
+  document.addEventListener('click',function(e){
+    var p=document.getElementById('dispPanel');
+    if(!p||!p.classList.contains('show'))return;
+    if(p.contains(e.target))return;
+    if(e.target.closest('#dispFab')||e.target.closest('#gnav-disp'))return;
+    p.classList.remove('show');
+  });
+});
+</script>
+
+
+<style>
+/* Manual numeric entry paired with every slider */
+.num-box{width:78px;padding:4px 7px;font-family:var(--mono);font-size:12.5px;font-weight:600;
+  text-align:right;color:var(--cyan);background:#fff;border:1px solid var(--b1);border-radius:3px;
+  outline:none;-moz-appearance:textfield}
+.num-box:focus{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,102,187,.14)}
+.num-box.oor{border-color:var(--red);color:var(--red);background:rgba(187,17,51,.05)}
+.num-box::-webkit-outer-spin-button,.num-box::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.num-wrap{display:flex;align-items:center;gap:5px}
+.num-unit{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:30px}
+.ctrl-lbl .val.hidden-val{display:none}
+</style>
+<script>
+/* ══════════════════════════════════════════════════════════════
+   MANUAL PARAMETER ENTRY
+   Every slider gets a typed-entry box. Typing is authoritative:
+   values outside the slider range are accepted and flagged rather
+   than silently clamped, because a legitimate design can sit
+   outside a UI convenience range.
+════════════════════════════════════════════════════════════════ */
+function unitOf(el){
+  var c=el.closest('.ctrl'); if(!c)return'';
+  var v=c.querySelector('.ctrl-lbl .val'); if(!v)return'';
+  var m=(v.textContent||'').match(/[-\d.]+\s*(.*)$/);
+  return m?m[1].trim():'';
+}
+function attachNumBox(sl){
+  if(!sl||sl.dataset.numbox)return;
+  var ctrl=sl.closest('.ctrl'); if(!ctrl)return;
+  var lbl=ctrl.querySelector('.ctrl-lbl'); if(!lbl)return;
+  var valSpan=lbl.querySelector('.val');
+  sl.dataset.numbox='1';
+  var unit=unitOf(sl);
+  var wrap=document.createElement('span'); wrap.className='num-wrap';
+  var inp=document.createElement('input');
+  inp.type='number'; inp.className='num-box';
+  inp.step=sl.step||'any'; inp.value=sl.value;
+  inp.setAttribute('aria-label','type a value');
+  var u=document.createElement('span'); u.className='num-unit'; u.textContent=unit;
+  wrap.appendChild(inp); wrap.appendChild(u);
+  if(valSpan){ valSpan.classList.add('hidden-val'); lbl.appendChild(wrap); }
+  else lbl.appendChild(wrap);
+
+  function pushFromBox(){
+    var v=parseFloat(inp.value);
+    if(!isFinite(v))return;
+    var lo=parseFloat(sl.min), hi=parseFloat(sl.max);
+    var out=(isFinite(lo)&&v<lo)||(isFinite(hi)&&v>hi);
+    inp.classList.toggle('oor',out);
+    inp.title = out ? ('Outside the slider range ('+sl.min+'\u2013'+sl.max+') \u2014 value is still applied')
+                    : '';
+    /* widen the slider so the handle can still represent the value */
+    if(out){ if(v<lo) sl.min=v; if(v>hi) sl.max=v; }
+    sl.value=v;
+    sl.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  inp.addEventListener('input',pushFromBox);
+  inp.addEventListener('change',pushFromBox);
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter'){pushFromBox();inp.blur();}});
+  sl.addEventListener('input',function(){
+    if(document.activeElement!==inp) inp.value=sl.value;
+  });
+}
+function attachAllNumBoxes(){
+  document.querySelectorAll('.ctrl input[type=range]').forEach(attachNumBox);
+}
+document.addEventListener('DOMContentLoaded',function(){
+  attachAllNumBoxes();
+  setTimeout(attachAllNumBoxes,700);
+});
+(function(){
+  var _sp=window.showPage;
+  if(typeof _sp==='function'){
+    window.showPage=function(){var r=_sp.apply(this,arguments);setTimeout(attachAllNumBoxes,150);return r;};
+  }
+})();
+</script>
+
+<script>
+/* Front-page preferences bar removed — now lives in Settings. */
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   AERO-TUNE — measurement-driven analysis & certification advisor
+   Upload a recording -> spectrum -> BPF/harmonics -> metrics ->
+   parameter back-solve -> certification verdict -> tuning plan.
+════════════════════════════════════════════════════════════════ */
+var ST={buf:null,sr:0,name:'',cal:null,dist:150,mtom:2177,N:6,B:5,D:2.0,cond:'overflight',
+        spec:null,bands:null,bpf:null,res:null,mode:'audio'};
+
+/* ── FFT (iterative radix-2) ── */
+function fft(re,im){
+  var n=re.length;
+  for(var i=1,j=0;i<n;i++){
+    var bit=n>>1;
+    for(;j&bit;bit>>=1) j^=bit;
+    j^=bit;
+    if(i<j){var t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t;}
+  }
+  for(var len=2;len<=n;len<<=1){
+    var ang=-2*Math.PI/len, wr=Math.cos(ang), wi=Math.sin(ang);
+    for(var i2=0;i2<n;i2+=len){
+      var cr=1,ci=0;
+      for(var k=0;k<len/2;k++){
+        var ur=re[i2+k], ui=im[i2+k];
+        var vr=re[i2+k+len/2]*cr-im[i2+k+len/2]*ci;
+        var vi=re[i2+k+len/2]*ci+im[i2+k+len/2]*cr;
+        re[i2+k]=ur+vr; im[i2+k]=ui+vi;
+        re[i2+k+len/2]=ur-vr; im[i2+k+len/2]=ui-vi;
+        var ncr=cr*wr-ci*wi; ci=cr*wi+ci*wr; cr=ncr;
+      }
+    }
+  }
+}
+/* Welch-averaged power spectrum, returns {f[],db[]} relative to full scale */
+function welch(sig,sr,nfft){
+  nfft=nfft||8192;
+  var hop=nfft/2, frames=Math.max(1,Math.floor((sig.length-nfft)/hop)+1);
+  var acc=new Float64Array(nfft/2), win=new Float64Array(nfft), wsum=0;
+  for(var i=0;i<nfft;i++){win[i]=0.5-0.5*Math.cos(2*Math.PI*i/(nfft-1));wsum+=win[i]*win[i];}
+  var used=0;
+  for(var fr=0;fr<frames;fr++){
+    var off=fr*hop; if(off+nfft>sig.length) break;
+    var re=new Float64Array(nfft), im=new Float64Array(nfft);
+    for(var i=0;i<nfft;i++) re[i]=sig[off+i]*win[i];
+    fft(re,im);
+    for(var k=0;k<nfft/2;k++) acc[k]+=(re[k]*re[k]+im[k]*im[k]);
+    used++;
+  }
+  var f=new Float64Array(nfft/2), db=new Float64Array(nfft/2);
+  for(var k=0;k<nfft/2;k++){
+    f[k]=k*sr/nfft;
+    var p=acc[k]/Math.max(1,used)/(wsum*sr)*2;
+    db[k]=10*Math.log10(Math.max(1e-20,p));
+  }
+  return {f:f,db:db,df:sr/nfft};
+}
+/* ── Third-octave banding ── */
+var TOB_F=[10,12.5,16,20,25,31.5,40,50,63,80,100,125,160,200,250,315,400,500,630,800,
+           1000,1250,1600,2000,2500,3150,4000,5000,6300,8000,10000];
+function toBands(spec){
+  var out=[];
+  for(var b=0;b<TOB_F.length;b++){
+    var fc=TOB_F[b], lo=fc/Math.pow(2,1/6), hi=fc*Math.pow(2,1/6), e=0;
+    for(var k=1;k<spec.f.length;k++){
+      if(spec.f[k]>=lo&&spec.f[k]<hi) e+=Math.pow(10,spec.db[k]/10)*spec.df;
+    }
+    out.push({fc:fc,db:10*Math.log10(Math.max(1e-20,e))});
+  }
+  return out;
+}
+function AwB(f){
+  var ra=(Math.pow(12194,2)*Math.pow(f,4))/
+    ((f*f+Math.pow(20.6,2))*Math.sqrt((f*f+Math.pow(107.7,2))*(f*f+Math.pow(737.9,2)))*(f*f+Math.pow(12194,2)));
+  return 20*Math.log10(ra)+2.0;
+}
+function CwB(f){
+  var rc=(Math.pow(12194,2)*f*f)/((f*f+Math.pow(20.6,2))*(f*f+Math.pow(12194,2)));
+  return 20*Math.log10(rc)+0.06;
+}
+function eSum(a){var s=0;for(var i=0;i<a.length;i++)s+=Math.pow(10,a[i]/10);return 10*Math.log10(Math.max(1e-20,s));}
+
+/* ── BPF detection: harmonic product spectrum over the tonal region ── */
+function detectBPF(spec){
+  var fmin=8,fmax=400,best=null;
+  for(var f0=fmin;f0<=fmax;f0+=0.25){
+    var s=0,cnt=0;
+    for(var h=1;h<=10;h++){
+      var fk=f0*h; if(fk>spec.f[spec.f.length-1]) break;
+      var k=Math.round(fk/spec.df);
+      if(k<1||k>=spec.db.length) break;
+      /* peak vs local floor */
+      var lo=Math.max(1,k-14), hi=Math.min(spec.db.length-1,k+14), fl=0,n=0;
+      for(var j=lo;j<=hi;j++){ fl+=Math.pow(10,spec.db[j]/10); n++; }
+      fl=10*Math.log10(fl/Math.max(1,n));
+      var pk=Math.max(spec.db[k-1]||-200,spec.db[k],spec.db[k+1]||-200);
+      s+=Math.max(0,pk-fl); cnt++;
+    }
+    if(cnt>=3){ var sc=s/cnt*Math.sqrt(cnt);
+      if(!best||sc>best.score) best={f0:f0,score:sc,nh:cnt}; }
+  }
+  return best;
+}
+/* Prominence of harmonic series above the broadband floor (tonality proxy) */
+function tonalProminence(spec,f0){
+  if(!f0) return 0;
+  var tot=0,n=0;
+  for(var h=1;h<=12;h++){
+    var k=Math.round(f0*h/spec.df); if(k<2||k>=spec.db.length-2) break;
+    var lo=Math.max(1,k-18),hi=Math.min(spec.db.length-1,k+18),fl=0,c=0;
+    for(var j=lo;j<=hi;j++){if(Math.abs(j-k)>3){fl+=Math.pow(10,spec.db[j]/10);c++;}}
+    fl=10*Math.log10(Math.max(1e-20,fl/Math.max(1,c)));
+    tot+=Math.max(0,spec.db[k]-fl); n++;
+  }
+  return n? tot/n : 0;
+}
+
+/* ── PNL / PNLT / EPNL (FAR-36 & ICAO Annex 16 structure) ──
+   Noy uses a simplified Mark VII-style approximation; the tone
+   correction and duration integration follow the standard.        */
+function noyOf(spl,fc){
+  var lo = fc<100? 64-10*Math.log10(100/fc) : fc>4000? 44+6*Math.log10(fc/4000) : 44;
+  if(spl<lo) return 0;
+  var m = fc<400? 0.043478 : 0.030103;
+  return Math.pow(2, m*(spl-lo));
+}
+function pnlOf(bands){
+  var noys=bands.map(function(b){return noyOf(b.db,b.fc);});
+  var nmax=Math.max.apply(null,noys), sum=noys.reduce(function(a,b){return a+b;},0);
+  var N=nmax+0.15*(sum-nmax);
+  return N>0? 40+33.22*Math.log10(N) : 0;
+}
+function toneCorrection(bands){
+  /* slope-based tone correction, Annex 16 App.2 structure, capped 6.7 dB */
+  var C=0;
+  for(var i=2;i<bands.length-1;i++){
+    var s1=bands[i].db-bands[i-1].db, s2=bands[i-1].db-bands[i-2].db;
+    var d=s1-s2;
+    if(d>5){
+      var F=bands[i].fc, lvl=d;
+      var c = (F>=500&&F<=5000)? Math.min(6.7,lvl/3) : Math.min(3.3,lvl/6);
+      if(c>C) C=c;
+    }
+  }
+  return C;
+}
+
+/* ── Zwicker-style psychoacoustics from third-octave bands ── */
+function psycho(bands,f0,promDb){
+  var spl=eSum(bands.map(function(b){return b.db;}));
+  var dba=eSum(bands.map(function(b){return b.db+AwB(b.fc);}));
+  /* specific loudness (rough Zwicker approximation over 1/3 oct) */
+  var Ntot=0, num=0, den=0;
+  bands.forEach(function(b,i){
+    var z=13*Math.atan(0.00076*b.fc)+3.5*Math.atan(Math.pow(b.fc/7500,2)); /* Bark */
+    var Ni=Math.pow(10,(b.db+AwB(b.fc)-40)/33.22);
+    Ni=Math.max(0,Ni);
+    Ntot+=Ni;
+    var g = z<15.8?1:0.066*Math.exp(0.171*z);
+    num+=Ni*g*z; den+=Ni;
+  });
+  var loud=Math.max(0.01,Ntot);
+  var sharp= den>0? 0.11*num/den : 0;
+  /* fluctuation & roughness driven by modulation at blade rate */
+  var fmod=f0||0;
+  var fl = fmod>0? Math.min(4, promDb/9 * (4/(Math.pow(fmod/4,2)+1))) : 0;
+  var rough = fmod>0? Math.min(3, promDb/13 * (1/(1+Math.pow(Math.log2(Math.max(1,fmod/70)),2)))) : 0;
+  var tonality=Math.min(1.2, promDb/26);
+  var wS = sharp>1.75? 0.25*(sharp-1.75)*Math.log10(loud+10) : 0;
+  var wFR= (2.18/Math.pow(loud,0.4))*(0.4*fl+0.6*rough);
+  var PA = loud*(1+Math.sqrt(wS*wS+wFR*wFR));
+  return {spl:spl,dba:dba,loud:loud,sharp:sharp,fluct:fl,rough:rough,tonality:tonality,PA:PA};
+}
+
+/* ── ICAO limits ──
+   Chapter 11 is implemented directly (verified: 82 dBA at <=788 kg
+   rising to 88 dBA at 3175 kg). Chapter 8 limits are user-editable
+   because the applicable value depends on Annex 16 edition and
+   amendment; defaults shown are indicative only.                 */
+function ch11Limit(m){ return 82 + 3*Math.log2(Math.max(788,m)/788); }
+function ch8Limits(m){
+  var d=3.01*Math.log10(Math.max(788,m)/80000);
+  return {takeoff:109+d, overflight:108+d, approach:110+d};
+}
+
+/* ── File ingest: audio via WebAudio, or CSV/TXT spectra ── */
+function stStatus(msg,kind){
+  var e=document.getElementById('st-status'); if(!e)return;
+  e.textContent=msg;
+  e.style.color = kind==='err'?'var(--red)':kind==='ok'?'var(--green)':'var(--muted)';
+}
+function stHandleFiles(files){
+  if(!files||!files.length)return;
+  var f=files[0]; ST.name=f.name;
+  var ext=(f.name.split('.').pop()||'').toLowerCase();
+  document.getElementById('st-fname').textContent=f.name+'  ('+(f.size/1048576).toFixed(2)+' MB)';
+  if(['csv','txt','tsv','dat'].indexOf(ext)>=0){ stReadText(f); return; }
+  stReadAudio(f);
+}
+function stReadAudio(f){
+  stStatus('Decoding '+f.name+' …');
+  var rd=new FileReader();
+  rd.onload=function(){
+    var ctx=new (window.AudioContext||window.webkitAudioContext)();
+    ctx.decodeAudioData(rd.result,function(buf){
+      ST.mode='audio'; ST.sr=buf.sampleRate;
+      var ch=buf.getChannelData(0);
+      /* mono-mix if multichannel */
+      if(buf.numberOfChannels>1){
+        var m=new Float32Array(ch.length);
+        for(var c=0;c<buf.numberOfChannels;c++){
+          var d=buf.getChannelData(c);
+          for(var i=0;i<m.length;i++) m[i]+=d[i]/buf.numberOfChannels;
+        }
+        ch=m;
+      }
+      ST.buf=ch;
+      stStatus('Decoded: '+(ch.length/buf.sampleRate).toFixed(1)+' s @ '+buf.sampleRate+' Hz, '+
+               buf.numberOfChannels+' ch → mono','ok');
+      stAnalyse();
+    },function(e){
+      stStatus('Could not decode this file. The browser handles WAV, MP3, OGG, M4A and (usually) FLAC. '+
+               'For other formats export to WAV, or upload a CSV of frequency,level.','err');
+    });
+  };
+  rd.readAsArrayBuffer(f);
+}
+function stReadText(f){
+  var rd=new FileReader();
+  rd.onload=function(){
+    var lines=String(rd.result).split(/[\r\n]+/).filter(function(l){return l.trim()&&!/^[#;]/.test(l);});
+    var pts=[];
+    lines.forEach(function(l){
+      var p=l.split(/[,;\t ]+/).filter(Boolean).map(parseFloat);
+      if(p.length>=2&&isFinite(p[0])&&isFinite(p[1])) pts.push([p[0],p[1]]);
+    });
+    if(pts.length<4){ stStatus('Could not read numeric pairs from this file. Expected two columns: frequency, level.','err'); return; }
+    ST.mode='spectrum';
+    ST.bands=TOB_F.map(function(fc){
+      var lo=fc/Math.pow(2,1/6),hi=fc*Math.pow(2,1/6),e=0,n=0;
+      pts.forEach(function(p){ if(p[0]>=lo&&p[0]<hi){e+=Math.pow(10,p[1]/10);n++;} });
+      if(!n){ /* nearest point */
+        var best=pts[0];
+        pts.forEach(function(p){ if(Math.abs(Math.log(p[0]/fc))<Math.abs(Math.log(best[0]/fc))) best=p; });
+        return {fc:fc,db:best[1]-6};
+      }
+      return {fc:fc,db:10*Math.log10(e)};
+    });
+    stStatus('Read '+pts.length+' spectral points → 1/3-octave bands. Treated as absolute dB (no calibration applied).','ok');
+    stAnalyse();
+  };
+  rd.readAsText(f);
+}
+
+/* ── Main analysis ── */
+function stAnalyse(){
+  var lvl=document.getElementById('st-callvl');
+  ST.dist=+document.getElementById('st-dist').value||150;
+  ST.mtom=+document.getElementById('st-mtom').value||2177;
+  ST.N=+document.getElementById('st-nrot').value||6;
+  ST.B=+document.getElementById('st-blades').value||5;
+  ST.cond=document.getElementById('st-cond').value;
+  ST.cal = (lvl && lvl.value!=='' && isFinite(+lvl.value)) ? +lvl.value : null;
+
+  var bands,spec=null,prom=0,bpf=null;
+  if(ST.mode==='audio'){
+    if(!ST.buf){stStatus('Upload a recording first.','err');return;}
+    spec=welch(ST.buf,ST.sr,8192);
+    ST.spec=spec;
+    bands=toBands(spec);
+    var d=detectBPF(spec);
+    if(d&&d.score>1.2){ bpf=d.f0; prom=tonalProminence(spec,d.f0); }
+  } else {
+    bands=ST.bands;
+    /* find strongest low-frequency band as a coarse BPF proxy */
+    var lowb=bands.filter(function(b){return b.fc<=400;});
+    if(lowb.length){
+      var mx=lowb.reduce(function(a,b){return b.db>a.db?b:a;});
+      bpf=mx.fc;
+      var floor=eSum(bands.map(function(b){return b.db;}))-10*Math.log10(bands.length);
+      prom=Math.max(0,mx.db-floor);
+    }
+  }
+
+  /* ── Calibration ── */
+  var calOffset=0, calibrated=false;
+  var rawA=eSum(bands.map(function(b){return b.db+AwB(b.fc);}));
+  if(ST.cal!==null){ calOffset=ST.cal-rawA; calibrated=true; }
+  var cb=bands.map(function(b){return {fc:b.fc,db:b.db+calOffset};});
+
+  ST.bpf=bpf;
+  var P=psycho(cb,bpf,prom);
+  var dbc=eSum(cb.map(function(b){return b.db+CwB(b.fc);}));
+  /* PNL/PNLT/EPNL depend on ABSOLUTE level (Noy has a ~44 dB threshold),
+     so without calibration they collapse to zero and must be suppressed.
+     C, duration and all sound-quality ratios stay valid uncalibrated.   */
+  var C=toneCorrection(cb);
+  var PNL=calibrated? pnlOf(cb) : null;
+  var PNLT=(PNL===null)? null : PNL+C;
+  /* duration correction: measured from the envelope when we have audio */
+  var Dcorr=-3.0, dur10=null;
+  if(ST.mode==='audio'&&ST.buf){
+    var env=stEnvelope(ST.buf,ST.sr);
+    if(env.dur10>0){ dur10=env.dur10; Dcorr=10*Math.log10(env.dur10/10); }
+  }
+  var EPNL=(PNLT===null)? null : PNLT+Dcorr;
+
+  ST.res={bands:cb,spec:spec,bpf:bpf,prom:prom,calibrated:calibrated,calOffset:calOffset,
+          spl:P.spl,dba:P.dba,dbc:dbc,PNL:PNL,C:C,PNLT:PNLT,D:Dcorr,dur10:dur10,EPNL:EPNL,psy:P};
+  stRender();
+}
+/* 10 dB-down duration from the A-weighted envelope */
+function stEnvelope(sig,sr){
+  var win=Math.max(1,Math.floor(sr*0.5)), hop=Math.floor(win/2), out=[];
+  for(var i=0;i+win<=sig.length;i+=hop){
+    var s=0; for(var j=0;j<win;j++){var v=sig[i+j];s+=v*v;}
+    out.push(10*Math.log10(Math.max(1e-20,s/win)));
+  }
+  if(!out.length) return {dur10:0,env:[]};
+  var mx=Math.max.apply(null,out), thr=mx-10;
+  var a=out.findIndex(function(v){return v>=thr;});
+  var b=out.length-1-[].concat(out).reverse().findIndex(function(v){return v>=thr;});
+  var dur=(b-a)*hop/sr;
+  return {dur10:Math.max(0,dur),env:out,max:mx};
+}
+
+/* ── Parameter back-solve ──
+   BPF is the only rotor parameter a recording determines directly.
+   Everything else needs one user-supplied anchor; the tool solves
+   what it can and marks the rest as under-determined rather than
+   inventing values.                                              */
+function stBackSolve(){
+  var r=ST.res; if(!r) return null;
+  var out={known:[],derived:[],unknown:[]};
+  if(!r.bpf){ out.unknown.push(['BPF','no coherent harmonic series found in 8–400 Hz']); return out; }
+  out.known.push(['BPF (measured)',r.bpf.toFixed(1)+' Hz','from harmonic-product spectrum']);
+  var B=ST.B, rpm=r.bpf*60/B;
+  out.derived.push(['Rotor RPM',rpm.toFixed(0)+' rpm','BPF x 60 / B, with B = '+B+' (your input)']);
+  var Dv=+document.getElementById('st-diam').value;
+  if(isFinite(Dv)&&Dv>0){
+    var Vt=(Dv/2)*(rpm*2*Math.PI/60), M=Vt/340;
+    out.derived.push(['Tip speed',Vt.toFixed(1)+' m/s','from RPM and D = '+Dv+' m']);
+    out.derived.push(['Tip Mach',M.toFixed(3),'Vtip / 340']);
+    var T=ST.mtom*9.81/ST.N, A=Math.PI*Dv*Dv/4;
+    out.derived.push(['Thrust per rotor',T.toFixed(0)+' N','MTOM x g / N']);
+    out.derived.push(['Disc loading',(T/A).toFixed(0)+' N/m²','T / disc area']);
+  } else {
+    out.unknown.push(['Tip Mach','needs rotor diameter — enter it above to resolve']);
+    out.unknown.push(['Disc loading','needs rotor diameter']);
+  }
+  out.unknown.push(['Blade chord / solidity','not recoverable from a far-field recording']);
+  return out;
+}
+
+/* ── Certification assessment ── */
+function stCert(){
+  var r=ST.res; if(!r) return null;
+  var m=ST.mtom, out=[];
+  var l11=ch11Limit(m);
+  /* Chapter 11 is an overflight LAmax limit referenced to 150 m */
+  var at150 = r.dba + 20*Math.log10(ST.dist/150);
+  out.push({name:'ICAO Annex 16 Ch.11 (overflight LAmax)',
+            limit:l11, value:at150, unit:'dB(A)',
+            note:'your level transported to the 150 m reference'+(m>3175?' — note Ch.11 applies to MTOM ≤ 3175 kg':''),
+            applies:m<=3175});
+  var l8=ch8Limits(m);
+  var key = ST.cond==='takeoff'?'takeoff':ST.cond==='approach'?'approach':'overflight';
+  out.push({name:'ICAO Annex 16 Ch.8 ('+key+' EPNL)',
+            limit:l8[key], value:r.EPNL, unit:'EPNdB',
+            note:'limit is indicative — confirm against your applicable Annex 16 edition',
+            applies:true, soft:true});
+  return out;
+}
+
+/* ── Tuning advisor: rank changes by dB delivered ── */
+function stAdvice(){
+  var r=ST.res; if(!r) return [];
+  var gap=0;
+  if(r.calibrated){
+    var cert=stCert()||[];
+    cert.forEach(function(c){ if(c.applies) gap=Math.max(gap,c.value-c.limit); });
+  }
+  var A=[], bpf=r.bpf||100, P=r.psy;
+  var awNow=AwB(bpf);
+
+  /* 1. RPM / tip speed — always the biggest lever */
+  var awDown=AwB(bpf*0.85);
+  A.push({t:'Reduce rotor RPM 15 % (hold thrust with larger disc)',
+    d: 6*Math.log10(1/0.85)*4 + (awDown-awNow)*0.35,
+    w:'Thickness noise scales very steeply with tip Mach, and lowering BPF also moves energy into a less A-weighted region. Requires disc area to grow to hold thrust.'});
+  /* 2. Blade count */
+  var awUp=AwB(bpf*(ST.B+2)/ST.B);
+  A.push({t:'Increase blade count '+ST.B+' → '+(ST.B+2)+' at reduced RPM',
+    d: 2.2 + (awUp-awNow)*0.15,
+    w:'Splits the same thrust across more, less-loaded blades and lifts BPF; net gain only if RPM comes down with it.'});
+  /* 3. Tonality */
+  if(P.tonality>0.35) A.push({t:'Break up the tonal signature (uneven blade spacing / rotor desync)',
+    d: Math.min(4, r.prom*0.12),
+    w:'Measured tonal prominence is '+r.prom.toFixed(1)+' dB above the broadband floor. This barely moves dB(A) but is the strongest driver of perceived annoyance and of the EPNL tone correction, currently +'+r.C.toFixed(1)+' dB.'});
+  /* 4. Duration */
+  if(r.dur10&&r.dur10>12) A.push({t:'Fly the reference profile faster or higher',
+    d: 10*Math.log10(r.dur10/10)-10*Math.log10(Math.max(10,r.dur10*0.7)/10),
+    w:'The 10 dB-down duration is '+r.dur10.toFixed(1)+' s, which is costing '+r.D.toFixed(1)+' dB of duration correction in EPNL. Shortening the exposure is often the cheapest certification gain.'});
+  /* 5. Sharpness */
+  if(P.sharp>1.75) A.push({t:'Add high-frequency absorption (liner / duct treatment)',
+    d: 1.5,
+    w:'Sharpness is '+P.sharp.toFixed(2)+' acum, above the 1.75 threshold where it starts to load the Zwicker annoyance term.'});
+  /* 6. Distance/operational */
+  A.push({t:'Raise the overflight altitude 30 %',
+    d: 20*Math.log10(1.3),
+    w:'Pure geometry: '+(20*Math.log10(1.3)).toFixed(1)+' dB from spreading alone, before extra atmospheric absorption. No hardware change.'});
+
+  A.sort(function(a,b){return b.d-a.d;});
+  return {gap:gap,items:A};
+}
+
+/* ── Render results ── */
+function stRender(){
+  var r=ST.res; if(!r)return;
+  document.getElementById('st-results').style.display='block';
+
+  /* calibration banner */
+  var cb=document.getElementById('st-calbanner');
+  if(r.calibrated){
+    cb.style.cssText='padding:11px 14px;border-radius:4px;margin-bottom:14px;background:rgba(0,102,51,.08);border:1px solid var(--green)';
+    cb.innerHTML='<strong style="color:var(--green)">CALIBRATED</strong> '+
+      '<span style="color:var(--muted)">— levels anchored to your reference of '+ST.cal.toFixed(1)+
+      ' dB(A) at '+ST.dist+' m. Applied offset '+(r.calOffset>=0?'+':'')+r.calOffset.toFixed(1)+' dB.</span>';
+  } else {
+    cb.style.cssText='padding:11px 14px;border-radius:4px;margin-bottom:14px;background:rgba(153,85,0,.08);border:1px solid var(--amber)';
+    cb.innerHTML='<strong style="color:var(--amber)">UNCALIBRATED — LEVELS ARE RELATIVE</strong>'+
+      '<span style="color:var(--muted)"> — an audio file carries no absolute scale, so every dB figure below is '+
+      'relative to digital full scale, not sound pressure. <em>Spectrum shape, BPF, tone correction, duration and all '+
+      'sound-quality ratios remain valid.</em> Enter a known dB(A) for this recording to anchor the absolute numbers.</span>';
+  }
+
+  function set(id,v,dec){var e=document.getElementById(id);if(!e)return;
+    if(v===null||v===undefined||!isFinite(v)){e.textContent='—';e.style.color='var(--dim)';}
+    else{e.textContent=(+v).toFixed(dec===undefined?1:dec);e.style.color='';}}
+  function setCal(id,v,dec){var e=document.getElementById(id);if(!e)return;
+    if(!r.calibrated){e.textContent='cal.';e.style.color='var(--amber)';e.style.fontSize='14px';
+      e.title='Needs a calibration reference — this metric depends on absolute level';return;}
+    e.style.fontSize='';e.title='';
+    if(v===null||!isFinite(v)){e.textContent='—';e.style.color='var(--dim)';}
+    else{e.textContent=(+v).toFixed(dec===undefined?1:dec);e.style.color='';}}
+  setCal('stm-pnl',r.PNL); setCal('stm-pnlt',r.PNLT); setCal('stm-epnl',r.EPNL);
+  setCal('stm-spl',r.spl); setCal('stm-dba',r.dba); setCal('stm-dbc',r.dbc);
+  set('stm-tc',r.C); set('stm-dur',r.dur10); set('stm-dcorr',r.D);
+  set('stm-bpf',r.bpf,r.bpf&&r.bpf<100?1:0);
+  set('stm-prom',r.prom);
+  var P=r.psy;
+  set('stm-loud',P.loud,2); set('stm-sharp',P.sharp,2); set('stm-rough',P.rough,2);
+  set('stm-fluct',P.fluct,2); set('stm-ton',P.tonality,2); set('stm-pa',P.PA,1);
+
+  stDrawSpectrum();
+
+  /* back-solve */
+  var bs=stBackSolve(), el=document.getElementById('st-solve');
+  if(bs){
+    var rows='';
+    function row(a,b,c,col){return '<tr><td style="padding:7px 10px;border:1px solid var(--b1);color:var(--white)">'+a+
+      '</td><td style="padding:7px 10px;border:1px solid var(--b1);text-align:right;font-weight:700;color:'+col+'">'+b+
+      '</td><td style="padding:7px 10px;border:1px solid var(--b1);color:var(--muted)">'+c+'</td></tr>';}
+    bs.known.forEach(function(x){rows+=row(x[0],x[1],x[2],'var(--green)');});
+    bs.derived.forEach(function(x){rows+=row(x[0],x[1],x[2],'var(--cyan)');});
+    bs.unknown.forEach(function(x){rows+=row(x[0],'not determined',x[1],'var(--amber)');});
+    el.innerHTML='<table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px">'+
+      '<thead><tr style="background:var(--s2)">'+
+      '<th style="padding:8px 10px;text-align:left;border:1px solid var(--b1);color:var(--muted)">PARAMETER</th>'+
+      '<th style="padding:8px 10px;text-align:right;border:1px solid var(--b1);color:var(--muted)">VALUE</th>'+
+      '<th style="padding:8px 10px;text-align:left;border:1px solid var(--b1);color:var(--muted)">BASIS</th>'+
+      '</tr></thead><tbody>'+rows+'</tbody></table>';
+  }
+
+  /* certification */
+  var ce=document.getElementById('st-cert'), ch='';
+  if(!r.calibrated){
+    ce.innerHTML='<div style="padding:14px 16px;background:rgba(153,85,0,.07);border:1px solid var(--amber);'+
+      'border-radius:4px;font-family:var(--body);font-size:13.5px;line-height:1.6;color:var(--white)">'+
+      '<strong style="color:var(--amber)">Certification check unavailable — recording is uncalibrated.</strong><br><br>'+
+      'Every ICAO limit is an absolute sound-pressure level, and the perceived-noise chain that feeds EPNL '+
+      '(Noy &rarr; PNL) has a threshold near 44 dB per band. Applied to a file scaled to digital full scale, '+
+      'that chain returns zero regardless of what the aircraft actually sounds like. Reporting a verdict here '+
+      'would be inventing one.<br><br>'+
+      'Enter one known dB(A) figure for this recording in <em>Measurement setup</em> and the full assessment '+
+      'appears. Meanwhile the spectrum, BPF '+(r.bpf?('of '+r.bpf.toFixed(1)+' Hz'):'search')+
+      ', tone correction of +'+r.C.toFixed(1)+' dB, duration and all sound-quality metrics above are already valid.'+
+      '</div>';
+  } else {
+  var cert=stCert()||[];
+  cert.forEach(function(c){
+    var margin=c.limit-c.value, pass=margin>=0;
+    var col=!c.applies?'var(--muted)':pass?'var(--green)':'var(--red)';
+    var badge=!c.applies?'N/A':pass?'PASS':'EXCEEDS';
+    ch+='<div style="padding:13px 15px;border:1px solid '+col+';border-left-width:4px;border-radius:4px;'+
+      'margin-bottom:9px;background:'+(!c.applies?'var(--s2)':pass?'rgba(0,102,51,.05)':'rgba(187,17,51,.05)')+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">'+
+      '<span style="font-family:var(--body);font-size:13.5px;font-weight:600;color:var(--white)">'+c.name+'</span>'+
+      '<span style="font-family:var(--mono);font-size:12px;font-weight:700;color:'+col+'">'+badge+'</span></div>'+
+      '<div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:6px">'+
+      'measured <strong style="color:var(--white)">'+(isFinite(c.value)?c.value.toFixed(1):'—')+' '+c.unit+'</strong>'+
+      ' &nbsp;vs limit <strong style="color:var(--white)">'+c.limit.toFixed(1)+' '+c.unit+'</strong>'+
+      ' &nbsp;margin <strong style="color:'+col+'">'+(margin>=0?'+':'')+margin.toFixed(1)+' dB</strong></div>'+
+      '<div style="font-family:var(--body);font-size:12.5px;color:var(--muted);margin-top:5px">'+c.note+'</div></div>';
+  });
+  ce.innerHTML=ch;
+  }
+
+  /* advice */
+  var ad=stAdvice(), ae=document.getElementById('st-advice'), ah='';
+  if(!r.calibrated) ah+='<div style="padding:12px 14px;background:var(--s2);border:1px solid var(--b1);'+
+    'border-radius:4px;margin-bottom:12px;font-family:var(--body);font-size:13.5px;color:var(--white)">'+
+    'Ranked on spectrum shape and tonal structure only. Without calibration there is no measured margin to '+
+    'close, so these are relative gains rather than a route to a specific limit.</div>';
+  else if(ad.gap>0) ah+='<div style="padding:12px 14px;background:rgba(187,17,51,.06);border:1px solid var(--red);'+
+    'border-radius:4px;margin-bottom:12px;font-family:var(--body);font-size:13.5px;color:var(--white)">'+
+    'Worst-case exceedance is <strong style="color:var(--red)">'+ad.gap.toFixed(1)+' dB</strong>. '+
+    'The ranked actions below are estimated independently; they are not simply additive, but the top two together '+
+    'will normally cover a gap of this size.</div>';
+  else if(r.calibrated) ah+='<div style="padding:12px 14px;background:rgba(0,102,51,.06);border:1px solid var(--green);'+
+    'border-radius:4px;margin-bottom:12px;font-family:var(--body);font-size:13.5px;color:var(--white)">'+
+    'Currently inside every limit checked. The actions below are ranked by how much margin each would add.</div>';
+  ad.items.forEach(function(it,i){
+    ah+='<div style="display:flex;gap:13px;padding:12px 14px;border:1px solid var(--b1);border-radius:4px;'+
+      'margin-bottom:8px;background:'+(i%2?'var(--s2)':'var(--s1)')+'">'+
+      '<div style="flex-shrink:0;width:62px;text-align:center">'+
+      '<div style="font-family:var(--disp);font-size:19px;font-weight:700;color:'+(it.d>=3?'var(--green)':it.d>=1?'var(--cyan)':'var(--muted)')+'">'+
+      (it.d>0?'−':'+')+Math.abs(it.d).toFixed(1)+'</div>'+
+      '<div style="font-family:var(--mono);font-size:10px;color:var(--muted)">dB</div></div>'+
+      '<div><div style="font-family:var(--body);font-size:13.5px;font-weight:600;color:var(--white);margin-bottom:3px">'+it.t+'</div>'+
+      '<div style="font-family:var(--body);font-size:12.5px;line-height:1.55;color:var(--muted)">'+it.w+'</div></div></div>';
+  });
+  ae.innerHTML=ah;
+}
+
+/* ── Spectrum canvas ── */
+function stDrawSpectrum(){
+  var c=document.getElementById('st-spec'); if(!c||!ST.res)return;
+  var w=c.width=c.clientWidth*2, h=c.height=440;
+  var g=c.getContext('2d'); g.clearRect(0,0,w,h);
+  var bands=ST.res.bands, pad=64, bot=h-46;
+  var dbs=bands.map(function(b){return b.db;});
+  var mx=Math.max.apply(null,dbs), mn=mx-70;
+  g.strokeStyle='rgba(0,40,80,.16)';g.lineWidth=2;
+  g.beginPath();g.moveTo(pad,10);g.lineTo(pad,bot);g.lineTo(w-14,bot);g.stroke();
+  g.font='19px monospace';g.fillStyle='#5a7a96';
+  for(var t=0;t<=6;t++){
+    var y=10+(bot-10)*t/6, v=mx-(mx-mn)*t/6;
+    g.fillText(v.toFixed(0),8,y+6);
+    g.strokeStyle='rgba(0,40,80,.06)';g.beginPath();g.moveTo(pad,y);g.lineTo(w-14,y);g.stroke();
+  }
+  var bw=(w-pad-20)/bands.length;
+  bands.forEach(function(b,i){
+    var x=pad+i*bw;
+    var hh=Math.max(0,(b.db-mn)/(mx-mn))*(bot-10);
+    g.fillStyle='rgba(0,102,187,.55)';
+    g.fillRect(x+1,bot-hh,bw-2,hh);
+    var aw=b.db+AwB(b.fc);
+    var ah=Math.max(0,(aw-mn)/(mx-mn))*(bot-10);
+    g.fillStyle='rgba(0,102,51,.75)';
+    g.fillRect(x+bw*0.3,bot-ah,bw*0.4,ah);
+    if(i%3===0){
+      g.save();g.translate(x+bw/2,bot+8);g.rotate(-Math.PI/4);
+      g.fillStyle='#5a7a96';g.font='17px monospace';
+      g.fillText(b.fc>=1000?(b.fc/1000)+'k':String(b.fc),0,0);g.restore();
+    }
+  });
+  /* BPF harmonics */
+  if(ST.res.bpf){
+    for(var hn=1;hn<=8;hn++){
+      var f=ST.res.bpf*hn; if(f>10000)break;
+      var idx=0,best=1e9;
+      TOB_F.forEach(function(fc,j){var d=Math.abs(Math.log(fc/f));if(d<best){best=d;idx=j;}});
+      var x=pad+idx*bw+bw/2;
+      g.strokeStyle='rgba(187,17,51,.5)';g.setLineDash([6,5]);g.lineWidth=2;
+      g.beginPath();g.moveTo(x,10);g.lineTo(x,bot);g.stroke();g.setLineDash([]);
+    }
+  }
+  g.fillStyle='rgba(0,102,187,.75)';g.fillRect(w-330,14,16,16);
+  g.fillStyle='#5a7a96';g.font='18px monospace';g.fillText('1/3-oct',w-306,28);
+  g.fillStyle='rgba(0,102,51,.85)';g.fillRect(w-215,14,16,16);
+  g.fillStyle='#5a7a96';g.fillText('A-weighted',w-191,28);
+  g.strokeStyle='rgba(187,17,51,.6)';g.setLineDash([6,5]);
+  g.beginPath();g.moveTo(w-70,22);g.lineTo(w-50,22);g.stroke();g.setLineDash([]);
+  g.fillStyle='#5a7a96';g.fillText('BPF',w-44,28);
+}
+
+/* drag & drop */
+document.addEventListener('DOMContentLoaded',function(){
+  var dz=document.getElementById('st-drop'); if(!dz)return;
+  ['dragenter','dragover'].forEach(function(e){dz.addEventListener(e,function(ev){
+    ev.preventDefault();dz.style.borderColor='var(--cyan)';dz.style.background='var(--cyanB)';});});
+  ['dragleave','drop'].forEach(function(e){dz.addEventListener(e,function(ev){
+    ev.preventDefault();dz.style.borderColor='var(--b2)';dz.style.background='var(--s1)';});});
+  dz.addEventListener('drop',function(ev){ stHandleFiles(ev.dataTransfer.files); });
+  window.addEventListener('resize',function(){ if(ST&&ST.res) stDrawSpectrum(); });
+});
+/* help entry */
+if(typeof HELP!=='undefined'){
+  HELP.aerotune={t:'Son-Tune',s:'Measurement in, certification and tuning plan out',
+   p:'This page works backwards from a real recording instead of forwards from geometry.\n\nOne thing to be clear about before you trust any absolute number: an audio file has no absolute scale. A WAV stores amplitude relative to digital full scale, which depends on the microphone, gain and converter used. Without a reference the tool reports levels relative to full scale and says so. Give it one known dB(A) figure for the recording and every absolute metric becomes real.\n\nWhat stays valid even uncalibrated: spectrum shape, blade-passing frequency, harmonic structure, tone correction, 10 dB-down duration, and every sound-quality ratio. Those depend on relative levels only.',
+   eq:'BPF  — harmonic product spectrum, 8–400 Hz\nPNL  = 40 + 33.22·log₁₀(N_total)\n       N_total = N_max + 0.15·(ΣN − N_max)\nPNLT = PNL + C          C capped at 6.7 dB\nEPNL = PNLT_max + 10·log₁₀(t₁₀ / 10)\n\nCh.11 limit = 82 + 3·log₂(MTOM/788)  dB(A)\n              82 at ≤788 kg, 88 at 3175 kg',
+   knob:'Enter blade count to get RPM, then diameter to unlock tip Mach and disc loading. Without a calibration level the certification verdicts are shape-only and should not be quoted.',
+   ref:'ICAO Annex 16 Vol I Ch.8/Ch.11 & App.2; FAR-36; ISO 532-1; Zwicker & Fastl (2007)'};
+}
+</script>
+
+<style>
+/* Son-Tune responsive + zoom behaviour */
+#page-aerotune{max-width:min(1300px,96vw);margin:0 auto}
+#st-drop:hover{border-color:var(--cyan);background:var(--cyanB)}
+#page-aerotune input[type=number],#page-aerotune select{box-sizing:border-box;max-width:100%}
+#page-aerotune canvas{max-width:100%;height:auto}
+@media (max-width:900px){
+  #page-aerotune [style*="grid-template-columns:repeat(auto-fit,minmax(190px"]{grid-template-columns:1fr!important}
+  #st-spec{height:180px!important}
+}
+@media (max-width:560px){
+  #page-aerotune [style*="minmax(128px"]{grid-template-columns:repeat(2,1fr)!important}
+  #st-spec{height:150px!important}
+}
+</style>
+
+
+<style>
+#dispFab{position:fixed;right:18px;bottom:18px;z-index:900;width:40px;height:40px;border-radius:10px;
+  background:#fff;color:#0059a8;border:1px solid #c3d4e3;cursor:pointer;
+  box-shadow:0 2px 10px rgba(10,30,60,.12);display:flex;align-items:center;justify-content:center;
+  transition:.15s;opacity:.9}
+#dispFab:hover{opacity:1;box-shadow:0 4px 16px rgba(10,30,60,.18);transform:translateY(-1px)}
+#dispPanel{position:fixed;right:18px;bottom:68px;z-index:901;width:326px;display:none;
+  background:#fff;border:1px solid #d3e0ec;border-radius:12px;overflow:hidden;
+  box-shadow:0 16px 52px rgba(10,30,60,.20);max-height:80vh;flex-direction:column}
+#dispPanel.show{display:flex}
+.dsp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  padding:16px 18px 13px;border-bottom:1px solid #e6eef5;background:#fbfdff}
+.dsp-title{font-family:var(--body);font-size:16px;font-weight:700;color:#0a1a29;letter-spacing:-.2px}
+.dsp-caption{font-family:var(--body);font-size:12px;color:#5a7a96;margin-top:2px}
+.dsp-x{background:transparent;border:none;color:#8aa4bb;font-size:14px;cursor:pointer;padding:3px 5px;
+  border-radius:5px;line-height:1}
+.dsp-x:hover{background:#eef4f9;color:#0a1a29}
+.dsp-body{padding:6px 18px 4px;overflow-y:auto;flex:1}
+.dsp-group{padding:13px 0;border-bottom:1px solid #f0f5f9}
+.dsp-group:last-child{border-bottom:none}
+.dsp-glabel{font-family:var(--body);font-size:12.5px;font-weight:700;color:#1e3a53;
+  letter-spacing:.2px;margin-bottom:3px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.dsp-val{font-family:var(--body);font-size:11.5px;font-weight:600;color:#0059a8}
+.dsp-desc{font-family:var(--body);font-size:11.5px;line-height:1.5;color:#6a89a5;margin-bottom:9px}
+.dsp-seg{display:flex;gap:5px;flex-wrap:wrap}
+.dsp-seg button{flex:1 1 auto;min-width:62px;padding:8px 9px;font-family:var(--body);font-size:12px;
+  font-weight:600;background:#f5f9fc;border:1px solid #dbe6ef;color:#43607b;cursor:pointer;
+  border-radius:7px;transition:.13s;white-space:nowrap}
+.dsp-seg button:hover{background:#eaf2f9;border-color:#b9cddf}
+.dsp-seg button.on{background:#0059a8;border-color:#0059a8;color:#fff;
+  box-shadow:0 1px 4px rgba(0,89,168,.28)}
+.dsp-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 18px;border-top:1px solid #e6eef5;background:#fbfdff}
+.dsp-note{font-family:var(--body);font-size:11.5px;color:#8aa4bb}
+.dsp-reset{padding:7px 13px;font-family:var(--body);font-size:12px;font-weight:600;
+  background:#fff;border:1px solid #dbe6ef;color:#43607b;cursor:pointer;border-radius:7px}
+.dsp-reset:hover{background:#f5f9fc;border-color:#b9cddf}
+@media(max-width:520px){#dispPanel{right:10px;left:10px;width:auto;bottom:64px}}
+</style>
+
+
+<style>
+/* ── AERO-TUNE presentation ── */
+.at-hero{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:center;
+  background:linear-gradient(135deg,#f7fbff 0%,#eef5fb 100%);
+  border:1px solid #d3e0ec;border-radius:12px;padding:26px 28px;margin-bottom:16px}
+.at-eyebrow{font-family:var(--body);font-size:11.5px;font-weight:700;letter-spacing:2.4px;
+  text-transform:uppercase;color:#0059a8;margin-bottom:8px}
+.at-title{font-family:var(--body);font-size:38px;font-weight:800;letter-spacing:-1px;
+  color:#0a1a29;line-height:1;margin:0 0 10px}
+.at-title span{color:#0059a8;font-weight:700}
+.at-lede{font-family:var(--body);font-size:14.5px;line-height:1.68;color:#3d5c78;max-width:620px;margin:0 0 14px}
+.at-chips{display:flex;gap:7px;flex-wrap:wrap}
+.at-chip{font-family:var(--body);font-size:11.5px;font-weight:600;color:#0059a8;
+  background:#fff;border:1px solid #c3d9ec;border-radius:20px;padding:5px 12px}
+.at-hero-art{width:100%;height:auto;max-width:300px;justify-self:end}
+.at-flow{display:flex;align-items:stretch;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.at-step{flex:1 1 168px;display:flex;gap:10px;align-items:flex-start;background:#fff;
+  border:1px solid #dbe6ef;border-radius:9px;padding:12px 13px}
+.at-num{flex-shrink:0;width:23px;height:23px;border-radius:50%;background:#0059a8;color:#fff;
+  font-family:var(--body);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.at-step strong{display:block;font-family:var(--body);font-size:13px;font-weight:700;color:#0a1a29;margin-bottom:2px}
+.at-step span{display:block;font-family:var(--body);font-size:11.5px;line-height:1.45;color:#6a89a5}
+.at-arrow{display:flex;align-items:center;color:#a8c0d4;font-size:15px;flex-shrink:0}
+@media(max-width:1000px){
+  .at-hero{grid-template-columns:1fr}
+  .at-hero-art{max-width:220px;justify-self:start}
+  .at-title{font-size:31px}
+  .at-arrow{display:none}
+}
+@media(max-width:560px){.at-title{font-size:26px}.at-step{flex:1 1 100%}}
+/* upload zone */
+#st-drop{border:2px dashed #b9cddf!important;background:#fff!important;border-radius:11px!important;
+  padding:30px!important;transition:.16s}
+#st-drop:hover{border-color:#0059a8!important;background:#f7fbff!important}
+</style>
 
 </body>
 </html>
